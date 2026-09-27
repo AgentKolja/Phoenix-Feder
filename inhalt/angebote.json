@@ -1,0 +1,35 @@
+[
+  {
+    "titel": "Kostenloses Erstgespräch",
+    "dauer": "30 Min.",
+    "preis": "kostenlos",
+    "text": "Wir lernen uns kennen, schauen auf dein Anliegen und klären, ob und wie ich dich begleiten kann.",
+    "bild": "",
+    "buchung": "",
+    "hervorheben": true
+  },
+  {
+    "titel": "Persönliches Coaching",
+    "dauer": "60 Min.",
+    "preis": "40 €",
+    "text": "Bestandsaufnahme, Zielsetzung und Interventionen zur Erfüllung deines Herzenswunsches.",
+    "bild": "coaching",
+    "buchung": ""
+  },
+  {
+    "titel": "Achtsamkeitstraining",
+    "dauer": "30 Min.",
+    "preis": "15 €",
+    "text": "Finde durch Meditation und Atemübungen zu einem bewussteren Leben.",
+    "bild": "achtsamkeit",
+    "buchung": ""
+  },
+  {
+    "titel": "Yoga-Training",
+    "dauer": "60 Min.",
+    "preis": "40 €",
+    "text": "Entwickle deinen individuellen Yogaflow – perfekt für die Bedürfnisse deines Körpers.",
+    "bild": "yoga",
+    "buchung": ""
+  }
+]
