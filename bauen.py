@@ -198,18 +198,18 @@ def kontakt_html():
   <input type="hidden" name="redirect" value="{E['domain']}/danke/">
   <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">
   <div class="felder">
-    <label>Vorname <span aria-hidden="true">*</span><input name="Vorname" required autocomplete="given-name"></label>
-    <label>Nachname<input name="Nachname" autocomplete="family-name"></label>
-    <label>E-Mail <span aria-hidden="true">*</span><input type="email" name="email" required autocomplete="email"></label>
-    <label>Telefon<input type="tel" name="Telefon" autocomplete="tel"></label>
+    <label><span>Vorname <span aria-hidden="true">*</span></span><input name="Vorname" required autocomplete="given-name"></label>
+    <label><span>Nachname</span><input name="Nachname" autocomplete="family-name"></label>
+    <label><span>E-Mail <span aria-hidden="true">*</span></span><input type="email" name="email" required autocomplete="email"></label>
+    <label><span>Telefon</span><input type="tel" name="Telefon" autocomplete="tel"></label>
   </div>
-  <label>Worum geht es?
+  <label><span>Worum geht es?</span>
     <select name="Anliegen">
       <option>Kostenloses Erstgespräch</option><option>Persönliches Coaching</option>
       <option>Achtsamkeitstraining</option><option>Yoga-Training</option><option>Etwas anderes</option>
     </select>
   </label>
-  <label>Nachricht <span aria-hidden="true">*</span><textarea name="message" rows="5" required></textarea></label>
+  <label><span>Nachricht <span aria-hidden="true">*</span></span><textarea name="message" rows="5" required></textarea></label>
   <p class="klein">Deine Angaben nutze ich nur, um deine Anfrage zu beantworten. Mehr dazu in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
   <button class="knopf" type="submit">Nachricht senden</button>
   <p class="status" role="status" aria-live="polite"></p>
