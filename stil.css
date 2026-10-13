@@ -142,6 +142,8 @@ p { margin: 0 0 1em; }
 .ueber { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
 .ueber-bild { border-radius: var(--rund); box-shadow: var(--schatten); aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
 .zitat { font: italic 400 1.35rem/1.45 var(--serif); border-left: 3px solid var(--akzent-hell); padding-left: 1.2rem; margin: 1.5rem 0; }
+.zitat-klein { font-size: 1.02rem; margin: 1rem 0 0; }
+.zitat span { display: block; font: 400 0.85rem/1.4 var(--sans); color: var(--leise); margin-top: 0.3rem; }
 
 /* Artikelkarten */
 .raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.75rem; }

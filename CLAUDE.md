@@ -72,8 +72,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Impressum und Datenschutz sind ausgefüllt (Stand Okt. 2026). Platzhalter `[[...]]` lässt `--streng` scheitern.
 - Preise: Nikolas ist kein Kleinunternehmer. Ob die Preise brutto sind, ist nicht geklärt – vor einer
   Preisänderung fragen und ggf. „inkl. MwSt.“ ergänzen (Preisangabenverordnung).
-- Zitate nur mit belegter Quelle. Bekannte Fehlzuschreibungen meiden (z. B. „Zwischen Reiz und Reaktion …“ ist
-  nicht von Viktor Frankl belegt).
+- Zitate: Ist die Zuschreibung nicht wörtlich belegt (z. B. „Zwischen Reiz und Reaktion …“ bei Viktor Frankl,
+  „Das Geheimnis der Gesundheit …“ bei Buddha, „Solange du das Unbewusste …“ bei C. G. Jung), dann
+  „inspiriert von …“ schreiben, nie als wörtliches Zitat ausgeben.
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
@@ -125,4 +126,7 @@ Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Verstehen, Bewusst h
 Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer). Bilder `seminar-*` stammen aus
 dem PDF. Termin, Ort und Preis stehen bewusst auf „auf Anfrage“, bis Nikolas konkrete Daten nennt – dann im
 Abschnitt `#anmelden` und in `angebote.json` eintragen und nach dem Termin wieder entfernen.
+Format: ca. 2,5 Stunden mit Pause, kleine Gruppe, drinnen (keine Gehmeditation, kein Schweigeessen – wetter- bzw.
+zeitabhängig). Maslow: Mangelbedürfnisse lassen sich stillen, Selbstverwirklichung und Transzendenz sind Sehnsüchte,
+die nie ganz gestillt werden.
 
