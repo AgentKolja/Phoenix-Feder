@@ -16,6 +16,7 @@ import sys
 from datetime import date, datetime, timezone
 from email.utils import format_datetime
 from pathlib import Path
+from urllib.parse import quote, urlencode
 
 WURZEL = Path(__file__).resolve().parent
 INHALT = WURZEL / "inhalt"
@@ -24,7 +25,27 @@ E = json.loads((WURZEL / "einstellungen.json").read_text(encoding="utf-8"))
 MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
           "September", "Oktober", "November", "Dezember"]
 PLATZHALTER = re.compile(r"\[\[(.+?)\]\]")
-NAVI = [("/blog/", "Artikel"), ("/book-online/", "Angebote"), ("/about/", "Über mich"), ("/#kontakt", "Kontakt")]
+NAVI = [("/blog/", "Artikel"), ("/gewohnheiten/", "Gewohnheiten"), ("/book-online/", "Begleitung"),
+        ("/about/", "Über mich"), ("/#kontakt", "Kontakt")]
+THEMEN = json.loads((INHALT / "themen.json").read_text(encoding="utf-8"))
+UEBUNGEN = json.loads((INHALT / "uebungen.json").read_text(encoding="utf-8"))
+UEBUNG = {u["slug"]: u for u in UEBUNGEN}
+ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
+ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Habitica-Challenge", "Kostenloses Erstgespräch",
+            "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Etwas anderes"]
+# Beschriftungen rund um einen Artikel, je nach Sprache des Artikels
+TEXTE = {
+    "de": {"essenz": "Auf den Punkt", "probieren": "Zum Ausprobieren", "frage": "Frage an dich",
+           "gewohnheit": "Mach eine Gewohnheit draus", "erfahrung": "Erfahrung teilen", "teilen": "Teilen",
+           "kopiert": "Link kopiert ✓", "passend": "Passt dazu", "geschrieben": "Geschrieben von",
+           "rolle": "Coach & Achtsamkeitstrainer", "erstgespraech": "Kostenloses Erstgespräch",
+           "nachricht": "Zum Artikel „{}“: "},
+    "en": {"essenz": "In essence", "probieren": "Try it", "frage": "A question for you",
+           "gewohnheit": "Make it a habit (in German)", "erfahrung": "Share your experience", "teilen": "Share",
+           "kopiert": "Link copied ✓", "passend": "Read next", "geschrieben": "Written by",
+           "rolle": "coach & mindfulness trainer", "erstgespraech": "Free first conversation",
+           "nachricht": "About the article “{}”: "},
+}
 
 
 # ---------------------------------------------------------------- Hilfen
@@ -85,6 +106,18 @@ def buchung(link=""):
     return link or E["buchung_url"] or "/#kontakt"
 
 
+def bilder_einsetzen(text):
+    # {{bild name "Alternativtext" "css-klasse" "eager"}} - Klasse und "eager" (sofort laden) sind optional
+    return re.sub(r'\{\{bild ([a-z0-9-]+) "([^"]*)"(?: "([^"]*)")?(?: "(eager)")?\}\}',
+                  lambda m: bild(m.group(1), m.group(2), m.group(3) or "", laden=m.group(4) or "lazy"), text)
+
+
+def kontakt_link(anliegen, nachricht=""):
+    """Link zum Kontaktformular der Startseite, das Anliegen (und Nachricht) schon ausgefuellt."""
+    werte = {"anliegen": anliegen, **({"nachricht": nachricht} if nachricht else {})}
+    return "/?" + urlencode(werte, quote_via=quote) + "#kontakt"
+
+
 # ---------------------------------------------------------------- Artikel
 
 def artikel_laden():
@@ -115,50 +148,202 @@ def raster(artikel):
     return '<div class="raster">\n' + "\n".join(karte(a) for a in artikel) + "\n</div>"
 
 
+def passende_artikel(a, alle, anzahl=3):
+    gleich = [x for x in alle if x is not a and x.get("thema") == a.get("thema")]
+    rest = [x for x in alle if x is not a and x not in gleich]
+    return (gleich + rest)[:anzahl]
+
+
 def artikel_seite(a, alle):
-    i = alle.index(a)
-    neuer, aelter = (alle[i - 1] if i > 0 else None), (alle[i + 1] if i + 1 < len(alle) else None)
-    weiter = ""
-    if neuer or aelter:
-        weiter = '<nav class="weiter" aria-label="Weitere Artikel">'
-        if aelter:
-            weiter += f'<a href="/post/{aelter["slug"]}/"><span>Älterer Artikel</span>{esc(aelter["titel"])}</a>'
-        if neuer:
-            weiter += f'<a class="rechts" href="/post/{neuer["slug"]}/"><span>Neuerer Artikel</span>{esc(neuer["titel"])}</a>'
-        weiter += "</nav>"
+    sprache = a.get("sprache", "de")
+    t = TEXTE[sprache]
     titelbild = ""
-    if a.get("bild"):
+    if a.get("bild") and a.get("titelbild") != "nein":
         titelbild = f'<figure class="titelbild">{bild(a["bild"], a.get("bildtext", a["titel"]), laden="eager", groessen="(min-width: 800px) 760px, 100vw")}</figure>'
+    essenz = ""
+    if a.get("essenz"):
+        punkte = "".join(f"<li>{esc(p.strip())}</li>" for p in a["essenz"].split(" | "))
+        essenz = f'<aside class="essenz"><p class="essenz-titel">{t["essenz"]}</p><ul>{punkte}</ul></aside>'
+    mitnehmen = ""
+    if a.get("uebung"):
+        passend = UEBUNG.get(a.get("passend", ""))
+        gewohnheit = (f'<p class="gewohnheit-link">{t["gewohnheit"]}: <a href="/gewohnheiten/#{passend["slug"]}">'
+                      f'{passend["emoji"]} {esc(passend["titel"])}</a></p>') if passend else ""
+        frage = f'<p class="frage"><strong>{t["frage"]}:</strong> {esc(a["frage"])}</p>' if a.get("frage") else ""
+        mitnehmen = f"""<section class="mitnehmen">
+    <h2>{t["probieren"]}</h2>
+    <p>{esc(a["uebung"])}</p>
+    {frage}
+    {gewohnheit}
+  </section>"""
+    thema = next((th for th in THEMEN if th["slug"] == a.get("thema")), None)
+    thema_link = f' · <a href="/thema/{thema["slug"]}/">{esc(thema["titel"])}</a>' if thema else ""
+    feedback = kontakt_link("Feedback zu einem Artikel", t["nachricht"].format(a["titel"]))
+    url = f"{E['domain']}/post/{a['slug']}/"
+    whatsapp = "https://wa.me/?text=" + quote(f"{a['titel']} – {url}")
     ld = {
         "@context": "https://schema.org", "@type": "BlogPosting", "headline": a["titel"],
-        "datePublished": a["datum"], "inLanguage": a.get("sprache", "de"),
+        "datePublished": a["datum"], "inLanguage": sprache,
         "author": {"@type": "Person", "name": E["autor"], "url": E["domain"] + "/about/"},
-        "mainEntityOfPage": f"{E['domain']}/post/{a['slug']}/", "description": a["beschreibung"],
+        "mainEntityOfPage": url, "description": a["beschreibung"],
     }
     if a.get("bild"):
         ld["image"] = f"{E['domain']}/bilder/{a['bild']}-1600.webp"
-    inhalt = f"""<article class="beitrag huelle-schmal" lang="{a.get('sprache', 'de')}">
+    inhalt = f"""<article class="beitrag huelle-schmal" lang="{sprache}">
   <header class="beitrag-kopf">
-    <p class="meta"><a href="/blog/">Artikel</a> · {datum_de(a['datum'])} · {a['minuten']} Min. Lesezeit</p>
+    <p class="meta" lang="de"><a href="/blog/">Artikel</a>{thema_link} · {datum_de(a['datum'])} · {a['minuten']} Min. Lesezeit</p>
     <h1>{esc(a['titel'])}</h1>
   </header>
   {titelbild}
+  {essenz}
   <div class="fliesstext">
-{a['inhalt']}
+{bilder_einsetzen(a['inhalt'])}
   </div>
+  {mitnehmen}
+  <div class="interaktion">
+    <a class="knopf" href="{esc(feedback)}">{t["erfahrung"]}</a>
+    <button class="knopf zweit" type="button" data-teilen data-kopiert="{t["kopiert"]}" hidden>{t["teilen"]}</button>
+    <a class="knopf zweit" href="{esc(whatsapp)}" rel="noopener">WhatsApp</a>
+  </div>
+  <p class="autor-zeile">{t["geschrieben"]} <a href="/about/">{esc(E['autor'])}</a>, {t["rolle"]} · <a href="{esc(buchung())}">{t["erstgespraech"]}</a></p>
 </article>
-<aside class="huelle-schmal autor" lang="de">
-  {bild('nikolas-portrait', 'Nikolas Voth', 'autor-bild', groessen='96px')}
-  <div>
-    <p class="autor-name">{esc(E['autor'])}</p>
-    <p>Coach, Achtsamkeitstrainer und Autor. Wenn dich dieser Artikel berührt hat und du tiefer einsteigen möchtest: Das erste Gespräch ist kostenlos.</p>
-    <a class="knopf" href="{esc(buchung())}">Kostenloses Erstgespräch</a>
-  </div>
-</aside>
-<div class="huelle-schmal">{weiter}</div>
+<section class="huelle passend" lang="de">
+  <h2>{t["passend"]}</h2>
+  {raster(passende_artikel(a, alle))}
+</section>
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>"""
     return seite(a["titel"], a["beschreibung"], f"/post/{a['slug']}/", inhalt,
                  og_bild=a.get("bild"), og_typ="article")
+
+
+# ---------------------------------------------------------------- Themen und Uebungen
+
+def themen_chips(aktiv):
+    chips = [("/blog/", "Alle", aktiv is None)] + [(f"/thema/{t['slug']}/", t["titel"], aktiv == t["slug"]) for t in THEMEN]
+    return ('<nav class="chips" aria-label="Themen">'
+            + "".join(f'<a href="{z}"' + (' aria-current="page"' if an else "") + f">{esc(x)}</a>" for z, x, an in chips)
+            + "</nav>")
+
+
+def themen_html():
+    kacheln = []
+    for t in THEMEN:
+        anzahl = sum(a.get("thema") == t["slug"] for a in artikel_laden())
+        kacheln.append(f"""<a class="thema-kachel" href="/thema/{t['slug']}/">
+  {bild(t["bild"], "", groessen="(min-width: 900px) 270px, 100vw")}
+  <span class="thema-text"><strong>{esc(t['titel'])}</strong><span>{esc(t['essenz'])}</span><span class="meta">{anzahl} Artikel →</span></span>
+</a>""")
+    return '<div class="themen">\n' + "\n".join(kacheln) + "\n</div>"
+
+
+def thema_seite(t, artikel):
+    liste = [a for a in artikel if a.get("thema") == t["slug"]]
+    inhalt = f"""<section class="abschnitt">
+  <div class="huelle">
+    <div class="abschnitt-kopf">
+      <p class="oberzeile">Thema</p>
+      <h1>{esc(t['titel'])}</h1>
+      <p>{esc(t['essenz'])}</p>
+    </div>
+    {themen_chips(t['slug'])}
+    {raster(liste)}
+    <p class="mehr"><a class="knopf zweit" href="/gewohnheiten/">Übungen für jeden Tag</a></p>
+  </div>
+</section>"""
+    return seite(t["titel"], t["essenz"], f"/thema/{t['slug']}/", inhalt, og_bild=t["bild"])
+
+
+def text_html(text):
+    """Klartext aus Habitica (Absaetze, '- ' Listen, Links) -> HTML."""
+    text = re.sub(r"(\n[-*] [^\n]*)\n\s*\n(?=[-*] )", r"\1\n", text)
+    teile = []
+    for block in re.split(r"\n\s*\n", text.strip()):
+        zeilen, liste, absatz = block.split("\n"), [], []
+
+        def absatz_abschliessen():
+            if absatz:
+                teile.append("<p>" + "<br>".join(absatz) + "</p>")
+                absatz.clear()
+
+        def liste_abschliessen():
+            if liste:
+                teile.append("<ul>" + "".join(f"<li>{z}</li>" for z in liste) + "</ul>")
+                liste.clear()
+
+        for zeile in zeilen:
+            inhalt = esc(zeile.strip())
+            inhalt = re.sub(r"(https?://[^\s<]+)", r'<a href="\1" target="_blank" rel="noopener">\1</a>', inhalt)
+            if re.match(r"^[-*] ", zeile.strip()):
+                absatz_abschliessen()
+                liste.append(inhalt[2:].strip())
+            else:
+                liste_abschliessen()
+                if inhalt:
+                    absatz.append(inhalt)
+        absatz_abschliessen()
+        liste_abschliessen()
+    return "\n".join(teile)
+
+
+def uebung_karte(u):
+    abhaken = (f'<label class="erledigt" hidden><input type="checkbox" data-quest="{u["slug"]}"> Erledigt</label>'
+               if u["art"] == "quest" else "")
+    return f"""<article class="uebung" id="{u['slug']}">
+  <details>
+    <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-titel">{esc(u['titel'])}</span></summary>
+    <div class="uebung-text">{text_html(u['text'])}</div>
+  </details>
+  {abhaken}
+</article>"""
+
+
+def uebungen_html():
+    gewohnheiten = [u for u in UEBUNGEN if u["art"] == "gewohnheit"]
+    taeglich = [u for u in UEBUNGEN if u["art"] == "taeglich"]
+    quests = [u for u in UEBUNGEN if u["art"] == "quest"]
+    raster_ = lambda liste: '<div class="uebungen">' + "\n".join(uebung_karte(u) for u in liste) + "</div>"
+    gruppen = list(dict.fromkeys(u["gruppe"] for u in quests))
+    quest_html = "".join(f'<h3 class="gruppe">{esc(g)}</h3>' + raster_([u for u in quests if u["gruppe"] == g])
+                         for g in gruppen)
+    return f"""<h2 id="gewohnheiten-liste">{len(gewohnheiten)} Gewohnheiten</h2>
+<p class="unterzeile">Keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. Tippe eine Gewohnheit an, um sie zu lesen.</p>
+{raster_(gewohnheiten)}
+<h2 id="taeglich">{len(taeglich)} tägliche Aufgaben</h2>
+<p class="unterzeile">Kleine tägliche Begleiter, die dir guttun – auch fünf Minuten zählen.</p>
+{raster_(taeglich)}
+<h2 id="quests">{len(quests)} Quests</h2>
+<p class="unterzeile">Erlebnisse, die du dir vornehmen kannst, wann immer du magst. Hake ab, was du geschafft hast.</p>
+<div class="fortschritt" data-fortschritt hidden>
+  <p><strong data-erledigt>0</strong> von {len(quests)} Quests · <strong data-xp>0</strong> XP · Level <strong data-level>1</strong></p>
+  <div class="balken"><span data-balken></span></div>
+  <p class="klein">Dein Fortschritt bleibt nur in diesem Browser gespeichert. Nichts davon wird übertragen.</p>
+</div>
+{quest_html}"""
+
+
+def impuls_html():
+    pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest")]
+
+    def kurz(u):
+        erster = next(z for z in u["text"].split("\n\n") if z.strip())
+        erster = re.sub(r"^[-*] ", "", erster.replace("\n", " ")).strip()
+        return erster if len(erster) <= 220 else erster[:220].rsplit(" ", 1)[0] + " …"
+
+    daten = [{"s": u["slug"], "a": ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else ""), "e": u["emoji"],
+              "t": u["titel"], "k": kurz(u)} for u in pool]
+    d = daten[date.today().toordinal() % len(daten)]
+    json_text = json.dumps(daten, ensure_ascii=False).replace("</", "<\\/")
+    return f"""<div class="impuls" data-impuls>
+  <p class="impuls-art" data-feld="art">{esc(d['a'])}</p>
+  <div class="impuls-emoji" data-feld="emoji" aria-hidden="true">{d['e']}</div>
+  <h3 data-feld="titel">{esc(d['t'])}</h3>
+  <p data-feld="kurz">{esc(d['k'])}</p>
+  <div class="knopf-reihe">
+    <a class="knopf" data-feld="link" href="/gewohnheiten/#{d['s']}">Ganze Übung lesen</a>
+    <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
+  </div>
+</div>
+<script type="application/json" id="impuls-daten">{json_text}</script>"""
 
 
 # ---------------------------------------------------------------- Bausteine fuer Seiten
@@ -182,7 +367,7 @@ def angebote_html():
     return '<div class="angebote">\n' + "\n".join(teile) + "\n</div>"
 
 
-def kontakt_html():
+def kontakt_html(vorauswahl=""):
     if not E["formular_schluessel"]:
         wege = []
         if E.get("linkedin"):
@@ -205,8 +390,7 @@ def kontakt_html():
   </div>
   <label><span>Worum geht es?</span>
     <select name="Anliegen">
-      <option>Kostenloses Erstgespräch</option><option>Persönliches Coaching</option>
-      <option>Achtsamkeitstraining</option><option>Yoga-Training</option><option>Etwas anderes</option>
+      {"".join(f"<option{' selected' if a == vorauswahl else ''}>{a}</option>" for a in ANLIEGEN)}
     </select>
   </label>
   <label><span>Nachricht <span aria-hidden="true">*</span></span><textarea name="message" rows="5" required></textarea></label>
@@ -223,7 +407,11 @@ def bausteine_einsetzen(text, artikel):
         "{{angebote}}": angebote_html,
         "{{neueste_artikel}}": lambda: raster(artikel[:3]),
         "{{alle_artikel}}": lambda: raster(artikel),
-        "{{kontakt}}": kontakt_html,
+        "{{impuls}}": impuls_html,
+        "{{themen}}": themen_html,
+        "{{themen_chips}}": lambda: themen_chips(None),
+        "{{uebungen}}": uebungen_html,
+        "{{habitica_url}}": lambda: esc(E["habitica_challenge"]),
         "{{buchung_url}}": lambda: esc(buchung()),
         "{{name}}": lambda: esc(E["name"]),
         "{{autor}}": lambda: esc(E["autor"]),
@@ -231,9 +419,8 @@ def bausteine_einsetzen(text, artikel):
     for marke, erzeuger in ersatz.items():
         if marke in text:
             text = text.replace(marke, erzeuger())
-    # {{bild name "Alternativtext" "css-klasse" "eager"}} - Klasse und "eager" (sofort laden) sind optional
-    text = re.sub(r'\{\{bild ([a-z0-9-]+) "([^"]*)"(?: "([^"]*)")?(?: "(eager)")?\}\}',
-                  lambda m: bild(m.group(1), m.group(2), m.group(3) or "", laden=m.group(4) or "lazy"), text)
+    text = re.sub(r"\{\{kontakt(?: ([^}]+))?\}\}", lambda m: kontakt_html(m.group(1) or ""), text)
+    text = bilder_einsetzen(text)
     rest = re.findall(r"\{\{[^}]+\}\}", text)
     if rest:
         raise SystemExit(f"Unbekannter Baustein: {rest[0]}")
@@ -248,7 +435,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
     og = f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"
     navi = ""
     for ziel, text in NAVI:
-        aktiv = pfad.startswith(ziel) or (ziel == "/blog/" and pfad.startswith("/post/"))
+        aktiv = pfad.startswith(ziel) or (ziel == "/blog/" and pfad.startswith(("/post/", "/thema/")))
         navi += f'<a href="{ziel}"' + (' aria-current="page"' if aktiv else "") + f">{text}</a>"
     kanonisch = f'<link rel="canonical" href="{url}">' if indexieren else '<meta name="robots" content="noindex">'
     jahr = date.today().year
@@ -276,6 +463,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
 <link rel="alternate" type="application/rss+xml" title="{esc(E['name'])} – Artikel" href="/feed.xml">
 <link rel="preload" href="/schriften/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/stil.css">
+<script src="/seite.js" defer></script>
 </head>
 <body>
 <a class="sprung" href="#inhalt">Zum Inhalt springen</a>
@@ -299,7 +487,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <p>{esc(E['untertitel'])}</p>
     </div>
     <nav aria-label="Fußzeile">
-      <a href="/blog/">Artikel</a><a href="/book-online/">Angebote</a><a href="/about/">Über mich</a>
+      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
       <a href="/feed.xml">RSS</a>{sozial}
     </nav>
     <nav aria-label="Rechtliches">
@@ -422,6 +610,14 @@ def main():
         schreiben(f"/post/{a['slug']}/", artikel_seite(a, artikel))
         urls.append((f"/post/{a['slug']}/", a["datum"]))
 
+    for t in THEMEN:
+        schreiben(f"/thema/{t['slug']}/", thema_seite(t, artikel))
+        urls.append((f"/thema/{t['slug']}/", None))
+    unbekannt = sorted({a["thema"] for a in artikel if a.get("thema")} - {t["slug"] for t in THEMEN})
+    unbekannt += sorted({a["passend"] for a in artikel if a.get("passend")} - set(UEBUNG))
+    if unbekannt:
+        raise SystemExit(f"Unbekanntes Thema/unbekannte Übung in Artikeln: {unbekannt}")
+
     for alt in ("/blog/page/2/", "/blog/page/3/", "/blog/page/4/"):
         umleitung(alt, "/blog/")
     for alt in ("/booking-calendar/", "/service-page/", "/services-4/"):
@@ -433,7 +629,7 @@ def main():
     (AUSGABE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {E['domain']}/sitemap.xml\n", encoding="utf-8")
     (AUSGABE / "CNAME").write_text(E["domain"].split("://")[1] + "\n", encoding="utf-8")
     (AUSGABE / ".nojekyll").write_text("", encoding="utf-8")
-    for datei in ("stil.css", "kontakt.js", "favicon.svg"):
+    for datei in ("stil.css", "kontakt.js", "seite.js", "favicon.svg"):
         shutil.copy(WURZEL / datei, AUSGABE / datei)
     shutil.copytree(WURZEL / "schriften", AUSGABE / "schriften")
     shutil.copytree(WURZEL / "bilder", AUSGABE / "bilder")

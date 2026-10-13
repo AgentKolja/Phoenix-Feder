@@ -1,56 +1,80 @@
 titel: Startseite
-beschreibung: Coaching, Achtsamkeitstraining und Yoga mit Nikolas Voth – und Artikel über Wege zu dauerhaftem Glück. Das Erstgespräch ist kostenlos.
+beschreibung: Achtsamkeit, gesunde Gewohnheiten und innere Freiheit: Artikel, Übungen und eine Habitica-Challenge für ein bewusstes, glückliches Leben.
 ---
 <section class="held">
   <div class="huelle held-innen">
     <div>
-      <p class="oberzeile">Coaching · Achtsamkeit · Yoga</p>
+      <p class="oberzeile">Achtsamkeit · Gewohnheiten · Innere Freiheit</p>
       <h1>Wege zu dauerhaftem Glück</h1>
-      <p class="gross">Für ein gesundes, bewusstes und glückliches Leben. Als Coach, Achtsamkeitstrainer und Autor unterstütze ich Menschen dabei, alte Muster zu lösen und ganzheitlich gesund zu leben – mental, emotional, körperlich.</p>
+      <p class="gross">Impulse, Übungen und Gedanken für ein gesundes, bewusstes und glückliches Leben – zum Lesen, Ausprobieren und Dranbleiben.</p>
       <div class="knopf-reihe">
-        <a class="knopf" href="{{buchung_url}}">Kostenloses Erstgespräch</a>
-        <a class="knopf zweit" href="/blog/">Artikel lesen</a>
+        <a class="knopf" href="#impuls">Impuls für heute</a>
+        <a class="knopf zweit" href="/blog/">Artikel entdecken</a>
       </div>
     </div>
-    <div class="held-bild">{{bild nikolas "Nikolas Voth" "" "eager"}}</div>
+    <div class="held-bild">{{bild feder "Eine goldene Feder schwebt in warmem Licht" "" "eager"}}</div>
   </div>
 </section>
 
-<section class="abschnitt getoent" id="angebote">
-  <div class="huelle">
+<section class="abschnitt getoent" id="impuls">
+  <div class="huelle impuls-raster">
     <div class="abschnitt-kopf">
-      <p class="oberzeile">Angebote</p>
-      <h2>Wie ich dich begleiten kann</h2>
-      <p>Persönlich und in deinem Tempo. Das erste Gespräch ist kostenlos und unverbindlich.</p>
+      <p class="oberzeile">Impuls für heute</p>
+      <h2>Eine kleine Übung für deinen Tag</h2>
+      <p>Jeden Tag ein anderer Impuls aus über 50 Gewohnheiten und Quests. Nicht der richtige? Zieh einfach einen neuen.</p>
+      <p><a href="/gewohnheiten/">Alle Übungen ansehen →</a></p>
     </div>
-    {{angebote}}
+    {{impuls}}
   </div>
 </section>
 
 <section class="abschnitt">
   <div class="huelle">
     <div class="abschnitt-kopf">
+      <p class="oberzeile">Worum es hier geht</p>
+      <h2>Vier Wege nach innen</h2>
+      <p>Jedes Thema bündelt Artikel mit Übungen zum Mitnehmen – auf Deutsch und Englisch.</p>
+    </div>
+    {{themen}}
+  </div>
+</section>
+
+<section class="abschnitt getoent">
+  <div class="huelle">
+    <div class="abschnitt-kopf">
       <p class="oberzeile">Artikel</p>
       <h2>Neu im Blog</h2>
-      <p>Gedanken und Übungen zu Achtsamkeit, gesunden Gewohnheiten und innerer Freiheit – auf Deutsch und Englisch.</p>
     </div>
     {{neueste_artikel}}
     <p class="mehr"><a class="knopf zweit" href="/blog/">Alle Artikel</a></p>
   </div>
 </section>
 
-<section class="abschnitt getoent">
-  <div class="huelle ueber">
-    {{bild nikolas-portrait "Porträt von Nikolas Voth" "ueber-bild"}}
-    <div>
-      <p class="oberzeile">Über mich</p>
-      <h2>Hallo! Ich bin Nikolas.</h2>
-      <p><strong>Consultant, Achtsamkeitstrainer, Coach.</strong></p>
-      <p>2015 fing alles mit einem Experiment an: Wie viel besser wäre das Leben, wenn du statt zu rauchen meditieren würdest? Seitdem habe ich meine Süchte konsequent durch Achtsamkeit und gesunde Gewohnheiten ersetzt.</p>
-      <p>Als Berater für Transformation unterstütze ich Menschen und Unternehmen dabei, schädliche Gewohnheiten aufzulösen und neue, gesunde Wege zu gehen. Meine Erkenntnisse teile ich hier, um Menschen zu einem glücklicheren Leben zu inspirieren.</p>
-      <p class="zitat">Das Beste, was du für dich und die Welt tun kannst, ist gesund und glücklich zu leben.</p>
-      <a class="knopf zweit" href="/about/">Mehr über mich</a>
+<section class="abschnitt">
+  <div class="huelle">
+    <div class="habitica">
+      <div class="habitica-emoji" aria-hidden="true">🎮</div>
+      <div>
+        <p class="oberzeile">Gewohnheiten spielerisch ändern</p>
+        <h2>Ein Rollenspiel für gute Gewohnheiten</h2>
+        <p>In der kostenlosen App Habitica sammelt deine Spielfigur Erfahrungspunkte für jede gute Gewohnheit, die du im Alltag lebst. Die Challenge „Stressfrei – die Kunst, das Leben zu genießen“ bringt 26 Gewohnheiten und 26 Quests mit – für 1 bis 10 Minuten am Tag.</p>
+        <div class="knopf-reihe">
+          <a class="knopf" href="/gewohnheiten/">So funktioniert’s</a>
+          <a class="knopf zweit" href="{{habitica_url}}" rel="noopener">Challenge auf Habitica</a>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
+
+<section class="abschnitt getoent" id="begleitung">
+  <div class="huelle">
+    <div class="abschnitt-kopf">
+      <p class="oberzeile">Begleitung</p>
+      <h2>Wenn du tiefer gehen möchtest</h2>
+      <p>Persönlich und in deinem Tempo – mit Nikolas Voth, Coach und Achtsamkeitstrainer. Das erste Gespräch ist kostenlos und unverbindlich. <a href="/about/">Mehr über mich</a></p>
+    </div>
+    {{angebote}}
   </div>
 </section>
 
@@ -58,8 +82,8 @@ beschreibung: Coaching, Achtsamkeitstraining und Yoga mit Nikolas Voth – und A
   <div class="huelle kontakt-raster">
     <div>
       <p class="oberzeile">Kontakt</p>
-      <h2>Anfrage und Kontakt</h2>
-      <p>Für Coaching, Achtsamkeitstrainings, Yoga oder individuelle Anfragen. Ich melde mich persönlich zurück.</p>
+      <h2>Fragen, Feedback, Erfahrungen</h2>
+      <p>Hat dich ein Impuls berührt? Hast du eine Übung ausprobiert, eine Frage zur Challenge oder eine eigene Idee für ein glücklicheres Leben? Schreib mir – ich melde mich persönlich zurück.</p>
       <p><a href="{{buchung_url}}">Lieber direkt einen Termin fürs kostenlose Erstgespräch?</a></p>
     </div>
     {{kontakt}}

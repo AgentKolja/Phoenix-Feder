@@ -12,18 +12,33 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/artikel/<slug>.html` | Ein Blogartikel. URL wird `/post/<slug>/` (entspricht den alten Wix-Adressen) |
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
 | `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink |
+| `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
+| `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
-| `stil.css`, `kontakt.js`, `favicon.svg`, `schriften/` | Design, Formular-Versand, Icon, lokal gehostete Schriften |
+| `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
+| `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
+| `seite.js` | Impuls für heute, Teilen-Knopf, Quests abhaken (localStorage), Sprungziele öffnen |
+| `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
 | `werkzeuge/wix-export.py` | Einmaliger Umzug von Wix, erledigt. Nicht erneut nötig |
 
 Inhaltsdateien beginnen mit Kopfzeilen `schluessel: wert`, dann eine Zeile `---`, dann HTML.
 Artikel: `titel`, `datum` (JJJJ-MM-TT), `sprache` (`de`/`en`), `beschreibung` (≤ 160 Zeichen, für Google
 und Karten), `bild` (Name ohne Endung), `bildtext`, optional `entwurf: ja` (wird nicht gebaut).
+Zusätzlich je Artikel: `thema` (Slug aus themen.json), `essenz` (2–4 Punkte, getrennt durch ` | `),
+`uebung` (eine konkrete Übung), `frage` (Reflexionsfrage), `passend` (Slug einer Übung aus uebungen.json),
+optional `titelbild: nein` (Bild nur für Karten/Vorschau). Essenz, Übung und Frage in der Sprache des Artikels
+und nah am Text – nichts hinzuerfinden. Der Build bricht ab, wenn `thema` oder `passend` nicht existieren.
 Seiten: `titel`, `beschreibung`, optional `bild`, `indexieren: nein`.
 
-Bausteine in Seiten: `{{angebote}}`, `{{neueste_artikel}}`, `{{alle_artikel}}`, `{{kontakt}}`,
-`{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`.
+Bausteine in Seiten: `{{angebote}}`, `{{neueste_artikel}}`, `{{alle_artikel}}`, `{{kontakt}}` bzw.
+`{{kontakt Habitica-Challenge}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`,
+`{{habitica_url}}`, `{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`
+(`{{bild …}}` geht auch in Artikeln).
+
+Ausrichtung: Die Seite stellt Achtsamkeit und die Essenz der Texte in den Vordergrund, nicht die Person.
+Besucher sollen mit Inhalten interagieren können (Impuls, Übungen, Quests, Teilen, Feedback) – die
+Buchung ist ein Angebot unter mehreren, nicht das Ende jeder Seite.
 HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 
 ## Arbeitsweise
@@ -47,3 +62,5 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
+- Gesundheitsaussagen nur ohne erfundene Zahlen: Studienangaben mit Prozenten nicht übernehmen, wenn die
+  Quelle nicht belegt ist.

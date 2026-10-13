@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "glueck-und-sinn",
+    "titel": "Glück & Sinn",
+    "essenz": "Glück muss nicht erst verdient werden. Es zeigt sich, wenn Illusionen sich lichten, wir im Moment ankommen und Freundlichkeit weitergeben.",
+    "bild": "no-illusion"
+  },
+  {
+    "slug": "innere-muster",
+    "titel": "Innere Muster lösen",
+    "essenz": "Du bist nicht deine Gedanken, deine Fehler oder deine alten Glaubenssätze. Was du über dich glaubst, lässt sich neu und mitfühlend schreiben.",
+    "bild": "die-kraft-des-glaubens"
+  },
+  {
+    "slug": "achtsam-kommunizieren",
+    "titel": "Achtsam kommunizieren",
+    "essenz": "Erst wirklich zuhören, dann klar sprechen: Eine kurze Pause und echtes Interesse verändern jedes Gespräch.",
+    "bild": "mindful-speaking"
+  },
+  {
+    "slug": "achtsam-arbeiten",
+    "titel": "Achtsam arbeiten",
+    "essenz": "Mit Absicht in den Tag starten, Pausen schützen, Raum für Ideen lassen: So wird Arbeit klarer und menschlicher.",
+    "bild": "mindfulness-at-work"
+  }
+]

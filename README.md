@@ -9,6 +9,7 @@ Schreib Claude in einer Sitzung mit diesem Repository, was du willst, zum Beispi
 
 - „Neuer Artikel: *Titel* – hier der Text … (Bild hängt an)“
 - „Preis fürs Coaching auf 50 € ändern“
+- „Neue Quest für die Challenge: …“ oder „Hier ist der neue Habitica-Export“ (CSV anhängen)
 - „Im Artikel *Der Engelskreis* den zweiten Absatz ersetzen durch …“
 
 Claude ändert die Dateien, prüft den Build und pusht. Eine Minute später ist es live.
