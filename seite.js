@@ -26,8 +26,7 @@
       feld("titel").textContent = u.t;
       feld("kurz").textContent = u.k;
       feld("link").setAttribute("href", `${basis}#${u.s}`);
-      feld("app").setAttribute("href", `${appBasis}#neu=${u.s}`);
-      feld("app").textContent = u.a.startsWith("Quest") ? "Als Quest starten" : "In meine Routinen";
+      feld("app").setAttribute("href", `${appBasis}#idee=${u.s}`);
     };
     zeigen();
     const neu = karte.querySelector("[data-neu]");

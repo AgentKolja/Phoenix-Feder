@@ -1,9 +1,9 @@
 {
-  "name": "Phoenix Feder – Meine Routinen",
-  "short_name": "Routinen",
-  "description": "Gewohnheiten, Quests und Abendreflexion für weniger Stress und mehr Genuss.",
+  "name": "Phoenix Feder – Probier’s heute",
+  "short_name": "Probier’s heute",
+  "description": "Eine kleine Idee für heute – und wenn sie dir gefällt, länger dranbleiben.",
   "lang": "de",
-  "start_url": "./#heute",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#fbf7f1",

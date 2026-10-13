@@ -1,5 +1,8 @@
-// Phoenix Feder – Meine Routinen
+// Phoenix Feder – Probier's heute / Meine Routinen
 //
+// Zwei Stufen: Zuerst nur eine Seite "Probier's heute" mit einer Idee zum Ausprobieren.
+// Gefällt sie, kann man sie als Kalender-Erinnerung mitnehmen oder "länger ausprobieren" –
+// erst dann erscheinen Heute, Fortschritt & Co.
 // Kein Konto, kein Server: Alles liegt im localStorage dieses Geräts.
 // Die Ideen dahinter, kurz:
 // - Tiny Habits (BJ Fogg): klein anfangen, an einen festen Anker im Alltag koppeln, sofort feiern
@@ -40,6 +43,11 @@ let startAuswahl = [];
 let startSchritt = 1;
 let startAnker = {};
 let installEreignis = null;
+let idee = null; // aktuelle Idee auf "Probier's heute"
+let ideeFilter = "alle";
+let kalZeit = "19:00";
+let kalDauer = "14";
+const ZEITEN = [["08:00", "Morgens"], ["12:30", "Mittags"], ["19:00", "Abends"]];
 
 // ---------------------------------------------------------------- Hilfen
 
@@ -52,6 +60,7 @@ const datumLang = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("de-DE
 const zahl = (x) => x.toLocaleString("de-DE", { maximumFractionDigits: 1 });
 const zufall = (liste) => liste[Math.floor(Math.random() * liste.length)];
 const istTaeglich = (slug) => TAEGLICH.some((t) => t.slug === slug);
+const routineModus = () => Z.modus === "routine" || Z.gewohnheiten.length > 0;
 
 function info(slug) {
   const t = TAEGLICH.find((x) => x.slug === slug);
@@ -63,7 +72,7 @@ function info(slug) {
 
 function neuerZustand() {
   return { version: 1, start: tag(), gewohnheiten: [], log: {}, quest: null, questDaten: {}, automatik: {},
-    belohnungen: [], eingeloest: [], hinweise: {}, erinnerung: { morgen: "07:30", abend: "21:00" } };
+    belohnungen: [], eingeloest: [], hinweise: {}, erinnerung: { morgen: "07:30", abend: "21:00" }, modus: "probieren" };
 }
 
 function laden() {
@@ -188,14 +197,98 @@ function feiern(text = zufall(LOB)) {
 // ---------------------------------------------------------------- Ansichten
 
 function render() {
+  const einfach = !routineModus();
+  document.body.classList.toggle("einfach", einfach);
+  $(".app-kopf .logo span").textContent = einfach ? "Probier’s heute" : "Meine Routinen";
   document.querySelectorAll("[data-tab]").forEach((a) => {
-    if (a.dataset.tab === ansicht) a.setAttribute("aria-current", "page");
+    const aktiv = a.dataset.tab === ansicht || (a.dataset.tab === "probieren" && ansicht === "entdecken");
+    if (aktiv) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
   });
-  const ansichten = { start: ansichtStart, heute: ansichtHeute, entdecken: ansichtEntdecken, fortschritt: ansichtFortschritt, mehr: ansichtMehr };
+  const ansichten = { start: ansichtStart, probieren: ansichtProbieren, heute: ansichtHeute, entdecken: ansichtEntdecken, fortschritt: ansichtFortschritt, mehr: ansichtMehr };
   $("#app").innerHTML = (speicherFehlt ? '<p class="hinweis-app">Dein Browser erlaubt hier kein Speichern (privates Fenster?). Deine Einträge gehen beim Schließen verloren.</p>' : "")
     + ansichten[ansicht]();
   $("[data-federn]").textContent = `🪶 ${federnVerfuegbar()}`;
+}
+
+// ---------------------------------------------------------------- Probier's heute
+
+function ideenPool() {
+  return D.uebungen.filter((u) => (u.art === "gewohnheit" || u.art === "quest") && u.gruppe !== "Abschluss"
+    && (ideeFilter === "alle" || (ideeFilter === "erlebnis" ? u.art === "quest" : u.bereich === ideeFilter)));
+}
+
+function tagesIdee() {
+  const pool = ideenPool();
+  return pool[Math.floor(Date.now() / 864e5) % pool.length].slug;
+}
+
+function erinnerungStart(zeit) {
+  // heute, wenn bis dahin noch mindestens 15 Minuten sind, sonst morgen
+  const [h, m] = zeit.split(":").map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  if (d - new Date() < 15 * 60000) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+function kalenderZeit(d) {
+  return `${tag(d).replaceAll("-", "")}T${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}00`;
+}
+
+function ideeTermin(slug) {
+  const u = info(slug);
+  const start = erinnerungStart(kalZeit);
+  const link = `${location.origin}${location.pathname}#idee=${slug}`;
+  return { id: slug, titel: `${u.emoji} ${u.titel}`, text: `${u.kurz}\n\nIdeen und Hintergrund: ${link}`, url: link,
+    start: kalenderZeit(start), ende: kalenderZeit(new Date(start.getTime() + 15 * 60000)),
+    regel: kalDauer === "14" ? "RRULE:FREQ=DAILY;COUNT=14" : "" };
+}
+
+function googleKalender(t) {
+  const p = new URLSearchParams({ action: "TEMPLATE", text: t.titel, details: t.text, dates: `${t.start}/${t.ende}`, ctz: "Europe/Berlin" });
+  if (t.regel) p.set("recur", t.regel);
+  return `https://calendar.google.com/calendar/render?${p}`;
+}
+
+function ansichtProbieren() {
+  if (!idee || !U[idee]) idee = tagesIdee();
+  const u = info(idee);
+  const geschafft = u.art === "quest" ? questsLaden().has(idee) : erledigt(tag(), idee);
+  const dabei = Z.gewohnheiten.some((g) => g.slug === idee) || Z.quest === idee;
+  const filterListe = [["alle", "Alle"], ...D.bereiche.map((b) => [b.slug, `${b.emoji} ${b.titel}`]), ["erlebnis", "🗺️ Erlebnisse"]];
+  return `<section class="probieren">
+  <p class="oberzeile">${u.art === "quest" ? "Ein kleines Erlebnis für dich" : "Probier es heute"}</p>
+  <div class="karte-app idee">
+    <div class="idee-emoji" aria-hidden="true">${u.emoji}</div>
+    <h1>${esc(u.titel)}</h1>
+    <p class="erklaerung-gross">${esc(u.kurz)}</p>
+    <div class="knopf-reihe">
+      ${geschafft ? '<span class="marke-app geschafft-marke">✓ Heute ausprobiert</span>' : '<button class="knopf" data-aktion="ausprobiert">✓ Hab ich ausprobiert</button>'}
+      <button class="knopf zweit" data-aktion="andere-idee">↻ Andere Idee</button>
+    </div>
+    <details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div></details>
+  </div>
+  <div class="chips-app ideen-filter" aria-label="Ideen eingrenzen">${filterListe.map(([w, t]) => `<button data-aktion="idee-filter" data-wert="${w}" aria-pressed="${ideeFilter === w}">${esc(t)}</button>`).join("")}</div>
+</section>
+
+<section class="optionen">
+  <h2>Gefällt dir die Idee?</h2>
+  <details class="option">
+    <summary><span class="option-emoji" aria-hidden="true">📅</span><span><strong>Als Erinnerung in den Kalender</strong><span class="klein">Einmal oder zwei Wochen lang täglich – ganz ohne App.</span></span></summary>
+    <p class="klein">Wann?</p>
+    <div class="chips-app">${ZEITEN.map(([z, t]) => `<button data-aktion="kal-zeit" data-wert="${z}" aria-pressed="${kalZeit === z}">${t} · ${z.replace(":", ".")}</button>`).join("")}</div>
+    <p class="klein">Wie oft?</p>
+    <div class="chips-app"><button data-aktion="kal-dauer" data-wert="1" aria-pressed="${kalDauer === "1"}">Einmal</button><button data-aktion="kal-dauer" data-wert="14" aria-pressed="${kalDauer === "14"}">2 Wochen täglich</button></div>
+    <div class="knopf-reihe"><a class="knopf" target="_blank" rel="noopener" href="${esc(googleKalender(ideeTermin(idee)))}">Google Kalender</a><button class="knopf zweit" data-aktion="ics-idee">Apple, Outlook &amp; Co.</button></div>
+  </details>
+  <div class="option">
+    <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Länger ausprobieren</strong><span class="klein">Täglich kurz abhaken, abends reflektieren und sehen, was dir wirklich hilft.</span></span></div>
+    <div class="knopf-reihe"><button class="knopf zweit" data-aktion="laenger">${dabei ? "Zu meinen Routinen" : u.art === "quest" ? "Als Quest starten" : "In meine Routinen"}</button>
+    ${routineModus() ? "" : '<a class="link-knopf" href="#start">eigene Auswahl zusammenstellen</a>'}</div>
+  </div>
+</section>
+<p class="klein fuss-app">Kein Konto, keine Anmeldung – nichts wird übertragen. <a href="#entdecken">Alle Ideen als Liste</a> · <a href="../">Zur Website</a></p>`;
 }
 
 function wahlZeile(aktion, wert, emoji, titel, text, gewaehlt) {
@@ -363,7 +456,8 @@ function ansichtEntdecken() {
   const gruppen = filter === "quest"
     ? [...new Set(D.uebungen.filter((u) => u.art === "quest").map((u) => u.gruppe))].map((g) => [g, "", D.uebungen.filter((u) => u.art === "quest" && u.gruppe === g)])
     : D.bereiche.map((b) => [`${b.emoji} ${b.titel}`, b.text, D.uebungen.filter((u) => u.art === "gewohnheit" && u.bereich === b.slug)]);
-  return `<h1>Entdecken</h1>
+  return `<p><a class="link-knopf" href="#probieren">← Eine Idee nach der anderen</a></p>
+<h1>Alle Ideen</h1>
 <div class="umschalter"><button data-aktion="filter" data-wert="gewohnheit" aria-pressed="${filter === "gewohnheit"}">Gewohnheiten</button><button data-aktion="filter" data-wert="quest" aria-pressed="${filter === "quest"}">Quests (${fertig.size}/${D.uebungen.filter((u) => u.art === "quest").length})</button></div>
 <p class="klein">${filter === "quest" ? "Kleine Erlebnisse, die du dir vornehmen kannst, wann immer du magst." : "Tipp: Lieber drei Gewohnheiten wirklich leben als zehn halb."}</p>
 ${gruppen.map(([titel, text, liste]) => `<h2 class="gruppe-app">${esc(titel)}</h2>${text ? `<p class="klein">${esc(text)}</p>` : ""}<ul class="entdecken">${liste.map(zeile).join("")}</ul>`).join("")}`;
@@ -591,20 +685,31 @@ function questFertig() {
   feiern(`Quest geschafft! +${PUNKTE.quest} 🪶`);
 }
 
+function icsText(text) {
+  return String(text).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+
+function icsDatei(termine, name) {
+  const jetzt = `${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`;
+  const zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Probiers heute//DE", "CALSCALE:GREGORIAN"];
+  for (const t of termine) {
+    zeilen.push("BEGIN:VEVENT", `UID:${t.id}-${Date.now()}@phoenix-feder.de`, `DTSTAMP:${jetzt}`, `DTSTART:${t.start}`,
+      `DTEND:${t.ende}`, ...(t.regel ? [t.regel] : []), `SUMMARY:${icsText(t.titel)}`, `DESCRIPTION:${icsText(t.text)}`,
+      `URL:${t.url}`, "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", `DESCRIPTION:${icsText(t.titel)}`, "END:VALARM", "END:VEVENT");
+  }
+  zeilen.push("END:VCALENDAR");
+  herunterladen(zeilen.join("\r\n"), name, "text/calendar");
+}
+
 function ics() {
-  const jetzt = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
-  const morgen = verschieben(tag(), 1).replaceAll("-", "");
   const url = `${location.origin}${location.pathname}`;
-  const termin = (id, zeit, titel, text) => [
-    "BEGIN:VEVENT", `UID:${id}-${Date.now()}@phoenix-feder.de`, `DTSTAMP:${jetzt}`,
-    `DTSTART:${morgen}T${zeit.replace(":", "")}00`, "DURATION:PT5M", "RRULE:FREQ=DAILY",
-    `SUMMARY:${titel}`, `DESCRIPTION:${text} ${url}`, `URL:${url}`,
-    "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", `DESCRIPTION:${titel}`, "END:VALARM", "END:VEVENT"];
-  const zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Meine Routinen//DE", "CALSCALE:GREGORIAN",
-    ...termin("morgen", Z.erinnerung.morgen, "🪶 Dein Wort für heute", "Kurz innehalten: Was zählt heute?"),
-    ...termin("abend", Z.erinnerung.abend, "🪶 Abendreflexion", "Wie war dein Tag? Drei gute Dinge."),
-    "END:VCALENDAR"];
-  herunterladen(zeilen.join("\r\n"), "phoenix-feder-erinnerungen.ics", "text/calendar");
+  const termin = (id, zeit, titel, text) => {
+    const start = erinnerungStart(zeit);
+    return { id, titel, text: `${text} ${url}`, url, start: kalenderZeit(start),
+      ende: kalenderZeit(new Date(start.getTime() + 5 * 60000)), regel: "RRULE:FREQ=DAILY" };
+  };
+  icsDatei([termin("morgen", Z.erinnerung.morgen, "🪶 Dein Wort für heute", "Kurz innehalten: Was zählt heute?"),
+    termin("abend", Z.erinnerung.abend, "🪶 Abendreflexion", "Wie war dein Tag? Drei gute Dinge.")], "phoenix-feder-erinnerungen.ics");
 }
 
 function herunterladen(inhalt, name, typ) {
@@ -696,6 +801,7 @@ const AKTIONEN = {
   "start-fertig": () => {
     document.querySelectorAll("[data-start-anker]").forEach((feld) => { startAnker[feld.dataset.startAnker] = feld.value; });
     startAuswahl.forEach((slug) => Z.gewohnheiten.push({ slug, anker: startAnker[slug] || "", seit: tag() }));
+    Z.modus = "routine";
     speichern();
     if (location.hash === "#heute") route(); else location.hash = "#heute";
     feiern("Los geht’s! Deine Reise beginnt. 🪶");
@@ -767,6 +873,44 @@ const AKTIONEN = {
   "belohnung-weg": (el, slug, wert) => { Z.belohnungen = Z.belohnungen.filter((x) => x.id !== wert); speichern(); render(); },
   installieren: async () => { installEreignis.prompt(); await installEreignis.userChoice; installEreignis = null; render(); },
   ics: () => ics(),
+  "ics-idee": () => icsDatei([ideeTermin(idee)], `phoenix-feder-${idee}.ics`),
+  "kal-zeit": (el, slug, wert) => { kalZeit = wert; offenLassen("details", render); },
+  "kal-dauer": (el, slug, wert) => { kalDauer = wert; offenLassen("details", render); },
+  "andere-idee": () => {
+    const pool = ideenPool().filter((u) => u.slug !== idee);
+    if (pool.length) idee = zufall(pool).slug;
+    render();
+    $(".idee")?.classList.add("blaettern");
+  },
+  "idee-filter": (el, slug, wert) => {
+    ideeFilter = wert;
+    const pool = ideenPool();
+    if (!pool.some((u) => u.slug === idee)) idee = zufall(pool).slug;
+    render();
+  },
+  ausprobiert: () => {
+    const u = info(idee);
+    if (u.art === "quest") {
+      const fertig = questsLaden();
+      fertig.add(idee);
+      questsSpeichern(fertig);
+      Z.questDaten[idee] = tag();
+    } else {
+      const e = eintrag(tag());
+      if (!e.erledigt.includes(idee)) e.erledigt.push(idee);
+    }
+    speichern();
+    offenLassen("details", render);
+    feiern("Schön! 🪶 Spür kurz nach, wie sich das angefühlt hat.");
+  },
+  laenger: () => {
+    const u = info(idee);
+    if (u.art === "quest") { if (!questsLaden().has(idee)) Z.quest = idee; } else hinzufuegen(idee);
+    Z.modus = "routine";
+    speichern();
+    if (location.hash === "#heute") route(); else location.hash = "#heute";
+    toast("Willkommen! Hake hier täglich ab, was dir gelungen ist. 🌱");
+  },
   export: () => herunterladen(JSON.stringify(sicherung(), null, 1), `phoenix-feder-routinen-${tag()}.json`, "application/json"),
   "link-teilen": () => linkTeilen(),
   zuruecksetzen: () => {
@@ -785,23 +929,30 @@ const AKTIONEN = {
 
 // ---------------------------------------------------------------- Start
 
+// Offene Aufklapper nach dem Neuzeichnen offen lassen (z. B. beim Wählen der Uhrzeit)
+function offenLassen(auswahl, zeichnen) {
+  const offen = [...document.querySelectorAll(auswahl)].map((d) => d.open === true);
+  zeichnen();
+  document.querySelectorAll(auswahl).forEach((d, i) => { if (offen[i]) d.open = true; });
+}
+
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith("import=")) { importAusLink(h.slice(7)); return; }
-  if (h.startsWith("neu=")) {
-    const slug = h.slice(4);
-    history.replaceState(null, "", `${location.pathname}#heute`);
-    if (U[slug]?.art === "quest") questAnnehmen(slug);
-    else if (U[slug]) hinzufuegen(slug);
+  if (h.startsWith("idee=") || h.startsWith("neu=")) {
+    // Links von der Website: erst die Idee zeigen, statt gleich eine Routine anzulegen
+    const slug = h.slice(h.indexOf("=") + 1);
+    if (U[slug]) { idee = slug; ideeFilter = "alle"; }
+    history.replaceState(null, "", `${location.pathname}#probieren`);
     route();
-    if (U[slug] && U[slug].art !== "quest" && Z.gewohnheiten.some((g) => g.slug === slug)) details(slug);
     return;
   }
-  const bekannt = ["heute", "entdecken", "fortschritt", "mehr"];
-  ansicht = bekannt.includes(h) ? h : "heute";
-  if (!Z.gewohnheiten.length && ansicht === "heute") ansicht = "start";
+  const bekannt = ["start", "probieren", "heute", "entdecken", "fortschritt", "mehr"];
+  ansicht = bekannt.includes(h) ? h : routineModus() ? "heute" : "probieren";
+  if (ansicht === "heute" && !routineModus()) ansicht = "probieren";
   blattSchliessen();
   render();
+  scrollTo(0, 0);
 }
 
 document.addEventListener("click", (ereignis) => {

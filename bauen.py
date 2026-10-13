@@ -302,7 +302,7 @@ def uebung_karte(u):
   <details>
     <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-kopf"><span class="uebung-titel">{esc(u['titel'])}</span><span class="uebung-erklaerung">{esc(u['erklaerung'])}</span></span></summary>
     <div class="uebung-text">{text_html(u['text'])}
-      <p><a class="in-app" href="/app/#neu={u['slug']}">{"Als Quest in der App starten" if u["art"] == "quest" else "In meine Routinen aufnehmen"} →</a></p>
+      <p><a class="in-app" href="/app/#idee={u['slug']}">Heute ausprobieren →</a></p>
     </div>
   </details>
   {abhaken}
@@ -349,7 +349,7 @@ def impuls_html():
   <h3 data-feld="titel">{esc(d['t'])}</h3>
   <p data-feld="kurz">{esc(d['k'])}</p>
   <div class="knopf-reihe">
-    <a class="knopf" data-feld="app" href="/app/#neu={d['s']}">In meine Routinen</a>
+    <a class="knopf" data-feld="app" href="/app/#idee={d['s']}">Heute ausprobieren</a>
     <a class="knopf zweit" data-feld="link" href="/gewohnheiten/#{d['s']}">Ganze Übung</a>
     <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
   </div>
@@ -485,7 +485,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <span>{esc(E['name'])}</span>
     </a>
     <nav class="navi" aria-label="Hauptmenü">{navi}</nav>
-    <a class="knopf klein-knopf kopf-knopf" href="/app/">Meine Routinen</a>
+    <a class="knopf klein-knopf kopf-knopf" href="/app/">Probier’s heute</a>
   </div>
 </header>
 <main id="inhalt">
@@ -498,7 +498,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <p>{esc(E['untertitel'])}</p>
     </div>
     <nav aria-label="Fußzeile">
-      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/app/">App: Meine Routinen</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
+      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/app/">Probier’s heute</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
       <a href="/feed.xml">RSS</a>{sozial}
     </nav>
     <nav aria-label="Rechtliches">

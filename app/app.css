@@ -53,6 +53,35 @@ body.blatt-offen { overflow: hidden; }
 .chips-app button[aria-pressed="true"], .chips-app button:hover { border-color: var(--akzent); color: var(--akzent); }
 .chips-app button[aria-pressed="true"] { background: var(--akzent); color: var(--auf-akzent); }
 
+/* Einfacher Modus: nur "Probier's heute", ohne Menüleiste und Federn */
+body.einfach { padding-bottom: 2rem; }
+body.einfach .app-navi, body.einfach [data-federn] { display: none; }
+
+/* Probier's heute */
+.probieren { margin-bottom: 1.5rem; }
+.idee { text-align: center; padding: 1.8rem 1.4rem 1.2rem; }
+.idee-emoji { font-size: 3.4rem; line-height: 1; margin-bottom: 0.6rem; }
+.idee h1 { margin-bottom: 0.3em; }
+.idee .erklaerung-gross { font-size: 1.2rem; max-width: 30rem; margin-inline: auto; }
+.idee .knopf-reihe { justify-content: center; margin-top: 1.2rem; }
+.idee .aufklapp { text-align: left; }
+.geschafft-marke { padding: 0.8rem 1.2rem; border-radius: 999px; background: color-mix(in srgb, var(--akzent-hell) 18%, var(--karte)); }
+.ideen-filter { justify-content: center; margin-top: 1rem; }
+.ideen-filter button { font-size: 0.85rem; padding: 0.35rem 0.75rem; }
+.optionen h2 { margin-top: 1.8rem; }
+.option { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.1rem; margin-bottom: 0.7rem; }
+.option > summary, .option-kopf { display: flex; gap: 0.9rem; align-items: center; cursor: pointer; list-style: none; }
+.option > summary::-webkit-details-marker { display: none; }
+.option > summary::after { content: "＋"; margin-left: auto; color: var(--akzent); font-weight: 700; }
+.option[open] > summary::after { content: "－"; }
+.option[open] > summary { margin-bottom: 0.8rem; }
+.option-kopf { cursor: default; }
+.option-emoji { font-size: 1.8rem; line-height: 1; flex: none; }
+.option strong { display: block; }
+.option .klein { display: block; margin: 0.15rem 0 0; }
+.option .knopf-reihe { margin-top: 0.8rem; align-items: center; }
+.fuss-app { text-align: center; margin-top: 2rem; }
+
 /* Willkommen und Auswahl-Listen */
 .wahl-liste { display: grid; gap: 0.55rem; margin-bottom: 0.8rem; }
 .wahl-zeile { display: flex; align-items: center; gap: 0.9rem; width: 100%; text-align: left; padding: 0.85rem 1rem; border: 2px solid var(--linie);

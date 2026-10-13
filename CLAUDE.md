@@ -19,7 +19,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
 | `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
 | `seite.js` | Impuls für heute, Teilen-Knopf, Quests abhaken (localStorage), Sprungziele öffnen |
-| `app/` | Web-App „Meine Routinen“ unter `/app/` (siehe unten) |
+| `app/` | Web-App „Probier’s heute“ / „Meine Routinen“ unter `/app/` (siehe unten) |
 | `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
 | `werkzeuge/wix-export.py` | Einmaliger Umzug von Wix, erledigt. Nicht erneut nötig |
@@ -68,7 +68,13 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
   Universität oder Studie nur nennen, wenn es die Forschung nachweislich gibt (Tabelle `STUDIEN` in
   `werkzeuge/habitica-import.py`; der Import bricht ab, wenn noch „%“ oder „Studie der …“ im Text steht).
 
-## App „Meine Routinen“ (`app/`)
+## App „Probier’s heute“ → „Meine Routinen“ (`app/`)
+
+Zwei Stufen: Wer neu ist, sieht nur eine Seite (`#probieren`): eine Idee für heute mit Klartext,
+„Hab ich ausprobiert“, „Andere Idee“, Filter nach Bereich. Ohne Menüleiste und ohne Federn (`body.einfach`).
+Optional darunter: als Erinnerung in den Kalender (einmal oder 14 Tage täglich, Google-Link oder .ics) oder
+„Länger ausprobieren“ → nimmt die Idee als Routine auf, setzt `Z.modus = "routine"` und zeigt `#heute` mit
+voller Navigation. Routinemodus gilt auch, sobald mindestens eine Gewohnheit gewählt ist.
 
 Installierbare Web-App (PWA) ohne Konto und ohne Server. `bauen.py` kopiert `app/` nach `docs/app/`,
 schreibt `daten.json` (Übungen inkl. fertigem HTML) und setzt in `sw.js` eine neue Version, sobald sich
@@ -82,14 +88,15 @@ App-Dateien oder Daten ändern.
   montags/Monatsanfang, Federn + Stufen + eigene Belohnungen, Feedback nach 14 Tagen (Kontaktformular vorausgefüllt).
 - Erinnerungen über Kalender (Google-Link oder .ics), Gerätewechsel über Sicherungsdatei oder Link
   (`#import=…`, Daten gzip+base64 im Fragment – erreicht nie den Server).
-- Von der Website verlinken: `/app/#neu=<slug>` nimmt eine Gewohnheit auf bzw. startet eine Quest.
+- Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee auf der Probier-Seite (legt nichts an;
+  `#neu=` alter Links verhält sich genauso).
 - Datenformat nur abwärtskompatibel ändern (`version: 1`); neue Felder in `neuerZustand()` mit Standardwert.
-- Testen mit Playwright: frischer Kontext → Auswahl → Abhaken → Reflexion → Quest → Fortschritt, außerdem
+- Testen mit Playwright: frischer Kontext → Probier-Seite (keine Menüleiste, Kalender-Link, „Länger“) → Auswahl → Abhaken → Reflexion → Quest → Fortschritt, außerdem
   offline (`context.setOffline(true)`) und Übertragungslink in zweitem Kontext. Nach `localStorage`-Änderungen
   im Test die Seite neu laden (reiner Hash-Wechsel lädt nicht neu).
 - Google-Anmeldung/Sync gibt es bewusst noch nicht: bräuchte eine OAuth-Client-ID (Google Cloud) und würde
   Daten im Drive-App-Ordner des Nutzers ablegen. Erst bauen, wenn die Client-ID existiert, und dann mit ihr testen.
 - Weniger ist mehr: Verspielte Namen (Singvogel, Superhiero …) nie ohne Erklärzeile zeigen. Lange Texte,
   Einstellungen und Statistiken hinter „Aufklappen“, höchstens ein Hinweis gleichzeitig. Einstieg:
-  Bereich → passende Gewohnheiten → Zeitpunkt.
+  eine Idee zum Ausprobieren; eigene Auswahl (`#start`: Bereich → Gewohnheiten → Zeitpunkt) nur auf Wunsch.
 
