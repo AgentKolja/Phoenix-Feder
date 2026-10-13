@@ -242,11 +242,10 @@ p { margin: 0 0 1em; }
 .blaettern { animation: blaettern 0.35s ease; }
 @keyframes blaettern { from { opacity: 0.2; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* Habitica-Hinweis */
-.habitica { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem 2rem; align-items: start; padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px dashed var(--akzent-hell); border-radius: var(--rund); background: var(--flaeche); }
-.habitica-emoji { font-size: 3rem; line-height: 1; }
-.habitica h2 { margin-bottom: 0.5em; }
-.habitica p:not(.oberzeile) { max-width: 46rem; }
+.danach { border-top: 1px solid var(--linie); margin-top: 1.5rem; padding-top: 1.2rem; }
+.abschnitt-kopf .danach p { font-size: 1rem; }
+
+/* Quests abhaken */
 
 /* Gewohnheiten-Seite */
 .pizza { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
@@ -298,7 +297,7 @@ p { margin: 0 0 1em; }
   .navi { width: 100%; margin: 0; gap: 1.2rem; overflow-x: auto; padding-bottom: 0.2rem; }
   .navi a { white-space: nowrap; }
   .felder { grid-template-columns: 1fr; }
-  .habitica, .ueber-kurz { grid-template-columns: 1fr; }
+  .ueber-kurz { grid-template-columns: 1fr; }
   body { font-size: 1rem; }
   .fliesstext { font-size: 1.0625rem; }
 }

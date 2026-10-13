@@ -14,7 +14,8 @@
   const karte = document.querySelector("[data-impuls]");
   const daten = document.getElementById("impuls-daten");
   if (karte && daten) {
-    const liste = JSON.parse(daten.textContent);
+    const monat = new Date().getMonth() + 1;
+    const liste = JSON.parse(daten.textContent).filter((u) => !u.m || u.m.includes(monat));
     const feld = (name) => karte.querySelector(`[data-feld="${name}"]`);
     const basis = feld("link").getAttribute("href").split("#")[0];
     const appBasis = feld("app").getAttribute("href").split("#")[0];

@@ -66,6 +66,10 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .idee .knopf-reihe { justify-content: center; margin-top: 1.2rem; }
 .idee .aufklapp { text-align: left; }
 .geschafft-marke { padding: 0.8rem 1.2rem; border-radius: 999px; background: color-mix(in srgb, var(--akzent-hell) 18%, var(--karte)); }
+.alternative { display: flex; gap: 0.8rem; align-items: center; width: 100%; text-align: left; margin-top: 0.6rem; padding: 0.8rem 1rem;
+  background: var(--flaeche); border: 1px solid var(--linie); border-radius: 12px; color: inherit; font: inherit; cursor: pointer; }
+.alternative:hover { border-color: var(--akzent-hell); }
+.alternative > span:nth-child(2) { flex: 1; display: flex; flex-direction: column; }
 .ideen-filter { justify-content: center; margin-top: 1rem; }
 .ideen-filter button { font-size: 0.85rem; padding: 0.35rem 0.75rem; }
 .optionen h2 { margin-top: 1.8rem; }
@@ -78,7 +82,7 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .option-kopf { cursor: default; }
 .option-emoji { font-size: 1.8rem; line-height: 1; flex: none; }
 .option strong { display: block; }
-.option .klein { display: block; margin: 0.15rem 0 0; }
+.option .klein, .alternative .klein { display: block; margin: 0.15rem 0 0; }
 .option .knopf-reihe { margin-top: 0.8rem; align-items: center; }
 .fuss-app { text-align: center; margin-top: 2rem; }
 

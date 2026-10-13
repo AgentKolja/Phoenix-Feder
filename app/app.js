@@ -65,7 +65,8 @@ const routineModus = () => Z.modus === "routine" || Z.gewohnheiten.length > 0;
 function info(slug) {
   const t = TAEGLICH.find((x) => x.slug === slug);
   const u = U[slug] || {};
-  return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich };
+  return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich,
+    heute: u.heute || "", statt: u.statt || [], monate: u.monate || [] };
 }
 
 // ---------------------------------------------------------------- Speicher
@@ -213,9 +214,13 @@ function render() {
 
 // ---------------------------------------------------------------- Probier's heute
 
+// Nur, was man heute wirklich ausprobieren kann (z. B. nicht „feste Schlafenszeiten“, keine Bienen im Winter)
+const heuteMoeglich = (u) => Boolean(u.heute) && (!u.monate?.length || u.monate.includes(new Date().getMonth() + 1));
+
 function ideenPool() {
-  return D.uebungen.filter((u) => (u.art === "gewohnheit" || u.art === "quest") && u.gruppe !== "Abschluss"
-    && (ideeFilter === "alle" || (ideeFilter === "erlebnis" ? u.art === "quest" : u.bereich === ideeFilter)));
+  const alle = D.uebungen.filter((u) => (u.art === "gewohnheit" || u.art === "quest") && heuteMoeglich(u));
+  const passend = alle.filter((u) => ideeFilter === "alle" || (ideeFilter === "erlebnis" ? u.art === "quest" : u.bereich === ideeFilter));
+  return passend.length ? passend : alle;
 }
 
 function tagesIdee() {
@@ -240,7 +245,7 @@ function ideeTermin(slug) {
   const u = info(slug);
   const start = erinnerungStart(kalZeit);
   const link = `${location.origin}${location.pathname}#idee=${slug}`;
-  return { id: slug, titel: `${u.emoji} ${u.titel}`, text: `${u.kurz}\n\nIdeen und Hintergrund: ${link}`, url: link,
+  return { id: slug, titel: `${u.emoji} ${u.titel}`, text: `${u.heute || u.kurz}\n\nIdeen und Hintergrund: ${link}`, url: link,
     start: kalenderZeit(start), ende: kalenderZeit(new Date(start.getTime() + 15 * 60000)),
     regel: kalDauer === "14" ? "RRULE:FREQ=DAILY;COUNT=14" : "" };
 }
@@ -255,16 +260,21 @@ function ansichtProbieren() {
   if (!idee || !U[idee]) idee = tagesIdee();
   const u = info(idee);
   const geschafft = u.art === "quest" ? questsLaden().has(idee) : erledigt(tag(), idee);
+  const heute = heuteMoeglich(u);
+  // Braucht Zeit (oder gerade nicht die Jahreszeit): erklären und Ideen für heute anbieten
+  const stattdessen = heute ? "" : `<p class="klein">${u.heute ? "Gerade nicht die Jahreszeit dafür." : "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit Erinnerung (unten)."}${u.statt.length ? " Für heute passt:" : ""}</p>
+    ${u.statt.map((s) => info(s)).map((s) => `<button class="alternative" data-aktion="idee-zeigen" data-wert="${s.slug}"><span class="option-emoji" aria-hidden="true">${s.emoji}</span><span><strong>${esc(s.titel)}</strong><span class="klein">${esc(s.heute)}</span></span><span aria-hidden="true">→</span></button>`).join("")}`;
   const dabei = Z.gewohnheiten.some((g) => g.slug === idee) || Z.quest === idee;
   const filterListe = [["alle", "Alle"], ...D.bereiche.map((b) => [b.slug, `${b.emoji} ${b.titel}`]), ["erlebnis", "🗺️ Erlebnisse"]];
   return `<section class="probieren">
-  <p class="oberzeile">${u.art === "quest" ? "Ein kleines Erlebnis für dich" : "Probier es heute"}</p>
+  <p class="oberzeile">${!heute ? "Braucht etwas Zeit" : u.art === "quest" ? "Ein kleines Erlebnis für dich" : "Probier es heute"}</p>
   <div class="karte-app idee">
     <div class="idee-emoji" aria-hidden="true">${u.emoji}</div>
     <h1>${esc(u.titel)}</h1>
-    <p class="erklaerung-gross">${esc(u.kurz)}</p>
+    <p class="erklaerung-gross">${esc(heute ? u.heute : u.kurz)}</p>
+    ${stattdessen}
     <div class="knopf-reihe">
-      ${geschafft ? '<span class="marke-app geschafft-marke">✓ Heute ausprobiert</span>' : '<button class="knopf" data-aktion="ausprobiert">✓ Hab ich ausprobiert</button>'}
+      ${!heute ? "" : geschafft ? '<span class="marke-app geschafft-marke">✓ Heute ausprobiert</span>' : '<button class="knopf" data-aktion="ausprobiert">✓ Hab ich ausprobiert</button>'}
       <button class="knopf zweit" data-aktion="andere-idee">↻ Andere Idee</button>
     </div>
     <details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div></details>
@@ -880,6 +890,12 @@ const AKTIONEN = {
     const pool = ideenPool().filter((u) => u.slug !== idee);
     if (pool.length) idee = zufall(pool).slug;
     render();
+    $(".idee")?.classList.add("blaettern");
+  },
+  "idee-zeigen": (el, slug, wert) => {
+    idee = wert;
+    render();
+    scrollTo(0, 0);
     $(".idee")?.classList.add("blaettern");
   },
   "idee-filter": (el, slug, wert) => {

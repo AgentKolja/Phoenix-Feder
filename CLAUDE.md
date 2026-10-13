@@ -13,7 +13,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
 | `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
-| `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“) und der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke). Von Hand gepflegt; der Build bricht ab, wenn eine Übung keine Erklärung hat |
+| `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (wirkt erst über Wochen, z. B. feste Schlafenszeiten). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
@@ -88,6 +88,8 @@ App-Dateien oder Daten ändern.
   montags/Monatsanfang, Federn + Stufen + eigene Belohnungen, Feedback nach 14 Tagen (Kontaktformular vorausgefüllt).
 - Erinnerungen über Kalender (Google-Link oder .ics), Gerätewechsel über Sicherungsdatei oder Link
   (`#import=…`, Daten gzip+base64 im Fragment – erreicht nie den Server).
+- „Probier’s heute“, Impuls auf der Startseite und „Andere Idee“ zeigen nur Ideen mit `heute` (und passendem Monat).
+  Andere Ideen sind per Link erreichbar, zeigen dann „Braucht etwas Zeit“ und die `statt`-Ideen.
 - Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee auf der Probier-Seite (legt nichts an;
   `#neu=` alter Links verhält sich genauso).
 - Datenformat nur abwärtskompatibel ändern (`version: 1`); neue Felder in `neuerZustand()` mit Standardwert.

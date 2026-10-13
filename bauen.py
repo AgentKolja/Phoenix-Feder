@@ -38,8 +38,17 @@ _fehlt = [u["slug"] for u in UEBUNGEN if u["slug"] not in ERKLAERUNGEN["uebungen
 if _fehlt:
     raise SystemExit(f"inhalt/erklaerungen.json: Erklärung fehlt für {_fehlt}")
 for _u in UEBUNGEN:
-    _u["erklaerung"] = ERKLAERUNGEN["uebungen"][_u["slug"]]["kurz"]
-    _u["bereich"] = ERKLAERUNGEN["uebungen"][_u["slug"]]["bereich"]
+    _e = ERKLAERUNGEN["uebungen"][_u["slug"]]
+    _u["erklaerung"], _u["bereich"] = _e["kurz"], _e["bereich"]
+    # heute: konkreter Schritt fuer heute | true (Erklaerung passt schon) | false (wirkt erst ueber Wochen)
+    if "heute" not in _e:
+        raise SystemExit(f"inhalt/erklaerungen.json: \"heute\" fehlt bei {_u['slug']} (Text, true oder false)")
+    _u["heute"] = _e["kurz"] if _e["heute"] is True else (_e["heute"] or "")
+    _u["statt"], _u["monate"] = _e.get("statt", []), _e.get("monate", [])
+for _u in UEBUNGEN:
+    for _s in _u["statt"]:
+        if _s not in UEBUNG or not UEBUNG[_s]["heute"] or UEBUNG[_s]["monate"]:
+            raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Habitica-Challenge", "Kostenloses Erstgespräch",
             "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Etwas anderes"]
@@ -302,7 +311,7 @@ def uebung_karte(u):
   <details>
     <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-kopf"><span class="uebung-titel">{esc(u['titel'])}</span><span class="uebung-erklaerung">{esc(u['erklaerung'])}</span></span></summary>
     <div class="uebung-text">{text_html(u['text'])}
-      <p><a class="in-app" href="/app/#idee={u['slug']}">Heute ausprobieren →</a></p>
+      <p><a class="in-app" href="/app/#idee={u['slug']}">{"Heute ausprobieren" if u["heute"] else "Länger ausprobieren"} →</a></p>
     </div>
   </details>
   {abhaken}
@@ -338,10 +347,12 @@ def uebungen_html():
 
 
 def impuls_html():
-    pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest")]
+    # nur Ideen, die man heute ausprobieren kann; "m" = passende Monate (filtert seite.js)
+    pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest") and u["heute"]]
     daten = [{"s": u["slug"], "a": ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else ""), "e": u["emoji"],
-              "t": u["titel"], "k": u["erklaerung"]} for u in pool]
-    d = daten[date.today().toordinal() % len(daten)]
+              "t": u["titel"], "k": u["heute"], **({"m": u["monate"]} if u["monate"] else {})} for u in pool]
+    jetzt = [x for x in daten if date.today().month in x.get("m", [date.today().month])]
+    d = jetzt[date.today().toordinal() % len(jetzt)]
     json_text = json.dumps(daten, ensure_ascii=False).replace("</", "<\\/")
     return f"""<div class="impuls" data-impuls>
   <p class="impuls-art" data-feld="art">{esc(d['a'])}</p>
@@ -549,6 +560,7 @@ def app_bauen():
     daten = {
         "uebungen": [{"slug": u["slug"], "art": u["art"], "gruppe": u["gruppe"], "emoji": u["emoji"],
                       "titel": u["titel"], "kurz": u["erklaerung"], "bereich": u["bereich"],
+                      "heute": u["heute"], "statt": u["statt"], "monate": u["monate"],
                       "html": text_html(u["text"])} for u in UEBUNGEN],
         "bereiche": BEREICHE,
         "habitica": E["habitica_challenge"],
