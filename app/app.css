@@ -87,6 +87,21 @@ body.einfach .app-navi { display: none; }
 .kalender-aktion .klein { margin: 0.7rem 0 0; }
 .kalender-knopf { font-weight: 700; }
 .option .kalender-aktion strong { display: inline; }
+/* Kalender als Hauptweg in der Idee-Ansicht */
+.kalender-karte { background: var(--karte); border: 2px solid var(--akzent-hell); border-radius: var(--rund); padding: 1.2rem 1.2rem 1.3rem; margin: 1.6rem 0 1rem; box-shadow: var(--schatten); scroll-margin-top: 5rem; }
+.kalender-karte h2 { margin: 0 0 0.3rem; }
+.kalender-karte > .klein { margin: 0.2rem 0 0.4rem; }
+.kalender-karte .schritt:first-of-type { margin-top: 0.9rem; }
+.eigene-zeit { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; color: var(--leise); margin: 0.2rem 0 0.4rem; }
+.app .eigene-zeit input { width: auto; padding: 0.35rem 0.6rem; }
+.kalender-karte .kalender-aktion strong { display: inline; }
+.kalender-folge { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--linie); }
+.kalender-folge h3 { margin: 0.9rem 0 0.2rem; }
+.kalender-liste { list-style: none; padding: 0; margin: 0.4rem 0 0.6rem; display: grid; gap: 0.4rem; }
+.kalender-liste li { display: flex; align-items: flex-start; gap: 0.6rem; background: var(--karte); border: 1px solid var(--linie); border-radius: 12px; padding: 0.55rem 0.8rem; }
+.kalender-liste li > span { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
+.kalender-liste li .link-knopf { padding: 0; text-align: left; }
+.kalender-liste li .link-knopf.klein { text-decoration: none; color: var(--leise); padding: 0.1rem 0.2rem; }
 .install-liste { padding-left: 1.2rem; font-size: 0.95rem; }
 .install-liste li { margin-bottom: 0.5rem; }
 

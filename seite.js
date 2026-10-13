@@ -33,6 +33,7 @@
       feld("kurz").textContent = u.k;
       feld("app").setAttribute("href", `${appBasis}#idee=${u.s}`);
       feld("info").setAttribute("href", `${infoBasis}${u.s}/`);
+      feld("kalender").setAttribute("href", `${appBasis}#kalender=${u.s}`);
       speicher.schreiben(LETZTER, u.s);
     };
     zeigen();

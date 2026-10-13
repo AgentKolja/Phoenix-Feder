@@ -81,7 +81,8 @@ function server() {
   await p.click('[data-feld="info"]');
   await p.waitForLoadState("load");
   pruefe("Impuls „Mehr dazu“ führt zur Info-Seite genau dieser Idee", (await p.textContent("h1")).includes(impulsJetzt)
-    && Boolean(await p.$('.idee-heute a[href*="app/#idee="]')) && Boolean(await p.$(".idee-text p, .idee-text li")), infoLink);
+    && Boolean(await p.$('.idee-heute a[href*="app/#kalender="]')) && (await p.textContent(".idee-heute")).includes("Warum es guttut")
+    && Boolean(await p.$(".idee-text p, .idee-text li")), infoLink);
   await p.goto(`${B}/`, { waitUntil: "load" });
   const impulse = JSON.parse(roh.match(/id="impuls-daten">([^<]*)</)[1]).map((x) => x.s);
   pruefe("Impuls schlägt nur Ideen für heute vor", !impulse.some((s) => NICHT_HEUTE.includes(s)));
@@ -150,16 +151,38 @@ function server() {
   pruefe("… zurück zur Auswahl, Ausprobiertes ist markiert",
     (await p.textContent('[data-aktion="idee-zeigen"][data-slug="naturfreund"]')).includes("✓ Ausprobiert"));
   await p.click('[data-aktion="idee-zeigen"][data-slug="naturfreund"]');
-  await p.click(".optionen details.option > summary");
+  pruefe("Kalender ist der Hauptweg: gleich sichtbar, passende Zeit vorgewählt", await p.isVisible("#kalender")
+    && (await p.getAttribute('#kalender [data-aktion="kal-zeit"][aria-pressed="true"]', "data-wert")) === "12:30");
   await p.click('[data-aktion="kal-zeit"][data-wert="08:00"]');
-  const google = new URL(await p.getAttribute('.kalender-aktion a[href*="calendar.google"]', "href")).searchParams;
-  pruefe("Kalender bleibt offen, Google-Link 14 Tage", await p.evaluate(() => document.querySelector("details.option").open)
-    && google.get("recur") === "RRULE:FREQ=DAILY;COUNT=14" && google.get("dates").startsWith("20261014T080000"), google.get("dates"));
+  const googleLink = async () => new URL(await p.getAttribute('.kalender-aktion a[href*="calendar.google"]', "href")).searchParams;
+  const google = await googleLink();
+  pruefe("Google-Termin 14 Tage, mit „Warum es guttut“, „Passt gut“ und Link zur Info-Seite", google.get("recur") === "RRULE:FREQ=DAILY;COUNT=14"
+    && google.get("dates").startsWith("20261014T080000") && google.get("details").includes("Warum es guttut:")
+    && google.get("details").includes("Passt gut:") && google.get("details").includes("/gewohnheiten/naturfreund/"), google.get("dates"));
+  await p.click('[data-aktion="kal-dauer"][data-wert="60"]');
+  pruefe("„2 Monate“ = 60 tägliche Termine, „Dauerhaft“ ohne Ende", (await googleLink()).get("recur") === "RRULE:FREQ=DAILY;COUNT=60"
+    && (await p.click('[data-aktion="kal-dauer"][data-wert="0"]').then(googleLink)).get("recur") === "RRULE:FREQ=DAILY");
   await p.click('[data-aktion="kal-dauer"][data-wert="1"]');
   const [download] = await Promise.all([p.waitForEvent("download"), p.click('[data-aktion="ics-idee"]')]);
   const ics = fs.readFileSync(await download.path(), "utf8");
-  pruefe("ICS-Datei einmalig, ohne Wiederholung, mit Hinweis zum Öffnen", ics.includes("BEGIN:VEVENT") && !ics.includes("RRULE")
-    && (await p.textContent("[data-toast]")).includes("Kalenderdatei"));
+  pruefe("ICS einmalig, Zeilen höchstens 75 Bytes, Beschreibung vollständig, Hinweis zum Öffnen", ics.includes("BEGIN:VEVENT") && !ics.includes("RRULE")
+    && ics.includes("UID:naturfreund@") && ics.split("\r\n").every((z) => new TextEncoder().encode(z).length <= 75)
+    && ics.replace(/\r\n /g, "").includes("Warum es guttut:") && (await p.textContent("[data-toast]")).includes("Kalenderdatei"));
+  const folge = await p.$$eval('#kalender [data-aktion="kalender-zeigen"]', (l) => l.map((x) => x.dataset.slug));
+  const folgeZeiten = await p.evaluate((l) => l.map((s) => U[s].zeit), folge);
+  pruefe("Danach: „Passt noch etwas dazu?“ – Ideen zu anderen Tageszeiten", (await p.textContent("#kalender")).includes("Im Kalender")
+    && folge.length >= 2 && folgeZeiten.every((z) => z.slice(0, 2) !== "08"), folge.join(", "));
+  await p.click(`#kalender [data-aktion="kalender-zeigen"][data-slug="${folge[0]}"]`);
+  pruefe("… ein Tipp öffnet die nächste Idee direkt beim Kalender, mit ihrer passenden Zeit", (await p.evaluate(() => idee)) === folge[0]
+    && (await p.getAttribute('#kalender [data-aktion="kal-zeit"][aria-pressed="true"]', "data-wert")) === folgeZeiten[0]);
+  await p.goto(`${B}/app/#mehr`, { waitUntil: "networkidle" });
+  const [alleDl] = await Promise.all([p.waitForEvent("download"), p.click('[data-aktion="ics-alle"]')]);
+  pruefe("„Mein Kalender“ listet Eingetragenes, alles als eine Datei", (await p.textContent(".kalender-liste")).includes("Naturfreund")
+    && fs.readFileSync(await alleDl.path(), "utf8").includes("UID:naturfreund@"));
+  await p.goto(`${B}/`); await p.goto(`${B}/app/#kalender=digital-health`, { waitUntil: "networkidle" });
+  pruefe("Link #kalender= öffnet die Idee beim Kalender, 21.00 vorgewählt",
+    (await p.getAttribute('#kalender [data-aktion="kal-zeit"][aria-pressed="true"]', "data-wert")) === "21:00"
+    && await p.evaluate(() => { const r = document.querySelector("#kalender").getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }));
   await p.goto(`${B}/app/#entdecken`, { waitUntil: "networkidle" });
   pruefe("„Alle Ideen“ nach Bereichen, zum Stöbern ohne Aufnehmen-Knöpfe",
     (await p.locator(".gruppe-app").count()) >= 5 && !(await p.$('#app [data-aktion="hinzufuegen"]')));
@@ -180,8 +203,8 @@ function server() {
   pruefe("Link #bereich=erlebnis zeigt nur Quests", erlebnisse.length > 5 && await p.evaluate((l) => l.every((s) => U[s].art === "quest"), erlebnisse));
 
   await p.click('[data-aktion="idee-zeigen"]');
-  pruefe("Zwei Wege zum Dranbleiben: Kalender ohne App oder App mit Hinweis aufs Gerät",
-    (await p.textContent(".optionen")).includes("Ohne App") && (await p.textContent(".optionen")).includes("nur auf diesem Gerät"));
+  pruefe("Zwei Wege zum Dranbleiben: zuerst Kalender, dann die App mit Hinweis aufs Gerät",
+    Boolean(await p.$("#kalender + .optionen")) && (await p.textContent(".optionen")).includes("nur auf diesem Gerät"));
   await p.click('[data-aktion="laenger"]');
   await p.waitForTimeout(200);
   pruefe("„Länger ausprobieren“ öffnet „Heute“ mit Menüleiste", (await p.evaluate(() => ansicht)) === "heute" && await p.isVisible(".app-navi"));
@@ -223,6 +246,13 @@ function server() {
   await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
   pruefe("Alter Zustand: Genutztes aus „Täglich“ bleibt als eigene Auswahl, Belohnungen entfallen", await p.evaluate(() =>
     Z.gewohnheiten.map((g) => g.slug).join() === "naturfreund,bewegung" && Z.reflexion === true && !("belohnungen" in Z)));
+  await p.evaluate(() => localStorage.setItem("phoenix-feder-app", JSON.stringify({ version: 1, start: "2026-09-01", modus: "probieren", reflexion: null,
+    gewohnheiten: [], log: {}, hinweise: {}, kalender: { "digital-health": { zeit: "21:00", dauer: "14", datum: "2026-09-20" } } })));
+  await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
+  const auslauf = Boolean(await p.$('[data-aktion="verlaengern"]'));
+  await p.click('[data-aktion="verlaengern"]');
+  pruefe("Erinnerung nach 2 Wochen ausgelaufen: „Verlängern“ schlägt 2 Monate vor", auslauf
+    && (await p.getAttribute('#kalender [data-aktion="kal-dauer"][aria-pressed="true"]', "data-wert")) === "60");
   await alt.close();
 
   // ------------------------------------------------------------ App: Routinen, Reflexion, offline, Gerätewechsel

@@ -49,6 +49,10 @@ for _u in UEBUNGEN:
         raise SystemExit(f"inhalt/erklaerungen.json: \"heute\" fehlt bei {_u['slug']} (Text, true oder false)")
     _u["heute"] = _e["kurz"] if _e["heute"] is True else (_e["heute"] or "")
     _u["statt"], _u["monate"] = _e.get("statt", []), _e.get("monate", [])
+    # Für den Kalendereintrag: warum es guttut, passende Uhrzeit und wann im Alltag
+    if not (_e.get("warum") and re.match(r"^\d\d:\d\d$", _e.get("zeit", "")) and _e.get("wann")):
+        raise SystemExit(f"inhalt/erklaerungen.json: \"warum\", \"zeit\" (HH:MM) und \"wann\" fehlen bei {_u['slug']}")
+    _u["warum"], _u["zeit"], _u["wann"] = _e["warum"], _e["zeit"], _e["wann"]
 for _u in UEBUNGEN:
     for _s in _u["statt"]:
         if _s not in UEBUNG or not UEBUNG[_s]["heute"] or UEBUNG[_s]["monate"]:
@@ -358,9 +362,11 @@ def idee_seite(u, artikel):
     <aside class="idee-heute">
       <p class="essenz-titel">{kopf}</p>
       <p>{esc(text)}</p>
+      <p><strong>Warum es guttut:</strong> {esc(u['warum'])}</p>
+      <p><strong>Passt gut:</strong> {esc(u['wann'])}</p>
       {statt}
-      <div class="knopf-reihe"><a class="knopf" href="/app/#idee={u['slug']}">In der App ausprobieren</a></div>
-      <p class="klein">Abhaken, Kalender-Erinnerung oder länger dranbleiben – ohne Anmeldung, alles bleibt auf deinem Gerät.</p>
+      <div class="knopf-reihe"><a class="knopf" href="/app/#kalender={u['slug']}">📅 In deinen Kalender</a><a class="knopf zweit" href="/app/#idee={u['slug']}">In der App ausprobieren</a></div>
+      <p class="klein">Dein Kalender erinnert dich – zur passenden Zeit, mit allem, was du wissen musst. Ohne Anmeldung.</p>
     </aside>
     <h2>Ideen und Hintergrund</h2>
     <div class="idee-text">{text_html(u['text'])}</div>
@@ -379,7 +385,7 @@ def uebung_karte(u):
   <details>
     <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-kopf"><span class="uebung-titel">{esc(u['titel'])}</span><span class="uebung-erklaerung">{esc(u['erklaerung'])}</span></span></summary>
     <div class="uebung-text">{text_html(u['text'])}
-      <p><a class="in-app" href="/app/#idee={u['slug']}">{app_link_text(u)} →</a></p>
+      <p><a class="in-app" href="/app/#idee={u['slug']}">{app_link_text(u)} →</a> · <a class="in-app" href="/app/#kalender={u['slug']}">📅 In den Kalender</a> · <a href="/gewohnheiten/{u['slug']}/">Mehr dazu</a></p>
     </div>
   </details>
   {abhaken}
@@ -436,7 +442,8 @@ def impuls_html():
   <div class="impuls-emoji" data-feld="emoji" aria-hidden="true">{d['e']}</div>
   <h3 data-feld="titel">{esc(d['t'])}</h3>
   <p data-feld="kurz">{esc(d['k'])}</p>
-  <p class="impuls-mehr"><a data-feld="info" href="/gewohnheiten/{d['s']}/">Mehr dazu: Ideen und Hintergrund →</a></p>
+  <p class="impuls-mehr"><a data-feld="info" href="/gewohnheiten/{d['s']}/">Mehr dazu: Ideen und Hintergrund →</a><br>
+    <a data-feld="kalender" href="/app/#kalender={d['s']}">📅 Als Erinnerung in deinen Kalender →</a></p>
   <div class="knopf-reihe">
     <a class="knopf" data-feld="app" href="/app/#idee={d['s']}">Heute ausprobieren</a>
     <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
@@ -811,6 +818,7 @@ def app_bauen():
         "uebungen": [{"slug": u["slug"], "art": u["art"], "gruppe": u["gruppe"], "emoji": u["emoji"],
                       "titel": u["titel"], "kurz": u["erklaerung"], "bereich": u["bereich"],
                       "heute": u["heute"], "statt": u["statt"], "monate": u["monate"],
+                      "warum": u["warum"], "zeit": u["zeit"], "wann": u["wann"],
                       "html": text_html(u["text"])} for u in UEBUNGEN],
         "bereiche": BEREICHE,
         "richtungen": RICHTUNGEN,

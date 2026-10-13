@@ -52,7 +52,18 @@ let ideeZeit = null; // „Wie viel Zeit hast du?“ – kurz | lang | egal
 let reflexionWarDa = false;
 let kalZeit = "19:00";
 let kalDauer = "14";
+let zumKalender = false; // nach dem Zeichnen zum Kalender-Block scrollen (#kalender=…)
 const ZEITEN = [["08:00", "Morgens"], ["12:30", "Mittags"], ["19:00", "Abends"]];
+// Wie lange erinnert der Kalender? Schlüssel = Anzahl täglicher Termine (0 = ohne Ende), w8 = 8 Wochen lang wöchentlich
+const DAUER = {
+  gewohnheit: [["1", "Einmal"], ["14", "2 Wochen"], ["60", "2 Monate"], ["0", "Dauerhaft"]],
+  quest: [["1", "Einmal"], ["w8", "Jede Woche, 2 Monate lang"]],
+};
+const DAUER_TEXT = { 1: "einmal", 14: "2 Wochen lang täglich", 60: "2 Monate lang täglich", 0: "täglich", w8: "jede Woche, 2 Monate lang" };
+const dauerOptionen = (u) => (u.art === "quest" ? DAUER.quest : DAUER.gewohnheit);
+const kalenderRegel = (d) => (d === "14" || d === "60" ? `RRULE:FREQ=DAILY;COUNT=${d}` : d === "0" ? "RRULE:FREQ=DAILY" : d === "w8" ? "RRULE:FREQ=WEEKLY;COUNT=8" : "");
+const uhrzeit = (z) => z.replace(":", ".");
+const tageszeit = (z) => { const h = Number(z.slice(0, 2)); return h < 11 ? "Morgens" : h < 15 ? "Mittags" : h < 18 ? "Nachmittags" : "Abends"; };
 
 // ---------------------------------------------------------------- Hilfen
 
@@ -73,7 +84,7 @@ const istIdee = (u) => u.slug !== "reflektion";
 function info(slug) {
   const u = U[slug] || {};
   return { slug, emoji: u.emoji || "✨", titel: u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich,
-    heute: u.heute ?? "", statt: u.statt ?? [], monate: u.monate ?? [] };
+    heute: u.heute ?? "", statt: u.statt ?? [], monate: u.monate ?? [], warum: u.warum ?? "", zeit: u.zeit ?? "19:00", wann: u.wann ?? "" };
 }
 
 // ---------------------------------------------------------------- Speicher
@@ -82,6 +93,7 @@ function neuerZustand() {
   return { version: 1, start: tag(), gewohnheiten: [], log: {}, quest: null, questDaten: {}, automatik: {},
     hinweise: {}, erinnerung: { morgen: "07:30", abend: "21:00" }, modus: "probieren",
     reflexion: null, // Abendreflexion: null = noch nicht gefragt, true/false = Antwort
+    kalender: {}, // in den Kalender eingetragen: slug -> { zeit, dauer, datum }
     probieren: { bereich: "", zeit: "", idee: "" } };
 }
 
@@ -220,7 +232,7 @@ const richtungen = () => D.richtungen;
 const passtZurZeit = (u) => !ideeZeit || ideeZeit === "egal" || (ideeZeit === "lang") === (u.art === "quest");
 const passtZumBereich = (u) => !ideeFilter || ideeFilter === "alle" || u.bereich === ideeFilter;
 const fussZeile = `<p class="klein fuss-app">Kein Konto, keine Anmeldung – alles bleibt auf diesem Gerät.<br>
-  <a href="#entdecken">Alle Ideen nach Bereichen</a> · <a href="#mehr">Als App installieren</a> · <a href="../">Zur Website</a></p>`;
+  <a href="#entdecken">Alle Ideen nach Bereichen</a> · <a href="#mehr">📅 Mein Kalender &amp; App</a> · <a href="../">Zur Website</a></p>`;
 
 // Alle Ideen für heute, die zu den beiden Antworten passen (passt nichts, dann wenigstens der Bereich)
 function ideenPool() {
@@ -248,13 +260,61 @@ function kalenderZeit(d) {
   return `${tag(d).replaceAll("-", "")}T${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}00`;
 }
 
-function ideeTermin(slug) {
+// Der Termin erklärt sich selbst: was zu tun ist, warum es guttut, wann es passt – und wo es mehr gibt
+function ideeTermin(slug, zeit = kalZeit, dauer = kalDauer) {
   const u = info(slug);
-  const start = erinnerungStart(kalZeit);
+  const start = erinnerungStart(zeit);
   const link = `${location.origin}${location.pathname}#idee=${slug}`;
-  return { id: slug, titel: `${u.emoji} ${u.titel}`, text: `${u.heute || u.kurz}\n\nIdeen und Hintergrund: ${link}`, url: link,
-    start: kalenderZeit(start), ende: kalenderZeit(new Date(start.getTime() + 15 * 60000)),
-    regel: kalDauer === "14" ? "RRULE:FREQ=DAILY;COUNT=14" : "" };
+  const text = [
+    u.heute || u.kurz,
+    [u.warum && `Warum es guttut: ${u.warum}`, u.wann && `Passt gut: ${u.wann}`,
+      dauer !== "1" && "Dranbleiben: Ein verpasster Tag ist kein Problem – nur nicht zweimal hintereinander."].filter(Boolean).join("\n"),
+    `Mehr dazu: ${location.origin}/gewohnheiten/${slug}/\nAbhaken in der App: ${link}`,
+  ].filter(Boolean).join("\n\n");
+  return { id: slug, titel: `${u.emoji} ${u.titel}`, text, url: link,
+    start: kalenderZeit(start), ende: kalenderZeit(new Date(start.getTime() + 15 * 60000)), regel: kalenderRegel(dauer) };
+}
+
+// Vorbelegen: die passende Zeit der Idee (oder was schon im Kalender steht), Dauer je nach Art
+function kalenderVorbelegen(slug) {
+  const u = U[slug];
+  if (!u) return;
+  const k = Z.kalender[slug];
+  kalZeit = k?.zeit || u.zeit || "19:00";
+  kalDauer = k ? (k.dauer === "14" ? "60" : k.dauer) : u.art === "quest" ? "1" : heuteMoeglich(u) ? "14" : "60";
+}
+
+function kalenderMerken(slug) {
+  if (!U[slug]) return;
+  Z.kalender[slug] = { zeit: kalZeit, dauer: kalDauer, datum: tag() };
+  speichern();
+}
+
+// „Passt noch etwas dazu?“ – je freie Tageszeit eine kleine Routine, zuerst aus dem gleichen Bereich
+function kalenderVorschlaege(slug) {
+  const belegt = new Set(Object.values(Z.kalender).map((k) => tageszeit(k.zeit)));
+  const kandidaten = D.uebungen.filter((x) => istIdee(x) && x.art !== "quest" && heuteMoeglich(x) && x.zeit && !Z.kalender[x.slug] && x.slug !== slug);
+  const bereich = U[slug]?.bereich;
+  const sortiert = [...kandidaten.filter((x) => x.bereich === bereich), ...kandidaten.filter((x) => x.bereich !== bereich)];
+  const auswahl = [];
+  for (const x of sortiert) {
+    if (auswahl.length < 3 && !belegt.has(tageszeit(x.zeit))) { belegt.add(tageszeit(x.zeit)); auswahl.push(x); }
+  }
+  for (const x of sortiert) if (auswahl.length < 2 && !auswahl.includes(x)) auswahl.push(x);
+  return auswahl;
+}
+
+// Erinnerung ausgelaufen? Dann einmal anbieten, länger dranzubleiben
+function kalenderAuslaufend() {
+  const heute = tag();
+  const [slug, k] = Object.entries(Z.kalender).find(([s, x]) => U[s] && (x.dauer === "14" || x.dauer === "60")
+    && tageZwischen(x.datum, heute) >= Number(x.dauer) && !Z.hinweise[`verlaengern-${s}`]) || [];
+  if (!slug) return "";
+  const u = info(slug);
+  return `<div class="karte-app hinweis-karte"><p><strong>📅 Deine Erinnerung „${esc(u.titel)}“ ist ausgelaufen.</strong> ${k.dauer === "14"
+    ? "Hat es dir gutgetan? Dann trag sie für zwei Monate ein – so lange dauert es oft, bis etwas von allein läuft."
+    : "Läuft es schon von allein? Wenn nicht, trag sie dauerhaft ein."}</p>
+  <div class="knopf-reihe"><button class="knopf klein-knopf" data-aktion="verlaengern" data-slug="${slug}">Verlängern</button><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="verlaengern-${slug}">Nein, danke</button></div></div>`;
 }
 
 function googleKalender(t) {
@@ -265,9 +325,10 @@ function googleKalender(t) {
 
 // Der eigentliche Export: deutlich als Aktion erkennbar, mit Erklärung, was danach passiert.
 // Auf Apple-Geräten zuerst die Kalenderdatei (öffnet direkt den Apple-Kalender), sonst zuerst Google.
-function kalenderAktion(googleLink, icsAktion) {
-  const google = `<a class="knopf kalender-knopf${appleGeraet() ? " zweit" : ""}" target="_blank" rel="noopener" href="${esc(googleLink)}" data-aktion="google-geoeffnet">📅 In Google Kalender eintragen</a>`;
-  const datei = `<button class="knopf kalender-knopf${appleGeraet() ? "" : " zweit"}" data-aktion="${icsAktion}">📥 In Apple- oder Outlook-Kalender</button>`;
+function kalenderAktion(googleLink, icsAktion, slug = "") {
+  const s = slug ? ` data-slug="${slug}"` : "";
+  const google = `<a class="knopf kalender-knopf${appleGeraet() ? " zweit" : ""}" target="_blank" rel="noopener" href="${esc(googleLink)}" data-aktion="google-geoeffnet"${s}>📅 In Google Kalender eintragen</a>`;
+  const datei = `<button class="knopf kalender-knopf${appleGeraet() ? "" : " zweit"}" data-aktion="${icsAktion}"${s}>📥 In Apple- oder Outlook-Kalender</button>`;
   return `<div class="kalender-aktion">
     <div class="knopf-reihe">${appleGeraet() ? datei + google : google + datei}</div>
     <p class="klein"><strong>Google</strong> öffnet sich mit dem fertigen Termin – dort nur noch „Speichern“ tippen.
@@ -283,6 +344,7 @@ function ansichtFrage() {
   <h1>Woran möchtest du arbeiten?</h1>
   <p>Zwei kurze Fragen – dann siehst du alle Ideen, die zu dir passen und die du heute ausprobieren kannst.</p>
 </section>
+${kalenderAuslaufend()}
 <div class="wahl-liste">${antworten.map((r) => wahlZeile("frage", r.slug, r.emoji, r.titel, r.text, false, true)).join("")}</div>
 ${fussZeile}`;
 }
@@ -308,9 +370,37 @@ function ansichtVorschlaege() {
   <p>${pool.length === 1 ? "Eine Idee" : `${pool.length} Ideen`}, die du heute ausprobieren kannst. Such dir eine aus, die dich anlacht – tipp sie an für alle Details.</p>
   <div class="knopf-reihe"><button class="knopf zweit klein-knopf" data-aktion="ueberrasch">🎲 Überrasch mich</button><button class="link-knopf" data-aktion="neu-fragen">Fragen neu beantworten</button></div>
 </section>
+${kalenderAuslaufend()}
 <div class="wahl-liste">${pool.map((u) => wahlZeile("idee-zeigen", u.slug, u.emoji, u.titel,
-    `${ausprobiertHeute(u.slug) ? "✓ Ausprobiert · " : ""}${u.heute}`, false, true)).join("")}</div>
+    `${Z.kalender[u.slug] ? "📅 Im Kalender · " : ""}${ausprobiertHeute(u.slug) ? "✓ Ausprobiert · " : ""}${u.heute}`, false, true)).join("")}</div>
 ${fussZeile}`;
+}
+
+// Kalender als Hauptweg: Zeit (passende vorgeschlagen), Dauer, eintragen – danach „Passt noch etwas dazu?“
+function kalenderBlock(u) {
+  const zeiten = [[u.zeit, "★ Passt gut"], ...ZEITEN.filter(([z]) => z !== u.zeit)];
+  const vorschlag = ZEITEN.find(([z]) => z === u.zeit);
+  const k = Z.kalender[u.slug];
+  return `<section class="kalender-karte" id="kalender">
+  <h2>📅 In deinen Kalender</h2>
+  <p class="klein">Dein Kalender erinnert dich zur passenden Zeit. Im Termin steht, was zu tun ist und warum es guttut – ganz ohne App und Konto.</p>
+  <p class="schritt">1 · Wann?</p>
+  <div class="chips-app">${zeiten.map(([z, t]) => `<button data-aktion="kal-zeit" data-wert="${z}" aria-pressed="${kalZeit === z}">${t === "★ Passt gut" && vorschlag ? `★ ${vorschlag[1]}` : t} · ${uhrzeit(z)}</button>`).join("")}</div>
+  <label class="eigene-zeit">oder eigene Zeit <input type="time" data-feld="kal-eigen" value="${kalZeit}"></label>
+  ${u.wann ? `<p class="klein">Passt gut: ${esc(u.wann)}.</p>` : ""}
+  <p class="schritt">2 · Wie lange?</p>
+  <div class="chips-app">${dauerOptionen(u).map(([w, t]) => `<button data-aktion="kal-dauer" data-wert="${w}" aria-pressed="${kalDauer === w}">${t}</button>`).join("")}</div>
+  ${u.art === "quest" ? "" : '<p class="klein">Bis etwas von allein läuft, dauert es oft rund zwei Monate. Ändern oder löschen kannst du die Termine jederzeit in deinem Kalender.</p>'}
+  <p class="schritt">3 · Jetzt eintragen</p>
+  ${kalenderAktion(googleKalender(ideeTermin(u.slug)), "ics-idee", u.slug)}
+  ${k ? `<div class="kalender-folge">
+    <p><strong>✓ Im Kalender:</strong> ${DAUER_TEXT[k.dauer]} um ${uhrzeit(k.zeit)} Uhr.</p>
+    ${kalenderVorschlaege(u.slug).length ? `<h3>Passt noch etwas dazu?</h3>
+    <p class="klein">Kleine Routinen für andere Tageszeiten – tipp an und trag sie genauso ein.</p>
+    <div class="wahl-liste">${kalenderVorschlaege(u.slug).map((x) => wahlZeile("kalender-zeigen", x.slug, x.emoji, x.titel,
+      `${tageszeit(x.zeit)} · ${uhrzeit(x.zeit)} – ${x.wann}`, false, true)).join("")}</div>` : ""}
+  </div>` : ""}
+</section>`;
 }
 
 function ansichtProbieren() {
@@ -347,17 +437,9 @@ function ansichtProbieren() {
       <p><a href="../gewohnheiten/${esc(idee)}/">Alles dazu auf einer Seite →</a></p></details>
   </div>
 </section>
-${!saison ? "" : `<section class="optionen">
-  <h2>Gefällt dir die Idee? Zwei Wege, dranzubleiben</h2>
-  <details class="option">
-    <summary><span class="option-emoji" aria-hidden="true">📅</span><span><strong>Ohne App: Erinnerung im Kalender</strong><span class="klein">Einmal oder zwei Wochen lang täglich – dein Kalender erinnert dich.</span></span></summary>
-    <p class="schritt">1 · Wann?</p>
-    <div class="chips-app">${ZEITEN.map(([z, t]) => `<button data-aktion="kal-zeit" data-wert="${z}" aria-pressed="${kalZeit === z}">${t} · ${z.replace(":", ".")}</button>`).join("")}</div>
-    <p class="schritt">2 · Wie oft?</p>
-    <div class="chips-app"><button data-aktion="kal-dauer" data-wert="1" aria-pressed="${kalDauer === "1"}">Einmal</button><button data-aktion="kal-dauer" data-wert="14" aria-pressed="${kalDauer === "14"}">2 Wochen täglich</button></div>
-    <p class="schritt">3 · Jetzt eintragen</p>
-    ${kalenderAktion(googleKalender(ideeTermin(idee)), "ics-idee")}
-  </details>
+${!saison ? "" : `${kalenderBlock(u)}
+<section class="optionen">
+  <h2>Lieber mit der App?</h2>
   <div class="option">
     <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Mit der App: täglich abhaken</strong><span class="klein">Abhaken, abends kurz zurückschauen und sehen, was dir wirklich hilft – persönlich für dich.</span></span></div>
     ${speicherFehlt ? '<p class="klein">In diesem Fenster kann die App nichts speichern (privates Fenster?). Öffne sie in einem normalen Browserfenster, um dranzubleiben.</p>'
@@ -437,6 +519,8 @@ function punktZeile(slug, d, anker = "") {
 // Höchstens ein Hinweis auf einmal – der wichtigste zuerst
 function hinweisKarten() {
   const heute = tag();
+  const auslaufend = kalenderAuslaufend();
+  if (auslaufend) return auslaufend;
   // Wer dranbleiben will, braucht die App griffbereit – und auf dem iPhone ist sie dort auch vor dem Löschen sicher
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if (!alsAppGestartet() && (!Z.hinweise.app || tageZwischen(Z.hinweise.app, heute) >= 7)) {
@@ -630,7 +714,17 @@ ${installEreignis ? `<button class="knopf" data-aktion="installieren">📲 Jetzt
 function ansichtMehr() {
   const r = Z.erinnerung;
   const zurueck = routineModus() ? "" : '<p><a class="link-knopf" href="#probieren">← Zurück zu „Probier’s heute“</a></p>';
+  const kalender = Object.entries(Z.kalender).filter(([s]) => U[s]);
   return `${zurueck}<h1>Mehr</h1>
+<h2>📅 Mein Kalender</h2>
+${kalender.length ? `<p class="klein">Diese Ideen hast du in deinen Kalender eingetragen:</p>
+<ul class="kalender-liste">${kalender.map(([s, k]) => { const u = info(s); return `<li><span><button class="link-knopf" data-aktion="kalender-zeigen" data-slug="${s}">${u.emoji} ${esc(u.titel)}</button>
+  <span class="klein">${uhrzeit(k.zeit)} Uhr · ${DAUER_TEXT[k.dauer]} · seit ${datumLang(k.datum)}</span></span>
+  <button class="link-knopf klein" data-aktion="kalender-weg" data-slug="${s}" aria-label="${esc(u.titel)} aus der Liste nehmen">✕</button></li>`; }).join("")}</ul>
+<div class="knopf-reihe"><button class="knopf zweit klein-knopf" data-aktion="ics-alle">📥 Alle als eine Kalenderdatei</button><a class="knopf zweit klein-knopf" href="#probieren">＋ Weitere Idee eintragen</a></div>
+<p class="klein">Die Datei hilft bei einem neuen Gerät oder Kalender. Ändern und löschen geht direkt in deinem Kalender; ✕ nimmt eine Idee nur aus dieser Liste.</p>`
+    : '<p class="klein">Noch nichts eingetragen. Such dir eine Idee aus – mit einem Tipp steht sie zur passenden Zeit in deinem Kalender.</p><a class="knopf zweit klein-knopf" href="#probieren">Ideen ansehen</a>'}
+
 <h2>Als App installieren</h2>
 ${installierenHtml()}
 
@@ -692,6 +786,7 @@ function details(slug) {
   if (!g && istIdee(u) && ansicht !== "probieren" && Z.quest !== slug && !(u.art === "quest" && questsLaden().has(slug))) {
     aktion += `<button class="knopf zweit" data-aktion="idee-zeigen" data-slug="${slug}">💡 Heute ausprobieren</button>`;
   }
+  if (istIdee(u) && passtZurJahreszeit(u)) aktion += `<button class="knopf zweit" data-aktion="kalender-zeigen" data-slug="${slug}">📅 In den Kalender</button>`;
   if (aktion) aktion = `<div class="knopf-reihe">${aktion}</div>`;
   const anpassen = g ? `<details class="aufklapp" data-gewohnheit="${slug}"><summary>Anpassen: Zeitpunkt, Mini-Version, Plan B</summary>
 <label>Wann? <select data-feld="anker"><option value="">Wann es passt</option>${ANKER.map((a) => `<option ${g.anker === a ? "selected" : ""}>${esc(a)}</option>`).join("")}${g.anker && !ANKER.includes(g.anker) ? `<option selected>${esc(g.anker)}</option>` : ""}</select></label>
@@ -783,16 +878,33 @@ function icsText(text) {
   return String(text).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
 }
 
+// Zeilen nach RFC 5545 auf 75 Bytes falten (lange Beschreibungen, Umlaute, Emojis)
+function icsFalten(zeile) {
+  const teile = [];
+  let aktuell = "";
+  let bytes = 0;
+  for (const zeichen of zeile) {
+    const n = new TextEncoder().encode(zeichen).length;
+    if (bytes + n > (teile.length ? 74 : 75)) { teile.push(aktuell); aktuell = ""; bytes = 0; }
+    aktuell += zeichen;
+    bytes += n;
+  }
+  teile.push(aktuell);
+  return teile.join("\r\n ");
+}
+
 function icsDatei(termine, name) {
   const jetzt = `${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`;
+  // gleiche UID je Idee + steigende SEQUENCE: ein erneuter Import aktualisiert den Termin, statt ihn zu verdoppeln
+  const fassung = Math.floor(Date.now() / 60000) - 29000000;
   const zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Probiers heute//DE", "CALSCALE:GREGORIAN"];
   for (const t of termine) {
-    zeilen.push("BEGIN:VEVENT", `UID:${t.id}-${Date.now()}@phoenix-feder.de`, `DTSTAMP:${jetzt}`, `DTSTART:${t.start}`,
+    zeilen.push("BEGIN:VEVENT", `UID:${t.id}@phoenix-feder.de`, `SEQUENCE:${fassung}`, `DTSTAMP:${jetzt}`, `DTSTART:${t.start}`,
       `DTEND:${t.ende}`, ...(t.regel ? [t.regel] : []), `SUMMARY:${icsText(t.titel)}`, `DESCRIPTION:${icsText(t.text)}`,
       `URL:${t.url}`, "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", `DESCRIPTION:${icsText(t.titel)}`, "END:VALARM", "END:VEVENT");
   }
   zeilen.push("END:VCALENDAR");
-  herunterladen(zeilen.join("\r\n"), name, "text/calendar");
+  herunterladen(zeilen.map(icsFalten).join("\r\n"), name, "text/calendar");
   toast("📥 Kalenderdatei geladen – öffne sie, dann landet die Erinnerung in deinem Kalender.");
 }
 
@@ -864,6 +976,8 @@ function bereinigen(z) {
       liste(l).filter((x) => datumOk(x?.datum) && Number.isInteger(x.wert) && x.wert >= 1 && x.wert <= AUTOMATIK.length)
         .map((x) => ({ datum: x.datum, wert: x.wert }))])),
     hinweise: Object.fromEntries(eintraege(z.hinweise).filter(([k, d]) => /^[a-z0-9-]{1,40}$/.test(k) && datumOk(d))),
+    kalender: Object.fromEntries(eintraege(z.kalender).filter(([s, k]) => slugOk(s) && zeitOk(k?.zeit) && datumOk(k.datum)
+      && typeof k.dauer === "string" && Object.prototype.hasOwnProperty.call(DAUER_TEXT, k.dauer)).map(([s, k]) => [s, { zeit: k.zeit, dauer: k.dauer, datum: k.datum }])),
     erinnerung: { morgen: zeitOk(z.erinnerung?.morgen) ? z.erinnerung.morgen : n.erinnerung.morgen,
       abend: zeitOk(z.erinnerung?.abend) ? z.erinnerung.abend : n.erinnerung.abend },
     reflexion,
@@ -885,6 +999,7 @@ function wiederherstellen() {
   ideeFilter = Z.probieren.bereich || null;
   ideeZeit = Z.probieren.zeit || null;
   idee = U[Z.probieren.idee] ? Z.probieren.idee : null;
+  if (idee) kalenderVorbelegen(idee);
 }
 
 function base64url(bytes) {
@@ -1024,11 +1139,26 @@ const AKTIONEN = {
     if (outcome === "accepted") dauerhaftSpeichern();
     render();
   },
-  "google-geoeffnet": () => toast("Google Kalender öffnet sich – dort noch auf „Speichern“ tippen."),
+  "google-geoeffnet": (el, slug) => {
+    toast("Google Kalender öffnet sich – dort noch auf „Speichern“ tippen.");
+    if (slug) { kalenderMerken(slug); setTimeout(render, 0); } // erst nach dem Öffnen des Links neu zeichnen
+  },
   ics: () => ics(),
-  "ics-idee": () => icsDatei([ideeTermin(idee)], `phoenix-feder-${idee}.ics`),
+  "ics-idee": (el, slug) => { icsDatei([ideeTermin(slug)], `phoenix-feder-${slug}.ics`); kalenderMerken(slug); render(); },
+  "ics-alle": () => icsDatei(Object.entries(Z.kalender).filter(([s]) => U[s]).map(([s, k]) => ideeTermin(s, k.zeit, k.dauer)), "phoenix-feder-kalender.ics"),
   "kal-zeit": (el, slug, wert) => { kalZeit = wert; offenLassen("details", render); },
   "kal-dauer": (el, slug, wert) => { kalDauer = wert; offenLassen("details", render); },
+  "kalender-zeigen": (el, slug) => { zumKalender = true; AKTIONEN["idee-zeigen"](el, slug); },
+  verlaengern: (el, slug) => {
+    const naechste = Z.kalender[slug]?.dauer === "14" ? "60" : "0";
+    Z.hinweise[`verlaengern-${slug}`] = tag();
+    speichern();
+    AKTIONEN["kalender-zeigen"](el, slug);
+    kalDauer = naechste;
+    render();
+    $("#kalender")?.scrollIntoView({ block: "start" });
+  },
+  "kalender-weg": (el, slug) => { delete Z.kalender[slug]; speichern(); render(); },
   ueberrasch: () => {
     const pool = ideenPool().filter((u) => !ausprobiertHeute(u.slug));
     AKTIONEN["idee-zeigen"](null, zufall(pool.length ? pool : ideenPool()).slug);
@@ -1036,12 +1166,14 @@ const AKTIONEN = {
   "idee-zeigen": (el, slug) => {
     if (!U[slug]) return;
     idee = slug;
+    kalenderVorbelegen(slug);
     // Kommt man aus „Alle Ideen“, passen die Antworten zur Idee – so führt „Zurück“ zu ähnlichen Ideen
     if (!ideeFilter || !ideeZeit) { ideeFilter = U[slug].bereich || "alle"; ideeZeit = U[slug].art === "quest" ? "lang" : "kurz"; }
     merken();
     blattSchliessen();
     if (ansicht !== "probieren") { location.hash = "#probieren"; return; }
     render();
+    if (zumKalender) { zumKalender = false; $("#kalender")?.scrollIntoView({ block: "start" }); return; }
     scrollTo(0, 0);
     $(".idee")?.classList.add("blaettern");
   },
@@ -1114,11 +1246,13 @@ function route() {
     route();
     return;
   }
-  if (h.startsWith("idee=") || h.startsWith("neu=")) {
-    // Links von der Website: erst die Idee zeigen, statt gleich eine Routine anzulegen
+  if (h.startsWith("idee=") || h.startsWith("neu=") || h.startsWith("kalender=")) {
+    // Links von der Website: erst die Idee zeigen, statt gleich eine Routine anzulegen; #kalender= springt zum Eintragen
     const slug = h.slice(h.indexOf("=") + 1);
     if (U[slug]) {
       idee = slug;
+      kalenderVorbelegen(slug);
+      zumKalender = h.startsWith("kalender=");
       ideeFilter = U[slug].bereich || "alle";
       ideeZeit = U[slug].art === "quest" ? "lang" : "kurz";
       merken();
@@ -1133,6 +1267,8 @@ function route() {
   blattSchliessen();
   render();
   scrollTo(0, 0);
+  if (zumKalender && ansicht === "probieren") $("#kalender")?.scrollIntoView({ block: "start" });
+  zumKalender = false;
 }
 
 document.addEventListener("click", (ereignis) => {
@@ -1202,7 +1338,7 @@ async function starten() {
     return;
   }
   // Eine ältere daten.json aus dem Cache kennt neuere Felder nicht: hier einmal ergänzen statt überall abfragen
-  D.uebungen.forEach((u) => { u.heute ??= u.kurz; u.statt ??= []; u.monate ??= []; u.bereich ??= ""; U[u.slug] = u; });
+  D.uebungen.forEach((u) => { u.heute ??= u.kurz; u.statt ??= []; u.monate ??= []; u.bereich ??= ""; u.warum ??= ""; u.zeit ??= "19:00"; u.wann ??= ""; U[u.slug] = u; });
   D.richtungen ??= [...D.bereiche, { slug: "alle", emoji: "🎲", titel: "Überrasch mich", text: "" }];
   Z.gewohnheiten = Z.gewohnheiten.filter((g) => U[g.slug]); // falls eine Übung umbenannt wurde
   wiederherstellen();

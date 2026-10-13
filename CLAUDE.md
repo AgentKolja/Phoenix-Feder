@@ -124,6 +124,13 @@ App-Dateien oder Daten ändern.
 - Jede Idee hat eine eigene Info-Seite `/gewohnheiten/<slug>/` (`idee_seite()` in bauen.py: Für heute / Braucht Zeit
   oder Planung, Knopf in die App, Ideen und Hintergrund, passende Artikel, mehr aus dem Bereich). Der Impuls auf der
   Startseite verlinkt „Mehr dazu“ dorthin; die App unter „Ideen und Hintergrund“ ebenso.
+- Kalender ist der Hauptweg (`kalenderBlock()`): offen unter jeder Idee, Zeit mit „★ Passt gut“ vorgewählt (`zeit`),
+  Dauer Einmal/2 Wochen/2 Monate/Dauerhaft (Quests: Einmal/wöchentlich 8×), Google-Link oder .ics. Der Termin erklärt
+  sich selbst: Schritt für heute, `warum`, `wann`, „nie zweimal hintereinander auslassen“, Links zur Info-Seite und App.
+  `warum`/`zeit`/`wann` stehen je Idee in `erklaerungen.json` (Pflicht, bauen.py bricht sonst ab). Eingetragenes merkt
+  sich `Z.kalender` → „Passt noch etwas dazu?“ (je freie Tageszeit eine Idee), „📅 Mein Kalender“ unter Mehr (alles als
+  eine Datei; gleiche UID je Idee + steigende SEQUENCE, damit ein erneuter Import aktualisiert), „Verlängern“-Hinweis,
+  wenn 2 Wochen bzw. 2 Monate um sind. Website verlinkt `/app/#kalender=<slug>` (springt zum Kalender-Block).
 - „Länger dranbleiben“ gibt es in zwei Wegen: ohne App per Kalender-Erinnerung oder mit der App (persönlich, Einträge nur
   auf diesem Gerät). Danach rät „Heute“ wöchentlich, die App auf den Startbildschirm zu legen (`Z.hinweise.app`), bis
   sie installiert läuft. Im privaten Fenster gibt es den App-Weg nicht (`speicherFehlt`).
