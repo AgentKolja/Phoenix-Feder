@@ -12,6 +12,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/artikel/<slug>.html` | Ein Blogartikel. URL wird `/post/<slug>/` (entspricht den alten Wix-Adressen) |
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
 | `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink, `seite` (Knopf „Mehr erfahren“ statt Buchung) und `breit` (Karte über die ganze Zeile) |
+| `inhalt/seminar.json` | Nächster Seminartermin: Datum, Zeit, Ort, Plätze, Preis. Ist er vorbei oder leer, zeigt die Seite automatisch „Termin in Planung“ mit Anfrageformular |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
 | `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke – auch für Quests, damit sie zur Einstiegsfrage passen) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (nicht spontan: Gewohnheit wirkt erst über Wochen, z. B. feste Schlafenszeiten; Quest braucht Planung, z. B. Ausflug). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
@@ -72,9 +73,10 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Impressum und Datenschutz sind ausgefüllt (Stand Okt. 2026). Platzhalter `[[...]]` lässt `--streng` scheitern.
 - Preise: Nikolas ist kein Kleinunternehmer. Ob die Preise brutto sind, ist nicht geklärt – vor einer
   Preisänderung fragen und ggf. „inkl. MwSt.“ ergänzen (Preisangabenverordnung).
-- Zitate: Ist die Zuschreibung nicht wörtlich belegt (z. B. „Zwischen Reiz und Reaktion …“ bei Viktor Frankl,
-  „Das Geheimnis der Gesundheit …“ bei Buddha, „Solange du das Unbewusste …“ bei C. G. Jung), dann
-  „inspiriert von …“ schreiben, nie als wörtliches Zitat ausgeben.
+- Zitate: Belegte Zitate bevorzugen (z. B. Kabat-Zinn, „Wherever You Go, There You Are“; Epiktet, Handbüchlein
+  der Moral 5). Ist eine Zuschreibung nicht wörtlich belegt (z. B. „Zwischen Reiz und Reaktion …“ bei Viktor Frankl,
+  „Das Geheimnis der Gesundheit …“ bei Buddha, „Bis du das Unbewusste …“ bei C. G. Jung), dann „inspiriert durch …“
+  schreiben – sparsam, höchstens einmal pro Seite.
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
@@ -122,11 +124,14 @@ App-Dateien oder Daten ändern.
 
 ## Achtsamkeitsseminar (`/achtsamkeitsseminar/`)
 
-Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Verstehen, Bewusst handeln; Ablauf in fünf Schritten;
+Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln; Ablauf in fünf
+Schritten mit Minuten und „Methodik“ (MBSR, Body Scan, PMR nach Jacobson, ACT-Defusion, Wertespiel);
 Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer). Bilder `seminar-*` stammen aus
-dem PDF. Termin, Ort und Preis stehen bewusst auf „auf Anfrage“, bis Nikolas konkrete Daten nennt – dann im
-Abschnitt `#anmelden` und in `angebote.json` eintragen und nach dem Termin wieder entfernen.
-Format: ca. 2,5 Stunden mit Pause, kleine Gruppe, drinnen (keine Gehmeditation, kein Schweigeessen – wetter- bzw.
+dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Hinweis oben, Anmeldung `#anmelden`), Angebotskarte
+(`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
+Anmeldung: nur Vorname + E-Mail über Web3Forms; Nikolas nimmt 2–3 Anmeldungen mehr an als Plätze (Absagen-Puffer)
+und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026).
+Format: 150 Minuten mit Pause, kleine Gruppe, drinnen (keine Gehmeditation, kein Schweigeessen – wetter- bzw.
 zeitabhängig). Maslow: Mangelbedürfnisse lassen sich stillen, Selbstverwirklichung und Transzendenz sind Sehnsüchte,
 die nie ganz gestillt werden.
 

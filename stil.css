@@ -303,9 +303,19 @@ p { margin: 0 0 1em; }
 .ebene h3 { margin: 0.2rem 0 0.5rem; }
 .ablauf { list-style: none; counter-reset: schritt; padding: 0; margin: 0; }
 .ablauf li { counter-increment: schritt; display: grid; grid-template-columns: 2.6rem 1fr; gap: 0.2rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--linie); }
-.ablauf li::before { content: counter(schritt); grid-row: span 2; font: 500 1.8rem/1 var(--serif); color: var(--akzent); }
+.ablauf li::before { content: counter(schritt); grid-row: span 3; font: 500 1.8rem/1 var(--serif); color: var(--akzent); }
 .ablauf strong { font: 500 1.2rem/1.3 var(--serif); }
 .ablauf span { color: var(--leise); }
+.ablauf .minuten { font: 600 0.8rem/1 var(--sans); letter-spacing: 0.06em; color: var(--akzent); margin-left: 0.4rem; white-space: nowrap; }
+.ablauf .methodik { font-size: 0.92rem; margin-top: 0.3rem; }
+.ablauf .methodik b { color: var(--text); font-weight: 600; }
+.ablauf li.pause { counter-increment: none; padding-block: 0.6rem; }
+.ablauf li.pause::before { content: "☕"; font-size: 1.2rem; }
+.ablauf li.pause strong { font: 500 1rem/1.3 var(--sans); color: var(--leise); }
+.termin-hinweis { background: var(--flaeche); border-left: 3px solid var(--akzent-hell); border-radius: 0 var(--rund) var(--rund) 0; padding: 0.7rem 1rem; max-width: 34rem; }
+.termin-daten { list-style: none; padding: 0; margin: 0 0 1rem; }
+.termin-daten li { padding: 0.35rem 0; border-bottom: 1px solid var(--linie); }
+.kalender-block { margin-top: 1.2rem; padding: 1rem 1.2rem; background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); }
 .anleitung { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.3rem; }
 .anleitung > summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
 .anleitung[open] > summary { margin-bottom: 0.8rem; }

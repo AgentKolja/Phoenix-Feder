@@ -90,8 +90,24 @@ function server() {
   await p.goto(`${B}/book-online/`, { waitUntil: "load" });
   pruefe("Angebot enthält das Seminar", (await p.getAttribute('.angebot a[href*="achtsamkeitsseminar"]', "href")) !== null);
   await p.goto(`${B}/achtsamkeitsseminar/`, { waitUntil: "load" });
-  pruefe("Seminar-Seite mit vorausgewähltem Anliegen", (await p.textContent("h1")) === "Achtsamkeitsseminar"
-    && (await p.inputValue("select[name=Anliegen]")) === "Achtsamkeitsseminar");
+  pruefe("Seminar-Seite erreichbar", (await p.textContent("h1")) === "Achtsamkeitsseminar");
+  // Seminar-Anmeldung: Formular mit zwei Pflichtfeldern, danach Kalender-Knöpfe (Web3Forms wird im Test simuliert)
+  if (await p.$('form[data-danach="seminar-kalender"]')) {
+    const pflicht = await p.$$eval('form[data-danach] [required]', (l) => l.map((x) => x.name));
+    pruefe("Seminar-Anmeldung: nur Vorname und E-Mail sind Pflicht", pflicht.join(",") === "Vorname,email");
+    const ics = await p.evaluate(async () => (await fetch(document.querySelector('a[href$="termin.ics"]').href)).text());
+    pruefe("Kalenderdatei mit Erinnerung am Vortag", ics.includes("TRIGGER:-P1D") && ics.split("\r\n").every((z) => new TextEncoder().encode(z).length <= 75));
+    await p.route("https://api.web3forms.com/**", (route) => route.fulfill({ contentType: "application/json", body: '{"success":true}' }));
+    await p.fill('form[data-danach] [name="Vorname"]', "Test");
+    await p.fill('form[data-danach] [name="email"]', "test@example.org");
+    await p.click('form[data-danach] button[type="submit"]');
+    await p.waitForSelector("#seminar-kalender:not([hidden])", { timeout: 5000 }).catch(() => {});
+    pruefe("Nach der Anmeldung erscheinen die Kalender-Knöpfe", await p.isVisible("#seminar-kalender"));
+    await p.goto(`${B}/book-online/`, { waitUntil: "load" });
+    pruefe("Angebotskarte: „Platz sichern“ mit Termin", (await p.textContent('.angebot a[href*="achtsamkeitsseminar"]')).includes("Platz sichern"));
+  } else {
+    pruefe("Kein Seminartermin geplant: Anfrageformular statt Anmeldung", (await p.inputValue("#anmelden select[name=Anliegen]")) === "Achtsamkeitsseminar");
+  }
   await web.close();
 
   // ------------------------------------------------------------ App: Probier's heute

@@ -14,15 +14,17 @@ import math
 import re
 import shutil
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from email.utils import format_datetime
 from pathlib import Path
 from urllib.parse import quote, urlencode
+from zoneinfo import ZoneInfo
 
 WURZEL = Path(__file__).resolve().parent
 INHALT = WURZEL / "inhalt"
 AUSGABE = WURZEL / "docs"
 E = json.loads((WURZEL / "einstellungen.json").read_text(encoding="utf-8"))
+WOCHENTAGE = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
 MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
           "September", "Oktober", "November", "Dezember"]
 PLATZHALTER = re.compile(r"\[\[(.+?)\]\]")
@@ -50,6 +52,8 @@ for _u in UEBUNGEN:
     for _s in _u["statt"]:
         if _s not in UEBUNG or not UEBUNG[_s]["heute"] or UEBUNG[_s]["monate"]:
             raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
+# Nächster Seminartermin (leer oder vorbei -> Seite zeigt automatisch „Termin in Planung“)
+SEMINAR = json.loads((INHALT / "seminar.json").read_text(encoding="utf-8"))
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 # Einstiegsfrage „Woran möchtest du arbeiten?“ (Seite /gewohnheiten/ und App)
 RICHTUNGEN = [{"slug": b["slug"], "emoji": b["emoji"], "titel": b["titel"], "text": b["text"]} for b in BEREICHE] + [
@@ -399,10 +403,16 @@ def angebote_html():
     angebote = json.loads((INHALT / "angebote.json").read_text(encoding="utf-8"))
     teile = []
     for an in angebote:
+        if an.get("seminar"):
+            t = seminar_termin()
+            an = {**an, "dauer": f"{t['tag_kurz']} · {an['dauer']}" if t else an["dauer"],
+                  "preis": SEMINAR["preis"] if t else "auf Anfrage"}
         klasse = "angebot" + (" hervorgehoben" if an.get("hervorheben") else "") + (" breit" if an.get("breit") else "")
         bild_html = bild(an["bild"], an["titel"], "angebot-bild", "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
         knopf = "Mehr erfahren" if an.get("seite") else "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
         ziel = an.get("seite") or buchung(an.get("buchung"))
+        if an.get("seminar") and seminar_termin():
+            knopf, ziel = "Platz sichern", an["seite"] + "#anmelden"
         teile.append(f"""<article class="{klasse}">
   {bild_html}
   <div class="angebot-text">
@@ -449,6 +459,120 @@ def kontakt_html(vorauswahl=""):
 <script src="/kontakt.js" defer></script>"""
 
 
+# ---------------------------------------------------------------- Seminar
+
+def seminar_termin():
+    """Der nächste Termin mit fertigen Texten – oder None, wenn keiner geplant oder er vorbei ist."""
+    if not SEMINAR.get("datum"):
+        return None
+    tag = date.fromisoformat(SEMINAR["datum"])
+    if tag < date.today():
+        return None
+    zone = ZoneInfo("Europe/Berlin")
+    start = datetime.fromisoformat(f"{SEMINAR['datum']}T{SEMINAR['beginn']}").replace(tzinfo=zone)
+    ende = datetime.fromisoformat(f"{SEMINAR['datum']}T{SEMINAR['ende']}").replace(tzinfo=zone)
+    utc = lambda d: d.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    zeit = f"{SEMINAR['beginn']}–{SEMINAR['ende']} Uhr"
+    return {**SEMINAR, "start": utc(start), "ende_utc": utc(ende), "zeit": zeit,
+            "tag_lang": f"{WOCHENTAGE[tag.weekday()]}, {datum_de(SEMINAR['datum'])}",
+            "tag_kurz": f"{WOCHENTAGE[tag.weekday()][:2]} {tag.day}.{tag.month}."}
+
+
+def ics_falten(zeile):
+    """Zeilen in Kalenderdateien nach 75 Bytes umbrechen (RFC 5545), ohne UTF-8-Zeichen zu teilen."""
+    teile, aktuell = [], ""
+    for zeichen in zeile:
+        if len((aktuell + zeichen).encode("utf-8")) > (75 if not teile else 74):
+            teile.append(aktuell)
+            aktuell = ""
+        aktuell += zeichen
+    return "\r\n ".join(teile + [aktuell])
+
+
+def seminar_ics(t):
+    """Kalenderdatei mit Erinnerung am Vortag und zwei Stunden vorher."""
+    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} "
+            f"{E['domain']}/achtsamkeitsseminar/").replace(",", "\\,").replace(";", "\\;")
+    zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Seminar//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+              "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{t['start']}",
+              f"DTSTART:{t['start']}", f"DTEND:{t['ende_utc']}", "SUMMARY:Achtsamkeitsseminar (Pilot)",
+              f"LOCATION:{t['ort'].replace(',', chr(92) + ',')}", f"DESCRIPTION:{text}", f"URL:{E['domain']}/achtsamkeitsseminar/"]
+    for vorher in ("-P1D", "-PT2H"):
+        zeilen += ["BEGIN:VALARM", f"TRIGGER:{vorher}", "ACTION:DISPLAY", "DESCRIPTION:Achtsamkeitsseminar", "END:VALARM"]
+    return "\r\n".join(ics_falten(z) for z in zeilen + ["END:VEVENT", "END:VCALENDAR", ""])
+
+
+def seminar_kalender_html(t, versteckt=False):
+    google = "https://calendar.google.com/calendar/render?" + urlencode({
+        "action": "TEMPLATE", "text": "Achtsamkeitsseminar (Pilot)", "dates": f"{t['start']}/{t['ende_utc']}",
+        "location": t["ort"], "details": f"{t['ort_hinweis']} {E['domain']}/achtsamkeitsseminar/"})
+    return f"""<div class="kalender-block" id="seminar-kalender"{" hidden" if versteckt else ""}>
+  <p><strong>Trag dir den Termin gleich ein</strong> – mit Erinnerung am Vortag:</p>
+  <div class="knopf-reihe">
+    <a class="knopf zweit klein-knopf" href="{esc(google)}" target="_blank" rel="noopener">Google Kalender</a>
+    <a class="knopf zweit klein-knopf" href="/achtsamkeitsseminar/termin.ics" download>Apple, Outlook &amp; Co.</a>
+  </div>
+</div>"""
+
+
+def seminar_anmeldung_html():
+    t = seminar_termin()
+    if not t or not E["formular_schluessel"]:
+        return f"""<div>
+      <p class="oberzeile">Termine</p>
+      <h2>Beim nächsten Seminar dabei sein</h2>
+      <p>Das Seminar dauert etwa zweieinhalb Stunden, mit Pause, in einer kleinen Gruppe. Der nächste Termin ist in Planung: Schreib mir unverbindlich, dann erfährst du ihn als Erste:r.</p>
+      <p>Du möchtest das Seminar für dein Studio, deine Gruppe oder dein Team anfragen? Auch dann freue ich mich über deine Nachricht.</p>
+    </div>
+    {kontakt_html("Achtsamkeitsseminar")}"""
+    betreff = f"Anmeldung Achtsamkeitsseminar {t['tag_lang']}"
+    return f"""<div>
+      <p class="oberzeile">Pilot-Termin</p>
+      <h2>{esc(t['tag_lang'])}</h2>
+      <ul class="termin-daten">
+        <li><strong>Zeit:</strong> {esc(t['zeit'])} (150 Minuten mit Pause)</li>
+        <li><strong>Ort:</strong> {esc(t['ort'])} – {esc(t['ort_hinweis'])}</li>
+        <li><strong>Plätze:</strong> {t['plaetze']}</li>
+        <li><strong>Preis:</strong> {esc(t['preis_hinweis'])}</li>
+      </ul>
+      <p class="klein">Du kannst nicht? Sag kurz Bescheid, dann rückt jemand nach. Du möchtest das Seminar für dein Studio, deine Gruppe oder dein Team anfragen? Schreib mir über das <a href="/#kontakt">Kontaktformular</a>.</p>
+    </div>
+    <div>
+      <form class="formular" action="https://api.web3forms.com/submit" method="POST" data-kontakt
+            data-erfolg="Danke, du bist angemeldet! Ich schicke dir am Vortag eine kurze Erinnerung." data-danach="seminar-kalender">
+        <input type="hidden" name="access_key" value="{esc(E['formular_schluessel'])}">
+        <input type="hidden" name="subject" value="{esc(betreff)}">
+        <input type="hidden" name="from_name" value="phoenix-feder.de">
+        <input type="hidden" name="Anliegen" value="{esc(betreff)}">
+        <input type="hidden" name="redirect" value="{E['domain']}/angemeldet/">
+        <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="felder">
+          <label><span>Vorname <span aria-hidden="true">*</span></span><input name="Vorname" required autocomplete="given-name"></label>
+          <label><span>E-Mail <span aria-hidden="true">*</span></span><input type="email" name="email" required autocomplete="email"></label>
+        </div>
+        <label><span>Magst du mir vorab etwas mitgeben? (freiwillig)</span><textarea name="message" rows="2"></textarea></label>
+        <p class="klein">Deine Angaben nutze ich nur für dieses Seminar (Bestätigung, Erinnerung, Rückfragen). Mehr in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <button class="knopf" type="submit">Kostenlos anmelden</button>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+      {seminar_kalender_html(t, versteckt=True)}
+    </div>
+    <script src="/kontakt.js" defer></script>"""
+
+
+def seminar_hinweis_html():
+    t = seminar_termin()
+    return (f'<p class="termin-hinweis"><strong>Pilot: {esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> · {esc(t["ort"])} · {esc(t["preis"])}</p>'
+            if t else "")
+
+
+def seminar_kalender_seite():
+    t = seminar_termin()
+    if not t:
+        return '<p>Danke für deine Anmeldung! Ich melde mich mit allen Infos bei dir.</p>'
+    return f'<p>Danke, du bist für <strong>{esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> angemeldet. Ich schicke dir am Vortag eine kurze Erinnerung.</p>\n' + seminar_kalender_html(t)
+
+
 def bausteine_einsetzen(text, artikel):
     text = re.sub(r"<!--.*?-->\s*", "", text, flags=re.S)  # Notizen in Inhaltsdateien bleiben intern
     ersatz = {
@@ -460,6 +584,9 @@ def bausteine_einsetzen(text, artikel):
         "{{themen_chips}}": lambda: themen_chips(None),
         "{{uebungen}}": uebungen_html,
         "{{richtungen}}": richtungen_html,
+        "{{seminar_anmeldung}}": seminar_anmeldung_html,
+        "{{seminar_kalender}}": seminar_kalender_seite,
+        "{{seminar_hinweis}}": seminar_hinweis_html,
         "{{habitica_url}}": lambda: esc(E["habitica_challenge"]),
         "{{buchung_url}}": lambda: esc(buchung()),
         "{{name}}": lambda: esc(E["name"]),
@@ -716,6 +843,8 @@ def main():
     shutil.copytree(WURZEL / "schriften", AUSGABE / "schriften")
     shutil.copytree(WURZEL / "bilder", AUSGABE / "bilder")
     app_bauen()
+    if seminar_termin():
+        (AUSGABE / "achtsamkeitsseminar" / "termin.ics").write_text(seminar_ics(seminar_termin()), encoding="utf-8", newline="")
 
     fehler, platzhalter = pruefen()
     ungenutzt = ungenutzte_bilder()

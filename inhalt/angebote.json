@@ -36,9 +36,10 @@
     "titel": "Achtsamkeitsseminar",
     "dauer": "2,5 Std.",
     "preis": "auf Anfrage",
-    "text": "Wahrnehmen, verstehen, bewusst handeln: drei Ebenen der Achtsamkeit mit praktischen Übungen und Austausch in der Gruppe.",
+    "text": "Wahrnehmen, dich selbst verstehen, bewusst handeln: drei Ebenen der Achtsamkeit in 150 Minuten – mit Übungen und Austausch in der Gruppe.",
     "bild": "seminar-meditation",
     "seite": "/achtsamkeitsseminar/",
-    "breit": true
+    "breit": true,
+    "seminar": true
   }
 ]
