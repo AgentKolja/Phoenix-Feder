@@ -254,6 +254,11 @@ function hinweisKarten() {
     karten.push(`<div class="karte-app hinweis-karte"><p><strong>Neue Woche, frischer Start 🌱</strong> Passt deine Auswahl noch zu dir? Zu leicht oder zu schwer – nimm etwas dazu oder weg.</p>
       <div class="knopf-reihe"><a class="knopf klein-knopf" href="#entdecken">Anpassen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Passt so</button></div></div>`);
   }
+  const iosBrowser = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone;
+  if (iosBrowser && !Z.hinweise.ios) {
+    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Tipp fürs iPhone:</strong> Leg die App auf deinen Home-Bildschirm (Teilen → „Zum Home-Bildschirm“). Sonst kann Safari deine Einträge löschen, wenn du die Seite eine Woche nicht öffnest.</p>
+      <button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="ios">Verstanden</button></div>`);
+  }
   const faellig = automatikFaellig();
   if (faellig) {
     const u = info(faellig.slug);
