@@ -491,8 +491,8 @@ def ics_falten(zeile):
 
 def seminar_ics(t):
     """Kalenderdatei mit Erinnerung am Vortag und zwei Stunden vorher."""
-    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} "
-            f"{E['domain']}/achtsamkeitsseminar/").replace(",", "\\,").replace(";", "\\;")
+    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} ".replace("  ", " ")
+            + f"{E['domain']}/achtsamkeitsseminar/").replace(",", "\\,").replace(";", "\\;")
     zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Seminar//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
               "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{t['start']}",
               f"DTSTART:{t['start']}", f"DTEND:{t['ende_utc']}", "SUMMARY:Achtsamkeitsseminar (Pilot)",
@@ -505,7 +505,7 @@ def seminar_ics(t):
 def seminar_kalender_html(t, versteckt=False):
     google = "https://calendar.google.com/calendar/render?" + urlencode({
         "action": "TEMPLATE", "text": "Achtsamkeitsseminar (Pilot)", "dates": f"{t['start']}/{t['ende_utc']}",
-        "location": t["ort"], "details": f"{t['ort_hinweis']} {E['domain']}/achtsamkeitsseminar/"})
+        "location": t["ort"], "details": f"{t['ort_hinweis']} {E['domain']}/achtsamkeitsseminar/".strip()})
     return f"""<div class="kalender-block" id="seminar-kalender"{" hidden" if versteckt else ""}>
   <p><strong>Trag dir den Termin gleich ein</strong> – mit Erinnerung am Vortag:</p>
   <div class="knopf-reihe">
@@ -531,7 +531,7 @@ def seminar_anmeldung_html():
       <h2>{esc(t['tag_lang'])}</h2>
       <ul class="termin-daten">
         <li><strong>Zeit:</strong> {esc(t['zeit'])} (150 Minuten mit Pause)</li>
-        <li><strong>Ort:</strong> {esc(t['ort'])} – {esc(t['ort_hinweis'])}</li>
+        <li><strong>Ort:</strong> {esc(t['ort'])}{" – " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
         <li><strong>Plätze:</strong> {t['plaetze']}</li>
         <li><strong>Preis:</strong> {esc(t['preis_hinweis'])}</li>
       </ul>
@@ -562,7 +562,7 @@ def seminar_anmeldung_html():
 
 def seminar_hinweis_html():
     t = seminar_termin()
-    return (f'<p class="termin-hinweis"><strong>Pilot: {esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> · {esc(t["ort"])} · {esc(t["preis"])}</p>'
+    return (f'<p class="termin-hinweis"><strong>Pilot: {esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> · {esc(t["ort"].split(",")[0])} · {esc(t["preis"])}</p>'
             if t else "")
 
 

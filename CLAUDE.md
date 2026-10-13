@@ -130,7 +130,8 @@ Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer).
 dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Hinweis oben, Anmeldung `#anmelden`), Angebotskarte
 (`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
 Anmeldung: nur Vorname + E-Mail über Web3Forms; Nikolas nimmt 2–3 Anmeldungen mehr an als Plätze (Absagen-Puffer)
-und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026).
+und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026), Ort Warung Yoga Aachen. Seminar-Leitfaden mit Kursplan, Materialliste
+und Druckvorlagen liegt als Claude-Doc bei Nikolas (nicht im Repo).
 Format: 150 Minuten mit Pause, kleine Gruppe, drinnen (keine Gehmeditation, kein Schweigeessen – wetter- bzw.
 zeitabhängig). Maslow: Mangelbedürfnisse lassen sich stillen, Selbstverwirklichung und Transzendenz sind Sehnsüchte,
 die nie ganz gestillt werden.
