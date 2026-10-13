@@ -76,6 +76,13 @@ function server() {
   const impulsTitel = [await p.textContent('[data-feld="titel"]')];
   for (let i = 0; i < 3; i++) { await p.reload({ waitUntil: "load" }); impulsTitel.push(await p.textContent('[data-feld="titel"]')); }
   pruefe("Impuls: bei jedem Laden ein anderer", impulsTitel.every((t, i) => i === 0 || t !== impulsTitel[i - 1]), impulsTitel.join(" → "));
+  const infoLink = await p.getAttribute('[data-feld="info"]', "href");
+  const impulsJetzt = await p.textContent('[data-feld="titel"]');
+  await p.click('[data-feld="info"]');
+  await p.waitForLoadState("load");
+  pruefe("Impuls „Mehr dazu“ führt zur Info-Seite genau dieser Idee", (await p.textContent("h1")).includes(impulsJetzt)
+    && Boolean(await p.$('.idee-heute a[href*="app/#idee="]')) && Boolean(await p.$(".idee-text p, .idee-text li")), infoLink);
+  await p.goto(`${B}/`, { waitUntil: "load" });
   const impulse = JSON.parse(roh.match(/id="impuls-daten">([^<]*)</)[1]).map((x) => x.s);
   pruefe("Impuls schlägt nur Ideen für heute vor", !impulse.some((s) => NICHT_HEUTE.includes(s)));
   pruefe("Startseite ohne Rollenspiel-Kasten, mit „Über mich“", !(await p.$(".habitica")) && Boolean(await p.$("#ueber-mich")));
@@ -173,9 +180,12 @@ function server() {
   pruefe("Link #bereich=erlebnis zeigt nur Quests", erlebnisse.length > 5 && await p.evaluate((l) => l.every((s) => U[s].art === "quest"), erlebnisse));
 
   await p.click('[data-aktion="idee-zeigen"]');
+  pruefe("Zwei Wege zum Dranbleiben: Kalender ohne App oder App mit Hinweis aufs Gerät",
+    (await p.textContent(".optionen")).includes("Ohne App") && (await p.textContent(".optionen")).includes("nur auf diesem Gerät"));
   await p.click('[data-aktion="laenger"]');
   await p.waitForTimeout(200);
   pruefe("„Länger ausprobieren“ öffnet „Heute“ mit Menüleiste", (await p.evaluate(() => ansicht)) === "heute" && await p.isVisible(".app-navi"));
+  pruefe("Danach: Hinweis, die App auf den Startbildschirm zu legen", (await p.textContent(".hinweis-karte")).includes("Startbildschirm"));
   pruefe("„Heute“ legt nichts ungefragt an: keine festen Täglich-Punkte, Abendreflexion nur als Angebot",
     !(await p.$('[data-slug="bewegung"]')) && !(await p.$('.punkt-text[data-aktion="reflexion"]')) && Boolean(await p.$('[data-aktion="reflexion-wahl"]')));
   // ohne aktive Quest, sonst zeigt questKarte() nur diese und schlägt nichts vor

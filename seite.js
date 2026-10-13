@@ -18,6 +18,7 @@
     const liste = JSON.parse(daten.textContent).filter((u) => !u.m || u.m.includes(monat));
     const feld = (name) => karte.querySelector(`[data-feld="${name}"]`);
     const appBasis = feld("app").getAttribute("href").split("#")[0];
+    const infoBasis = feld("info").getAttribute("href").replace(/[^/]+\/$/, "");
     const LETZTER = "phoenix-feder-impuls";
     const zufallOhne = (slug) => {
       const auswahl = liste.length > 1 ? liste.filter((u) => u.s !== slug) : liste;
@@ -31,6 +32,7 @@
       feld("titel").textContent = u.t;
       feld("kurz").textContent = u.k;
       feld("app").setAttribute("href", `${appBasis}#idee=${u.s}`);
+      feld("info").setAttribute("href", `${infoBasis}${u.s}/`);
       speicher.schreiben(LETZTER, u.s);
     };
     zeigen();

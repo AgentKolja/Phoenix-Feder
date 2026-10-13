@@ -343,13 +343,14 @@ function ansichtProbieren() {
     <div class="knopf-reihe">
       ${!abhaken ? "" : geschafft ? `<span class="marke-app geschafft-marke">✓ ${u.art === "quest" ? "Geschafft" : "Heute ausprobiert"}</span>` : `<button class="knopf" data-aktion="ausprobiert">✓ ${heute ? "Hab ich ausprobiert" : "Hab ich gemacht"}</button>`}
     </div>
-    <details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div></details>
+    <details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div>
+      <p><a href="../gewohnheiten/${esc(idee)}/">Alles dazu auf einer Seite →</a></p></details>
   </div>
 </section>
 ${!saison ? "" : `<section class="optionen">
-  <h2>Gefällt dir die Idee?</h2>
+  <h2>Gefällt dir die Idee? Zwei Wege, dranzubleiben</h2>
   <details class="option">
-    <summary><span class="option-emoji" aria-hidden="true">📅</span><span><strong>Erinnerung in deinen Kalender eintragen</strong><span class="klein">Einmal oder zwei Wochen lang täglich – ganz ohne App.</span></span></summary>
+    <summary><span class="option-emoji" aria-hidden="true">📅</span><span><strong>Ohne App: Erinnerung im Kalender</strong><span class="klein">Einmal oder zwei Wochen lang täglich – dein Kalender erinnert dich.</span></span></summary>
     <p class="schritt">1 · Wann?</p>
     <div class="chips-app">${ZEITEN.map(([z, t]) => `<button data-aktion="kal-zeit" data-wert="${z}" aria-pressed="${kalZeit === z}">${t} · ${z.replace(":", ".")}</button>`).join("")}</div>
     <p class="schritt">2 · Wie oft?</p>
@@ -358,9 +359,11 @@ ${!saison ? "" : `<section class="optionen">
     ${kalenderAktion(googleKalender(ideeTermin(idee)), "ics-idee")}
   </details>
   <div class="option">
-    <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Länger ausprobieren</strong><span class="klein">Täglich kurz abhaken und sehen, was dir wirklich hilft.</span></span></div>
+    <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Mit der App: täglich abhaken</strong><span class="klein">Abhaken, abends kurz zurückschauen und sehen, was dir wirklich hilft – persönlich für dich.</span></span></div>
+    ${speicherFehlt ? '<p class="klein">In diesem Fenster kann die App nichts speichern (privates Fenster?). Öffne sie in einem normalen Browserfenster, um dranzubleiben.</p>'
+      : `<p class="klein">Ohne Konto: Deine Einträge bleiben nur auf diesem Gerät. Am besten legst du die App danach auf deinen Startbildschirm – dann ist sie mit einem Tipp da${alsAppGestartet() ? "" : " und deine Einträge sind sicher"}.</p>
     <div class="knopf-reihe"><button class="knopf zweit" data-aktion="laenger">${dabei ? "Zu meinen Routinen" : u.art === "quest" ? "Als Quest starten" : "In meine Routinen"}</button>
-    ${routineModus() ? "" : '<a class="link-knopf" href="#start">eigene Auswahl zusammenstellen</a>'}</div>
+    ${routineModus() ? "" : '<a class="link-knopf" href="#start">eigene Auswahl zusammenstellen</a>'}</div>`}
   </div>
 </section>`}
 ${fussZeile}`;
@@ -434,10 +437,11 @@ function punktZeile(slug, d, anker = "") {
 // Höchstens ein Hinweis auf einmal – der wichtigste zuerst
 function hinweisKarten() {
   const heute = tag();
-  const iosBrowser = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone;
-  if (iosBrowser && !Z.hinweise.ios) {
-    return `<div class="karte-app hinweis-karte"><p><strong>Tipp fürs iPhone:</strong> Leg die App auf deinen Home-Bildschirm (Teilen → „Zum Home-Bildschirm“). Sonst kann Safari deine Einträge löschen, wenn du die Seite eine Woche nicht öffnest. Wie du bisherige Einträge mitnimmst, steht unter <a href="#mehr">Mehr</a>.</p>
-      <button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="ios">Verstanden</button></div>`;
+  // Wer dranbleiben will, braucht die App griffbereit – und auf dem iPhone ist sie dort auch vor dem Löschen sicher
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (!alsAppGestartet() && (!Z.hinweise.app || tageZwischen(Z.hinweise.app, heute) >= 7)) {
+    return `<div class="karte-app hinweis-karte"><p><strong>Damit du dranbleibst:</strong> Leg die App auf deinen Startbildschirm. Dann ist sie mit einem Tipp da${ios ? " – und Safari kann deine Einträge nicht mehr löschen, wenn du die Seite eine Woche nicht öffnest" : ""}.</p>
+      <div class="knopf-reihe">${installEreignis ? '<button class="knopf klein-knopf" data-aktion="installieren">📲 Jetzt installieren</button>' : '<a class="knopf klein-knopf" href="#mehr">So geht’s</a>'}<button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="app">Später</button></div></div>`;
   }
   const faellig = automatikFaellig();
   if (faellig) {
@@ -1185,7 +1189,7 @@ addEventListener("storage", (ereignis) => {
 addEventListener("beforeinstallprompt", (ereignis) => {
   ereignis.preventDefault();
   installEreignis = ereignis;
-  if (ansicht === "mehr") render();
+  if (ansicht === "mehr" || ansicht === "heute") render();
 });
 addEventListener("appinstalled", () => toast("Installiert! Du findest „Probier’s heute“ jetzt bei deinen Apps. 🪶"));
 

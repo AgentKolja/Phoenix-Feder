@@ -321,9 +321,55 @@ def text_html(text):
 
 
 def app_link_text(u):
-    if u["heute"] and not u["monate"]:
-        return "Heute ausprobieren"
-    return "Länger ausprobieren" if u["art"] == "gewohnheit" else "In der App ansehen"
+    return "Heute ausprobieren" if u["heute"] and not u["monate"] else "In der App ansehen"
+
+
+def monate_text(monate):
+    return f"{MONATE[min(monate) - 1]} bis {MONATE[max(monate) - 1]}"
+
+
+def idee_seite(u, artikel):
+    """Eigene Seite je Idee (/gewohnheiten/<slug>/): Ziel für „Mehr dazu“ vom Impuls und für Links von außen."""
+    bereich = next((b for b in BEREICHE if b["slug"] == u["bereich"]), None)
+    art = ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else f" · {bereich['emoji']} {bereich['titel']}" if bereich else "")
+    if u["heute"]:
+        kopf, text = "So probierst du es heute aus", u["heute"]
+        if u["monate"]:
+            text += f" Passt am besten von {monate_text(u['monate'])}."
+    elif u["art"] == "quest":
+        kopf, text = "Braucht etwas Planung", "Nimm es dir für einen passenden Tag vor – am besten gleich mit Termin im Kalender."
+    else:
+        kopf, text = "Braucht etwas Zeit", "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit täglicher Erinnerung."
+    statt = "".join(f'<li><a href="/gewohnheiten/{x}/">{UEBUNG[x]["emoji"]} {esc(UEBUNG[x]["titel"])}</a></li>' for x in u["statt"])
+    statt = f'<p class="klein">Für heute passt stattdessen:</p><ul class="ideen-links">{statt}</ul>' if statt else ""
+    lesen_ = [a for a in artikel if a.get("passend") == u["slug"]]
+    lesen_ = f'<h2>Dazu lesen</h2>{raster(lesen_)}' if lesen_ else ""
+    verwandt = [x for x in UEBUNGEN if x["slug"] != u["slug"] and x["slug"] != "reflektion" and (
+        x["gruppe"] == u["gruppe"] if u["art"] == "quest" else x["art"] != "quest" and x["bereich"] == u["bereich"])][:6]
+    verwandt_html = "".join(f'<li><a href="/gewohnheiten/{x["slug"]}/">{x["emoji"]} {esc(x["titel"])}</a> – {esc(x["erklaerung"])}</li>'
+                            for x in verwandt)
+    titel_verwandt = f"Mehr aus „{u['gruppe']}“" if u["art"] == "quest" else f"Mehr aus „{bereich['titel']}“" if bereich else "Mehr Ideen"
+    inhalt = f"""<section class="abschnitt">
+  <div class="huelle-schmal idee-seite">
+    <p class="zurueck"><a href="/gewohnheiten/">← Alle Ideen</a></p>
+    <p class="oberzeile">{esc(art)}</p>
+    <h1><span aria-hidden="true">{u['emoji']}</span> {esc(u['titel'])}</h1>
+    <p class="gross">{esc(u['erklaerung'])}</p>
+    <aside class="idee-heute">
+      <p class="essenz-titel">{kopf}</p>
+      <p>{esc(text)}</p>
+      {statt}
+      <div class="knopf-reihe"><a class="knopf" href="/app/#idee={u['slug']}">In der App ausprobieren</a></div>
+      <p class="klein">Abhaken, Kalender-Erinnerung oder länger dranbleiben – ohne Anmeldung, alles bleibt auf deinem Gerät.</p>
+    </aside>
+    <h2>Ideen und Hintergrund</h2>
+    <div class="idee-text">{text_html(u['text'])}</div>
+    {lesen_}
+    {f'<h2>{esc(titel_verwandt)}</h2><ul class="ideen-links">{verwandt_html}</ul>' if verwandt else ""}
+  </div>
+</section>"""
+    beschreibung = u["erklaerung"] + (f" Für heute: {u['heute']}" if u["heute"] else "")
+    return seite(u["titel"], beschreibung, f"/gewohnheiten/{u['slug']}/", inhalt)
 
 
 def uebung_karte(u):
@@ -390,6 +436,7 @@ def impuls_html():
   <div class="impuls-emoji" data-feld="emoji" aria-hidden="true">{d['e']}</div>
   <h3 data-feld="titel">{esc(d['t'])}</h3>
   <p data-feld="kurz">{esc(d['k'])}</p>
+  <p class="impuls-mehr"><a data-feld="info" href="/gewohnheiten/{d['s']}/">Mehr dazu: Ideen und Hintergrund →</a></p>
   <div class="knopf-reihe">
     <a class="knopf" data-feld="app" href="/app/#idee={d['s']}">Heute ausprobieren</a>
     <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
@@ -863,6 +910,10 @@ def main():
     for a in artikel:
         schreiben(f"/post/{a['slug']}/", artikel_seite(a, artikel))
         urls.append((f"/post/{a['slug']}/", a["datum"]))
+
+    for u in UEBUNGEN:
+        schreiben(f"/gewohnheiten/{u['slug']}/", idee_seite(u, artikel))
+        urls.append((f"/gewohnheiten/{u['slug']}/", None))
 
     for t in THEMEN:
         schreiben(f"/thema/{t['slug']}/", thema_seite(t, artikel))

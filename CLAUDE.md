@@ -121,6 +121,12 @@ App-Dateien oder Daten ändern.
 - „Probier’s heute“ und der Impuls auf der Startseite zeigen nur, was heute geht (`heute`, passender Monat).
   Der Impuls wechselt bei jedem Laden (nie zweimal derselbe hintereinander, `localStorage["phoenix-feder-impuls"]`). Die Wochen-Quest filtert nur nach Monat: Quests mit Planung (Ausflug, Lazy Day) passen in eine Woche. Andere Ideen sind per Link erreichbar und zeigen „Braucht etwas Zeit“ (Gewohnheit),
   „Braucht etwas Planung“ (Quest, abhakbar) oder „Gerade nicht die Jahreszeit“ (ohne Kalender-Optionen) plus `statt`.
+- Jede Idee hat eine eigene Info-Seite `/gewohnheiten/<slug>/` (`idee_seite()` in bauen.py: Für heute / Braucht Zeit
+  oder Planung, Knopf in die App, Ideen und Hintergrund, passende Artikel, mehr aus dem Bereich). Der Impuls auf der
+  Startseite verlinkt „Mehr dazu“ dorthin; die App unter „Ideen und Hintergrund“ ebenso.
+- „Länger dranbleiben“ gibt es in zwei Wegen: ohne App per Kalender-Erinnerung oder mit der App (persönlich, Einträge nur
+  auf diesem Gerät). Danach rät „Heute“ wöchentlich, die App auf den Startbildschirm zu legen (`Z.hinweise.app`), bis
+  sie installiert läuft. Im privaten Fenster gibt es den App-Weg nicht (`speicherFehlt`).
 - Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee (legt nichts an; alte `#neu=`-Links
   ebenso), `/app/#bereich=<slug>` beantwortet die erste Frage (`ruhe`, `koerper`, …, `alle`); `erlebnis` beantwortet beide (alle Bereiche, Quests).
 - Sicherungsdatei und Übertragungslink kommen von außen: `bereinigen()` übernimmt nur bekannte Felder in der

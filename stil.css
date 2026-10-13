@@ -246,6 +246,19 @@ p { margin: 0 0 1em; }
 .impuls-emoji { font-size: 2.6rem; line-height: 1; margin: 0.4rem 0 0.8rem; }
 .impuls h3 { font-size: 1.7rem; }
 .impuls .knopf-reihe { margin-top: 1.2rem; }
+.impuls-mehr { margin: 0.6rem 0 0; font-size: 0.95rem; }
+/* Eigene Seite je Idee (/gewohnheiten/<slug>/) */
+.idee-seite h1 { margin-bottom: 0.4em; }
+.idee-seite p.gross { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--leise); }
+.idee-seite .zurueck { margin-bottom: 1.5rem; font-size: 0.95rem; }
+.idee-heute { background: var(--flaeche); border-left: 3px solid var(--akzent-hell); border-radius: 0 var(--rund) var(--rund) 0; padding: 1.2rem 1.4rem; margin: 1.8rem 0 2.5rem; }
+.idee-heute p { margin-bottom: 0.6rem; }
+.idee-heute .knopf-reihe { margin-top: 1rem; }
+.idee-heute .klein { margin: 0.8rem 0 0; }
+.idee-text { overflow-wrap: anywhere; }
+.idee-text ul { padding-left: 1.2rem; }
+.ideen-links { padding-left: 1.2rem; }
+.ideen-links li { margin-bottom: 0.45rem; }
 .blaettern { animation: blaettern 0.35s ease; }
 @keyframes blaettern { from { opacity: 0.2; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
