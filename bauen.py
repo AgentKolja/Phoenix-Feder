@@ -491,7 +491,8 @@ def ics_falten(zeile):
 
 def seminar_ics(t):
     """Kalenderdatei mit Erinnerung am Vortag und zwei Stunden vorher."""
-    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} ".replace("  ", " ")
+    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} "
+            f"{('Mitbringen: ' + t['mitbringen']) if t.get('mitbringen') else ''} ".replace("  ", " ")
             + f"{E['domain']}/achtsamkeitsseminar/").replace(",", "\\,").replace(";", "\\;")
     zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Seminar//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
               "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{t['start']}",
@@ -532,6 +533,7 @@ def seminar_anmeldung_html():
       <ul class="termin-daten">
         <li><strong>Zeit:</strong> {esc(t['zeit'])} (150 Minuten mit Pause)</li>
         <li><strong>Ort:</strong> {esc(t['ort'])}{" – " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
+        {f"<li><strong>Mitbringen:</strong> {esc(t['mitbringen'])}</li>" if t.get('mitbringen') else ""}
         <li><strong>Plätze:</strong> {t['plaetze']}</li>
         <li><strong>Preis:</strong> {esc(t['preis_hinweis'])}</li>
       </ul>
