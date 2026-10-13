@@ -3,7 +3,7 @@
     "titel": "Kostenloses Erstgespräch",
     "dauer": "30 Min.",
     "preis": "kostenlos",
-    "text": "Wir lernen uns kennen, schauen auf dein Anliegen und klären, ob und wie ich dich begleiten kann.",
+    "text": "Persönliches Coaching und Achtsamkeit, ganz auf dich zugeschnitten: für ein erfüllteres Leben oder für die Themen, die dich gerade bewegen. Wir lernen uns kennen und klären, wie ich dich begleiten kann.",
     "bild": "",
     "buchung": "",
     "hervorheben": true
@@ -22,6 +22,7 @@
     "preis": "15 €",
     "text": "Finde durch Meditation und Atemübungen zu einem bewussteren Leben.",
     "bild": "achtsamkeit",
+    "bild_fokus": "oben",
     "buchung": ""
   },
   {

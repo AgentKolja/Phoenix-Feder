@@ -456,7 +456,9 @@ def angebote_html():
             an = {**an, "dauer": f"{t['tag_kurz']} · {an['dauer']}" if t else an["dauer"],
                   "preis": SEMINAR["preis"] if t else an.get("preis", "auf Anfrage")}
         klasse = "angebot" + (" hervorgehoben" if an.get("hervorheben") else "") + (" breit" if an.get("breit") else "")
-        bild_html = bild(an["bild"], an["titel"], "angebot-bild", "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
+        # bild_fokus: welcher Teil eines Hochformats im Querformat-Ausschnitt sichtbar bleibt (z. B. "oben" fürs Gesicht)
+        fokus = f" fokus-{an['bild_fokus']}" if an.get("bild_fokus") else ""
+        bild_html = bild(an["bild"], an["titel"], "angebot-bild" + fokus, "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
         knopf = "Mehr erfahren" if an.get("seite") else "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
         ziel = an.get("seite") or buchung(an.get("buchung"))
         if an.get("seminar") and seminar_termin():
