@@ -63,8 +63,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
-- Gesundheitsaussagen nur ohne erfundene Zahlen: Studienangaben mit Prozenten nicht übernehmen, wenn die
-  Quelle nicht belegt ist.
+- Gesundheitsaussagen ohne Prozentzahlen: Wirkung in Worten („merklich“, „erheblich“, „nachhaltig“). Eine
+  Universität oder Studie nur nennen, wenn es die Forschung nachweislich gibt (Tabelle `STUDIEN` in
+  `werkzeuge/habitica-import.py`; der Import bricht ab, wenn noch „%“ oder „Studie der …“ im Text steht).
 
 ## App „Meine Routinen“ (`app/`)
 
