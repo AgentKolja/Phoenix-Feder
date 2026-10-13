@@ -11,9 +11,9 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `einstellungen.json` | Name, Domain, Buchungslink (Cal.com), Web3Forms-Schlüssel, Social-Links |
 | `inhalt/artikel/<slug>.html` | Ein Blogartikel. URL wird `/post/<slug>/` (entspricht den alten Wix-Adressen) |
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
-| `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink |
+| `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink, `seite` (Knopf „Mehr erfahren“ statt Buchung) und `breit` (Karte über die ganze Zeile) |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
-| `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (wirkt erst über Wochen, z. B. feste Schlafenszeiten). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
+| `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke – auch für Quests, damit sie zur Einstiegsfrage passen) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (nicht spontan: Gewohnheit wirkt erst über Wochen, z. B. feste Schlafenszeiten; Quest braucht Planung, z. B. Ausflug). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
@@ -22,6 +22,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `app/` | Web-App „Probier’s heute“ / „Meine Routinen“ unter `/app/` (siehe unten) |
 | `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
+| `werkzeuge/browsertest.js` | Browser-Test für Website und App (Playwright), siehe Arbeitsweise |
 | `werkzeuge/wix-export.py` | Einmaliger Umzug von Wix, erledigt. Nicht erneut nötig |
 
 Inhaltsdateien beginnen mit Kopfzeilen `schluessel: wert`, dann eine Zeile `---`, dann HTML.
@@ -34,22 +35,31 @@ und nah am Text – nichts hinzuerfinden. Der Build bricht ab, wenn `thema` oder
 Seiten: `titel`, `beschreibung`, optional `bild`, `indexieren: nein`.
 
 Bausteine in Seiten: `{{angebote}}`, `{{neueste_artikel}}`, `{{alle_artikel}}`, `{{kontakt}}` bzw.
-`{{kontakt Habitica-Challenge}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`,
+`{{kontakt Habitica-Challenge}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`
+(eingeklappte Liste aller Übungen), `{{richtungen}}` (Einstiegsfrage „Woran möchtest du arbeiten?“, Antworten
+führen nach `/app/#bereich=<slug>`; Liste `RICHTUNGEN` in bauen.py),
 `{{habitica_url}}`, `{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`
 (`{{bild …}}` geht auch in Artikeln).
 
-Ausrichtung: Die Seite stellt Achtsamkeit und die Essenz der Texte in den Vordergrund, nicht die Person.
-Besucher sollen mit Inhalten interagieren können (Impuls, Übungen, Quests, Teilen, Feedback) – die
-Buchung ist ein Angebot unter mehreren, nicht das Ende jeder Seite.
+Ausrichtung: Die Seite stellt Achtsamkeit und die Essenz der Texte in den Vordergrund. Nikolas kommt kurz vor:
+ein Abschnitt „Über mich“ auf der Startseite direkt vor der Begleitung (sein Wunsch, Okt. 2026; Text ist die
+Kurzfassung von `/about/` – bei Änderungen beide anpassen). Besucher sollen mit Inhalten interagieren können
+(Impuls, Übungen, Quests, Teilen, Feedback) – die Buchung ist ein Angebot unter mehreren, nicht das Ende jeder Seite.
+Leicht anfangen: Seiten beginnen mit einer einfachen Frage oder einer Idee, lange Listen sind eingeklappt.
+Interne Links nie auf `/gewohnheiten/#<übung>` (landet mitten in der Seite), sondern auf `/app/#idee=<übung>`.
+Kein Bild doppelt auf einer Seite (Themen-Kacheln weichen automatisch aus, wenn „Neu im Blog“ ihr Bild zeigt).
 HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 
 ## Arbeitsweise
 
-1. Ändern, dann **immer** `python3 bauen.py` ausführen. Er prüft jeden internen Link und jedes Bild und
-   endet bei Fehlern mit Code 1 – dann nicht pushen, sondern reparieren.
-2. Sichtprüfung bei Design-Änderungen: `cd docs && python3 -m http.server` und Screenshot
-   (Playwright, Chromium unter `/opt/pw-browsers`) in Desktop- und Handybreite, hell und dunkel.
-3. Commit mit deutscher, verständlicher Nachricht, push auf `main` → nach ca. 1 Minute live.
+1. Ändern, dann **immer** `python3 bauen.py --streng` ausführen. Er prüft jeden internen Link und jedes Bild,
+   meldet ungenutzte Bilder und endet bei Fehlern mit Code 1 – dann nicht pushen, sondern reparieren.
+2. Bei Änderungen an App, Skripten oder Seitenaufbau: `PW=$(npm root -g)/playwright node werkzeuge/browsertest.js`
+   (startet selbst einen Server auf `docs/`, Datum fest eingestellt). Neue Funktionen dort mit einer Prüfung ergänzen.
+3. Sichtprüfung bei Design-Änderungen: Screenshot (Playwright, Chromium unter `/opt/pw-browsers`) in Desktop-
+   und Handybreite, hell und dunkel.
+4. Commit mit deutscher, verständlicher Nachricht, push auf `main` → nach ca. 1 Minute live. Zusätzlich baut
+   GitHub Actions jeden Montag neu (Jahreszahl, Impuls, Jahreszeit-Ideen).
 
 ### Neuer Artikel
 - Text als sauberes HTML (`<p>`, `<h2>`, `<h3>`, `<ul>`, `<blockquote>`, `<strong>`, `<em>`, `<a>`), keine
@@ -59,8 +69,11 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Texte des Autors nicht inhaltlich umschreiben. Tippfehler korrigieren ist ok, im Commit nennen.
 
 ### Recht
-- Impressum und Datenschutz enthalten Platzhalter `[[...]]`. `python3 bauen.py --streng` schlägt fehl,
-  solange welche offen sind. **Vor dem Domain-Umzug müssen sie gefüllt sein.**
+- Impressum und Datenschutz sind ausgefüllt (Stand Okt. 2026). Platzhalter `[[...]]` lässt `--streng` scheitern.
+- Preise: Nikolas ist kein Kleinunternehmer. Ob die Preise brutto sind, ist nicht geklärt – vor einer
+  Preisänderung fragen und ggf. „inkl. MwSt.“ ergänzen (Preisangabenverordnung).
+- Zitate nur mit belegter Quelle. Bekannte Fehlzuschreibungen meiden (z. B. „Zwischen Reiz und Reaktion …“ ist
+  nicht von Viktor Frankl belegt).
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
@@ -70,8 +83,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 
 ## App „Probier’s heute“ → „Meine Routinen“ (`app/`)
 
-Zwei Stufen: Wer neu ist, sieht nur eine Seite (`#probieren`): eine Idee für heute mit Klartext,
-„Hab ich ausprobiert“, „Andere Idee“, Filter nach Bereich. Ohne Menüleiste und ohne Federn (`body.einfach`).
+Zwei Stufen: Wer neu ist, sieht nur „Probier’s heute“ (`#probieren`): zuerst die Frage „Woran möchtest du
+arbeiten?“ (`D.richtungen`), dann eine passende Idee für heute mit Klartext, „Hab ich ausprobiert“, „Andere Idee“
+und „Andere Richtung wählen“. Ohne Menüleiste und ohne Federn (`body.einfach`).
 Optional darunter: als Erinnerung in den Kalender (einmal oder 14 Tage täglich, Google-Link oder .ics) oder
 „Länger ausprobieren“ → nimmt die Idee als Routine auf, setzt `Z.modus = "routine"` und zeigt `#heute` mit
 voller Navigation. Routinemodus gilt auch, sobald mindestens eine Gewohnheit gewählt ist.
@@ -88,17 +102,27 @@ App-Dateien oder Daten ändern.
   montags/Monatsanfang, Federn + Stufen + eigene Belohnungen, Feedback nach 14 Tagen (Kontaktformular vorausgefüllt).
 - Erinnerungen über Kalender (Google-Link oder .ics), Gerätewechsel über Sicherungsdatei oder Link
   (`#import=…`, Daten gzip+base64 im Fragment – erreicht nie den Server).
-- „Probier’s heute“, Impuls auf der Startseite und „Andere Idee“ zeigen nur Ideen mit `heute` (und passendem Monat).
-  Andere Ideen sind per Link erreichbar, zeigen dann „Braucht etwas Zeit“ und die `statt`-Ideen.
-- Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee auf der Probier-Seite (legt nichts an;
-  `#neu=` alter Links verhält sich genauso).
+- „Probier’s heute“, Impuls auf der Startseite, „Andere Idee“ und die Wochen-Quest zeigen nur, was heute geht
+  (`heute`, passender Monat). Andere Ideen sind per Link erreichbar und zeigen „Braucht etwas Zeit“ (Gewohnheit),
+  „Braucht etwas Planung“ (Quest, abhakbar) oder „Gerade nicht die Jahreszeit“ (ohne Kalender-Optionen) plus `statt`.
+- Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee (legt nichts an; alte `#neu=`-Links
+  ebenso), `/app/#bereich=<slug>` beantwortet die Einstiegsfrage (`ruhe`, `koerper`, …, `erlebnis`, `alle`).
+- Sicherungsdatei und Übertragungslink kommen von außen: `bereinigen()` übernimmt nur bekannte Felder in der
+  erwarteten Form. Neue Felder im Zustand dort ergänzen, sonst gehen sie beim Gerätewechsel verloren.
+- Fehlen in einer alten, zwischengespeicherten `daten.json` neue Felder, muss die App weiterlaufen (Fallbacks).
 - Datenformat nur abwärtskompatibel ändern (`version: 1`); neue Felder in `neuerZustand()` mit Standardwert.
-- Testen mit Playwright: frischer Kontext → Probier-Seite (keine Menüleiste, Kalender-Link, „Länger“) → Auswahl → Abhaken → Reflexion → Quest → Fortschritt, außerdem
-  offline (`context.setOffline(true)`) und Übertragungslink in zweitem Kontext. Nach `localStorage`-Änderungen
-  im Test die Seite neu laden (reiner Hash-Wechsel lädt nicht neu).
+- Testen: `werkzeuge/browsertest.js` (siehe Arbeitsweise). Zum Öffnen eines `#idee=`-Links im Test erst eine
+  andere Seite laden, sonst ist es nur ein Hash-Wechsel; nach `localStorage`-Änderungen neu laden.
 - Google-Anmeldung/Sync gibt es bewusst noch nicht: bräuchte eine OAuth-Client-ID (Google Cloud) und würde
   Daten im Drive-App-Ordner des Nutzers ablegen. Erst bauen, wenn die Client-ID existiert, und dann mit ihr testen.
 - Weniger ist mehr: Verspielte Namen (Singvogel, Superhiero …) nie ohne Erklärzeile zeigen. Lange Texte,
   Einstellungen und Statistiken hinter „Aufklappen“, höchstens ein Hinweis gleichzeitig. Einstieg:
-  eine Idee zum Ausprobieren; eigene Auswahl (`#start`: Bereich → Gewohnheiten → Zeitpunkt) nur auf Wunsch.
+  eine Frage, dann eine Idee; eigene Auswahl (`#start`: Bereich → Gewohnheiten → Zeitpunkt) nur auf Wunsch.
+
+## Achtsamkeitsseminar (`/achtsamkeitsseminar/`)
+
+Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Verstehen, Bewusst handeln; Ablauf in fünf Schritten;
+Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer). Bilder `seminar-*` stammen aus
+dem PDF. Termin, Ort und Preis stehen bewusst auf „auf Anfrage“, bis Nikolas konkrete Daten nennt – dann im
+Abschnitt `#anmelden` und in `angebote.json` eintragen und nach dem Termin wieder entfernen.
 

@@ -1,7 +1,7 @@
 // Phoenix Feder – Probier's heute / Meine Routinen
 //
-// Zwei Stufen: Zuerst nur eine Seite "Probier's heute" mit einer Idee zum Ausprobieren.
-// Gefällt sie, kann man sie als Kalender-Erinnerung mitnehmen oder "länger ausprobieren" –
+// Zwei Stufen: Zuerst nur "Probier's heute" – eine Frage („Woran möchtest du arbeiten?“), dann eine Idee
+// zum Ausprobieren. Gefällt sie, kann man sie als Kalender-Erinnerung mitnehmen oder "länger ausprobieren" –
 // erst dann erscheinen Heute, Fortschritt & Co.
 // Kein Konto, kein Server: Alles liegt im localStorage dieses Geräts.
 // Die Ideen dahinter, kurz:
@@ -44,7 +44,7 @@ let startSchritt = 1;
 let startAnker = {};
 let installEreignis = null;
 let idee = null; // aktuelle Idee auf "Probier's heute"
-let ideeFilter = "alle";
+let ideeFilter = null; // Antwort auf „Woran möchtest du arbeiten?“ (null = noch nicht gefragt)
 let kalZeit = "19:00";
 let kalDauer = "14";
 const ZEITEN = [["08:00", "Morgens"], ["12:30", "Mittags"], ["19:00", "Abends"]];
@@ -66,7 +66,7 @@ function info(slug) {
   const t = TAEGLICH.find((x) => x.slug === slug);
   const u = U[slug] || {};
   return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich,
-    heute: u.heute || "", statt: u.statt || [], monate: u.monate || [] };
+    heute: u.heute ?? u.kurz ?? "", statt: u.statt || [], monate: u.monate || [] };
 }
 
 // ---------------------------------------------------------------- Speicher
@@ -214,13 +214,16 @@ function render() {
 
 // ---------------------------------------------------------------- Probier's heute
 
-// Nur, was man heute wirklich ausprobieren kann (z. B. nicht „feste Schlafenszeiten“, keine Bienen im Winter)
-const heuteMoeglich = (u) => Boolean(u.heute) && (!u.monate?.length || u.monate.includes(new Date().getMonth() + 1));
+// Nur, was man heute wirklich ausprobieren kann (z. B. nicht „feste Schlafenszeiten“, keine Bienen im Winter).
+// Fehlt „heute“ (alte daten.json aus dem Cache), gilt die Idee als machbar.
+const passtZurJahreszeit = (u) => !u.monate?.length || u.monate.includes(new Date().getMonth() + 1);
+const heuteMoeglich = (u) => Boolean(u.heute ?? u.kurz ?? true) && passtZurJahreszeit(u);
+const richtungen = () => D.richtungen || [...(D.bereiche || []), { slug: "alle", emoji: "🎲", titel: "Überrasch mich", text: "" }];
 
 function ideenPool() {
   const alle = D.uebungen.filter((u) => (u.art === "gewohnheit" || u.art === "quest") && heuteMoeglich(u));
-  const passend = alle.filter((u) => ideeFilter === "alle" || (ideeFilter === "erlebnis" ? u.art === "quest" : u.bereich === ideeFilter));
-  return passend.length ? passend : alle;
+  const passend = alle.filter((u) => !ideeFilter || ideeFilter === "alle" || (ideeFilter === "erlebnis" ? u.art === "quest" : u.bereich === ideeFilter));
+  return passend.length ? passend : alle.length ? alle : D.uebungen;
 }
 
 function tagesIdee() {
@@ -256,33 +259,49 @@ function googleKalender(t) {
   return `https://calendar.google.com/calendar/render?${p}`;
 }
 
+// Einstieg: erst eine einfache Frage, dann eine passende Idee
+function ansichtFrage() {
+  return `<section class="willkommen">
+  <p class="oberzeile">Probier’s heute</p>
+  <h1>Woran möchtest du arbeiten?</h1>
+  <p>Wähl, was dich gerade anspricht. Du bekommst eine kleine Idee, die du heute ausprobieren kannst.</p>
+</section>
+<div class="wahl-liste">${richtungen().map((r) => wahlZeile("frage", r.slug, r.emoji, r.titel, r.text, false, true)).join("")}</div>
+<p class="klein fuss-app">Kein Konto, keine Anmeldung – nichts wird übertragen. <a href="#entdecken">Alle Ideen als Liste</a> · <a href="../">Zur Website</a></p>`;
+}
+
 function ansichtProbieren() {
+  if (!idee && !ideeFilter) return ansichtFrage();
   if (!idee || !U[idee]) idee = tagesIdee();
   const u = info(idee);
   const geschafft = u.art === "quest" ? questsLaden().has(idee) : erledigt(tag(), idee);
   const heute = heuteMoeglich(u);
-  // Braucht Zeit (oder gerade nicht die Jahreszeit): erklären und Ideen für heute anbieten
-  const stattdessen = heute ? "" : `<p class="klein">${u.heute ? "Gerade nicht die Jahreszeit dafür." : "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit Erinnerung (unten)."}${u.statt.length ? " Für heute passt:" : ""}</p>
-    ${u.statt.map((s) => info(s)).map((s) => `<button class="alternative" data-aktion="idee-zeigen" data-wert="${s.slug}"><span class="option-emoji" aria-hidden="true">${s.emoji}</span><span><strong>${esc(s.titel)}</strong><span class="klein">${esc(s.heute)}</span></span><span aria-hidden="true">→</span></button>`).join("")}`;
+  const saison = passtZurJahreszeit(u);
+  // Nicht für heute (Gewohnheit braucht Wochen, Quest braucht Planung, falsche Jahreszeit): erklären und Ideen für heute anbieten
+  const grund = !saison ? "Gerade nicht die Jahreszeit dafür."
+    : u.art === "quest" ? "Dafür brauchst du etwas Zeit oder Planung – nimm es dir für einen passenden Tag vor."
+      : "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit Erinnerung (unten).";
+  const stattdessen = heute ? "" : `<p class="klein">${grund}${u.statt.length ? " Für heute passt:" : ""}</p>
+    ${u.statt.map((s) => info(s)).map((s) => wahlZeile("idee-zeigen", s.slug, s.emoji, s.titel, s.heute, false, true)).join("")}`;
+  const abhaken = heute || (saison && u.art === "quest");
   const dabei = Z.gewohnheiten.some((g) => g.slug === idee) || Z.quest === idee;
-  const filterListe = [["alle", "Alle"], ...D.bereiche.map((b) => [b.slug, `${b.emoji} ${b.titel}`]), ["erlebnis", "🗺️ Erlebnisse"]];
+  const richtung = richtungen().find((r) => r.slug === ideeFilter);
   return `<section class="probieren">
-  <p class="oberzeile">${!heute ? "Braucht etwas Zeit" : u.art === "quest" ? "Ein kleines Erlebnis für dich" : "Probier es heute"}</p>
+  <p class="oberzeile">${!saison ? "Gerade nicht die Jahreszeit" : !heute ? (u.art === "quest" ? "Braucht etwas Planung" : "Braucht etwas Zeit") : u.art === "quest" ? "Ein kleines Erlebnis für dich" : "Probier es heute"}</p>
   <div class="karte-app idee">
     <div class="idee-emoji" aria-hidden="true">${u.emoji}</div>
     <h1>${esc(u.titel)}</h1>
     <p class="erklaerung-gross">${esc(heute ? u.heute : u.kurz)}</p>
     ${stattdessen}
     <div class="knopf-reihe">
-      ${!heute ? "" : geschafft ? '<span class="marke-app geschafft-marke">✓ Heute ausprobiert</span>' : '<button class="knopf" data-aktion="ausprobiert">✓ Hab ich ausprobiert</button>'}
+      ${!abhaken ? "" : geschafft ? `<span class="marke-app geschafft-marke">✓ ${u.art === "quest" ? "Geschafft" : "Heute ausprobiert"}</span>` : `<button class="knopf" data-aktion="ausprobiert">✓ ${heute ? "Hab ich ausprobiert" : "Hab ich gemacht"}</button>`}
       <button class="knopf zweit" data-aktion="andere-idee">↻ Andere Idee</button>
     </div>
     <details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div></details>
   </div>
-  <div class="chips-app ideen-filter" aria-label="Ideen eingrenzen">${filterListe.map(([w, t]) => `<button data-aktion="idee-filter" data-wert="${w}" aria-pressed="${ideeFilter === w}">${esc(t)}</button>`).join("")}</div>
+  <p class="klein richtung-zeile">${richtung ? `${richtung.emoji} ${esc(richtung.titel)} · ` : ""}<button class="link-knopf" data-aktion="neu-fragen">Andere Richtung wählen</button></p>
 </section>
-
-<section class="optionen">
+${!saison ? "" : `<section class="optionen">
   <h2>Gefällt dir die Idee?</h2>
   <details class="option">
     <summary><span class="option-emoji" aria-hidden="true">📅</span><span><strong>Als Erinnerung in den Kalender</strong><span class="klein">Einmal oder zwei Wochen lang täglich – ganz ohne App.</span></span></summary>
@@ -297,14 +316,15 @@ function ansichtProbieren() {
     <div class="knopf-reihe"><button class="knopf zweit" data-aktion="laenger">${dabei ? "Zu meinen Routinen" : u.art === "quest" ? "Als Quest starten" : "In meine Routinen"}</button>
     ${routineModus() ? "" : '<a class="link-knopf" href="#start">eigene Auswahl zusammenstellen</a>'}</div>
   </div>
-</section>
+</section>`}
 <p class="klein fuss-app">Kein Konto, keine Anmeldung – nichts wird übertragen. <a href="#entdecken">Alle Ideen als Liste</a> · <a href="../">Zur Website</a></p>`;
 }
 
-function wahlZeile(aktion, wert, emoji, titel, text, gewaehlt) {
-  return `<button class="wahl-zeile" data-aktion="${aktion}" data-slug="${wert}" aria-pressed="${gewaehlt}">
-  <span class="wahl-emoji" aria-hidden="true">${emoji}</span><span class="wahl-text"><strong>${esc(titel)}</strong><span>${esc(text)}</span></span>
-  <span class="wahl-haken" aria-hidden="true">✓</span></button>`;
+// Auswahlzeile: mit Haken zum An-/Abwählen oder mit Pfeil für „weiter zu …“
+function wahlZeile(aktion, wert, emoji, titel, text, gewaehlt, pfeil = false) {
+  return `<button class="wahl-zeile" data-aktion="${aktion}" data-slug="${wert}"${pfeil ? "" : ` aria-pressed="${gewaehlt}"`}>
+  <span class="wahl-emoji" aria-hidden="true">${emoji}</span><span class="wahl-text"><strong>${esc(titel)}</strong>${text ? `<span>${esc(text)}</span>` : ""}</span>
+  ${pfeil ? '<span class="wahl-pfeil" aria-hidden="true">→</span>' : '<span class="wahl-haken" aria-hidden="true">✓</span>'}</button>`;
 }
 
 function ansichtStart() {
@@ -412,7 +432,7 @@ function questKarte() {
       <h3>${u.emoji} ${esc(u.titel)}</h3><p>${esc(u.kurz)}</p>
       <div class="knopf-reihe"><button class="knopf" data-aktion="quest-fertig">Geschafft! +${PUNKTE.quest} 🪶</button><button class="knopf zweit" data-aktion="details" data-slug="${Z.quest}">Details</button><button class="link-knopf" data-aktion="quest-weg">andere</button></div></div>`;
   }
-  const alleOffen = D.uebungen.filter((u) => u.art === "quest" && !fertig.has(u.slug));
+  const alleOffen = D.uebungen.filter((u) => u.art === "quest" && !fertig.has(u.slug) && passtZurJahreszeit(u));
   // Abschluss-Quests (Reflexion der Reise, Community) erst, wenn alle anderen geschafft sind
   const offen = alleOffen.some((u) => u.gruppe !== "Abschluss") ? alleOffen.filter((u) => u.gruppe !== "Abschluss") : alleOffen;
   if (!offen.length) return '<div class="karte-app"><p>Du hast alle Quests geschafft. Großartig! 🏆 Lust auf mehr? Die Challenge auf Habitica bekommt neue Ideen.</p></div>';
@@ -733,10 +753,50 @@ function herunterladen(inhalt, name, typ) {
 
 const sicherung = () => ({ app: Z, quests: [...questsLaden()], exportiert: tag() });
 
+// Daten von außen (Sicherungsdatei, Übertragungslink) nur in der erwarteten Form übernehmen:
+// Ein präparierter Link darf weder HTML einschleusen noch die App zum Absturz bringen.
+function bereinigen(z) {
+  const text = (x, max) => (typeof x === "string" ? x.slice(0, max) : "");
+  const slugOk = (x) => typeof x === "string" && /^[a-z0-9-]{1,60}$/.test(x);
+  const datumOk = (x) => typeof x === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x);
+  const zeitOk = (x) => typeof x === "string" && /^\d{2}:\d{2}$/.test(x);
+  const liste = (x) => (Array.isArray(x) ? x : []);
+  const eintraege = (x) => Object.entries(x && typeof x === "object" ? x : {});
+  const n = neuerZustand();
+  const log = {};
+  for (const [d, e] of eintraege(z.log)) {
+    if (!datumOk(d) || !e || typeof e !== "object") continue;
+    log[d] = { erledigt: liste(e.erledigt).filter(slugOk) };
+    if (Number.isInteger(e.stimmung) && e.stimmung >= 1 && e.stimmung <= STIMMUNGEN.length) log[d].stimmung = e.stimmung;
+    if (Array.isArray(e.gutes)) log[d].gutes = e.gutes.slice(0, 3).map((g) => text(g, 120));
+    if (typeof e.wort === "string") log[d].wort = text(e.wort, 40);
+  }
+  return {
+    ...n,
+    start: datumOk(z.start) ? z.start : n.start,
+    modus: z.modus === "routine" ? "routine" : "probieren",
+    gewohnheiten: liste(z.gewohnheiten).filter((g) => slugOk(g?.slug)).map((g) => ({ slug: g.slug, seit: datumOk(g.seit) ? g.seit : n.start,
+      anker: text(g.anker, 80), mini: text(g.mini, 80), wenn: text(g.wenn, 80), dann: text(g.dann, 80) })),
+    log,
+    quest: slugOk(z.quest) ? z.quest : null,
+    questDaten: Object.fromEntries(eintraege(z.questDaten).filter(([q, d]) => slugOk(q) && datumOk(d))),
+    automatik: Object.fromEntries(eintraege(z.automatik).filter(([g]) => slugOk(g)).map(([g, l]) => [g,
+      liste(l).filter((x) => datumOk(x?.datum) && Number.isInteger(x.wert)).map((x) => ({ datum: x.datum, wert: x.wert }))])),
+    belohnungen: liste(z.belohnungen).filter((b) => /^\d{1,20}$/.test(String(b?.id)) && Number.isFinite(b.kosten))
+      .map((b) => ({ id: String(b.id), name: text(b.name, 80), kosten: Math.max(10, Math.round(b.kosten)) })),
+    eingeloest: liste(z.eingeloest).filter((x) => Number.isFinite(x?.kosten))
+      .map((x) => ({ id: String(x.id).slice(0, 20), datum: datumOk(x.datum) ? x.datum : n.start, kosten: x.kosten })),
+    hinweise: Object.fromEntries(eintraege(z.hinweise).filter(([k, d]) => /^[a-z0-9-]{1,40}$/.test(k) && datumOk(d))),
+    erinnerung: { morgen: zeitOk(z.erinnerung?.morgen) ? z.erinnerung.morgen : n.erinnerung.morgen,
+      abend: zeitOk(z.erinnerung?.abend) ? z.erinnerung.abend : n.erinnerung.abend },
+  };
+}
+
 function uebernehmen(daten) {
   if (!daten?.app || daten.app.version !== 1 || !Array.isArray(daten.app.gewohnheiten)) throw new Error("ungültig");
-  Z = { ...neuerZustand(), ...daten.app };
-  questsSpeichern(new Set(daten.quests || []));
+  Z = bereinigen(daten.app);
+  Z.gewohnheiten = Z.gewohnheiten.filter((g) => U[g.slug]);
+  questsSpeichern(new Set((Array.isArray(daten.quests) ? daten.quests : []).filter((q) => U[q])));
   speichern();
 }
 
@@ -892,17 +952,23 @@ const AKTIONEN = {
     render();
     $(".idee")?.classList.add("blaettern");
   },
-  "idee-zeigen": (el, slug, wert) => {
-    idee = wert;
+  "idee-zeigen": (el, slug) => {
+    idee = slug;
     render();
     scrollTo(0, 0);
     $(".idee")?.classList.add("blaettern");
   },
-  "idee-filter": (el, slug, wert) => {
-    ideeFilter = wert;
-    const pool = ideenPool();
-    if (!pool.some((u) => u.slug === idee)) idee = zufall(pool).slug;
+  frage: (el, slug) => {
+    ideeFilter = slug;
+    idee = zufall(ideenPool()).slug;
     render();
+    scrollTo(0, 0);
+  },
+  "neu-fragen": () => {
+    ideeFilter = null;
+    idee = null;
+    render();
+    scrollTo(0, 0);
   },
   ausprobiert: () => {
     const u = info(idee);
@@ -937,6 +1003,8 @@ const AKTIONEN = {
     startBereiche = [];
     startAuswahl = [];
     startSchritt = 1;
+    ideeFilter = null;
+    idee = null;
     history.replaceState(null, "", `${location.pathname}#heute`);
     route();
   },
@@ -955,10 +1023,18 @@ function offenLassen(auswahl, zeichnen) {
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith("import=")) { importAusLink(h.slice(7)); return; }
+  if (h.startsWith("bereich=")) {
+    // Von der Seite /gewohnheiten/: Frage schon beantwortet
+    const wahl = h.slice(8);
+    if (richtungen().some((r) => r.slug === wahl)) { ideeFilter = wahl; idee = zufall(ideenPool()).slug; }
+    history.replaceState(null, "", `${location.pathname}#probieren`);
+    route();
+    return;
+  }
   if (h.startsWith("idee=") || h.startsWith("neu=")) {
     // Links von der Website: erst die Idee zeigen, statt gleich eine Routine anzulegen
     const slug = h.slice(h.indexOf("=") + 1);
-    if (U[slug]) { idee = slug; ideeFilter = "alle"; }
+    if (U[slug]) { idee = slug; ideeFilter = U[slug].art === "quest" ? "erlebnis" : U[slug].bereich || "alle"; }
     history.replaceState(null, "", `${location.pathname}#probieren`);
     route();
     return;

@@ -17,7 +17,6 @@
     const monat = new Date().getMonth() + 1;
     const liste = JSON.parse(daten.textContent).filter((u) => !u.m || u.m.includes(monat));
     const feld = (name) => karte.querySelector(`[data-feld="${name}"]`);
-    const basis = feld("link").getAttribute("href").split("#")[0];
     const appBasis = feld("app").getAttribute("href").split("#")[0];
     let index = Math.floor(Date.now() / 864e5) % liste.length;
     const zeigen = () => {
@@ -26,7 +25,6 @@
       feld("emoji").textContent = u.e;
       feld("titel").textContent = u.t;
       feld("kurz").textContent = u.k;
-      feld("link").setAttribute("href", `${basis}#${u.s}`);
       feld("app").setAttribute("href", `${appBasis}#idee=${u.s}`);
     };
     zeigen();
@@ -88,14 +86,14 @@
     zeigen();
   }
 
-  // Sprungziel öffnen, z. B. /gewohnheiten/#waldbaden
+  // Alte Sprungziele wie /gewohnheiten/#waldbaden: Übung und eingeklappte Liste öffnen
   const oeffnen = () => {
     const ziel = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    const details = ziel && ziel.querySelector("details");
-    if (details) {
-      details.open = true;
-      ziel.scrollIntoView({ block: "start" });
-    }
+    const details = ziel && (ziel.querySelector("details") || ziel.closest("details"));
+    if (!details) return;
+    details.open = true;
+    for (let d = details.parentElement?.closest("details"); d; d = d.parentElement?.closest("details")) d.open = true;
+    ziel.scrollIntoView({ block: "start" });
   };
   oeffnen();
   addEventListener("hashchange", oeffnen);

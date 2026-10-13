@@ -128,6 +128,11 @@ p { margin: 0 0 1em; }
 .angebot.hervorgehoben { background: var(--akzent); color: var(--auf-akzent); border-color: var(--akzent); justify-content: center; }
 .angebot.hervorgehoben .preis, .angebot.hervorgehoben p { color: var(--auf-akzent); }
 .angebot.hervorgehoben .knopf { background: var(--auf-akzent); color: var(--akzent); border-color: var(--auf-akzent); }
+/* Breite Karte über die ganze Zeile (z. B. Seminar): Bild links, Text rechts */
+.angebot.breit { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+.angebot.breit .angebot-bild { height: 100%; aspect-ratio: auto; min-height: 15rem; }
+.angebot.breit .angebot-text { justify-content: center; }
+.angebot.breit .angebot-text .knopf { margin-top: 0.4rem; }
 .preis { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--linie); padding-bottom: 0.6rem; color: var(--leise); }
 .angebot.hervorgehoben .preis { border-color: color-mix(in srgb, var(--auf-akzent) 35%, transparent); }
 .preis strong { font: 500 1.35rem/1 var(--serif); color: var(--text); }
@@ -245,14 +250,21 @@ p { margin: 0 0 1em; }
 .danach { border-top: 1px solid var(--linie); margin-top: 1.5rem; padding-top: 1.2rem; }
 .abschnitt-kopf .danach p { font-size: 1rem; }
 
-/* Quests abhaken */
-
-/* Gewohnheiten-Seite */
-.pizza { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
-.pizza > div { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1.3rem; }
-.pizza span { font-size: 2rem; }
-.pizza h3 { margin: 0.4rem 0 0; }
-.pizza .klein { margin-bottom: 0.6rem; }
+/* Gewohnheiten-Seite: erst die Frage „Woran möchtest du arbeiten?“, die ganze Liste eingeklappt darunter */
+.richtungen { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.8rem; }
+.richtung { display: flex; gap: 0.9rem; align-items: center; padding: 1rem 1.1rem; background: var(--karte); border: 1px solid var(--linie);
+  border-radius: var(--rund); color: var(--text); text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.richtung:hover { transform: translateY(-2px); box-shadow: var(--schatten); text-decoration: none; }
+.richtung-emoji { font-size: 2rem; line-height: 1; flex: none; }
+.richtung strong { display: block; font: 500 1.15rem/1.25 var(--serif); }
+.richtung span span { color: var(--leise); font-size: 0.95rem; }
+.alle-uebungen > summary { display: flex; flex-direction: column; gap: 0.2rem; cursor: pointer; list-style: none; padding: 1.1rem 1.3rem;
+  background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); }
+.alle-uebungen > summary::-webkit-details-marker { display: none; }
+.alle-uebungen > summary strong { font: 500 1.3rem/1.3 var(--serif); }
+.alle-uebungen > summary strong::after { content: " +"; color: var(--akzent); }
+.alle-uebungen[open] > summary strong::after { content: " –"; }
+.alle-uebungen > summary span { color: var(--leise); font-size: 0.95rem; }
 .tipps { max-width: 46rem; padding-left: 1.2rem; }
 .tipps li { margin-bottom: 0.6rem; }
 .unterzeile { color: var(--leise); margin-top: -0.4rem; }
@@ -281,6 +293,22 @@ p { margin: 0 0 1em; }
 .balken { height: 10px; border-radius: 999px; background: var(--flaeche); overflow: hidden; margin-bottom: 0.6rem; }
 .balken span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--akzent-hell), var(--akzent)); transition: width 0.3s ease; }
 
+/* Seminar */
+.ebenen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem; }
+.ebene { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); overflow: hidden; }
+.ebene img { aspect-ratio: 4 / 3; object-fit: cover; width: 100%; }
+.ebene > div { padding: 1.2rem 1.3rem 1.3rem; }
+.ebene h3 { margin: 0.2rem 0 0.5rem; }
+.ablauf { list-style: none; counter-reset: schritt; padding: 0; margin: 0; }
+.ablauf li { counter-increment: schritt; display: grid; grid-template-columns: 2.6rem 1fr; gap: 0.2rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--linie); }
+.ablauf li::before { content: counter(schritt); grid-row: span 2; font: 500 1.8rem/1 var(--serif); color: var(--akzent); }
+.ablauf strong { font: 500 1.2rem/1.3 var(--serif); }
+.ablauf span { color: var(--leise); }
+.anleitung { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.3rem; }
+.anleitung > summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
+.anleitung[open] > summary { margin-bottom: 0.8rem; }
+.anleitung li { margin-bottom: 0.6rem; }
+
 /* Über mich */
 .ueber-kurz { display: grid; grid-template-columns: 140px 1fr; gap: 1.5rem; align-items: start; background: var(--flaeche); border-radius: var(--rund); padding: 1.4rem; margin: 2rem 0; }
 .ueber-portrait { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; }
@@ -298,6 +326,8 @@ p { margin: 0 0 1em; }
   .navi a { white-space: nowrap; }
   .felder { grid-template-columns: 1fr; }
   .ueber-kurz { grid-template-columns: 1fr; }
+  .angebot.breit { grid-template-columns: 1fr; }
+  .angebot.breit .angebot-bild { aspect-ratio: 4 / 3; min-height: 0; }
   body { font-size: 1rem; }
   .fliesstext { font-size: 1.0625rem; }
 }

@@ -17,37 +17,16 @@ Jede Änderung ist im Verlauf sichtbar und lässt sich zurücknehmen.
 
 Kleine Tippfehler kannst du auch selbst direkt auf github.com in `inhalt/` korrigieren – die Seite baut sich danach von allein neu.
 
-## Umzug von Wix – deine Schritte
+## Stand
 
-Alles andere ist erledigt. Reihenfolge einhalten, dann gibt es keine Ausfallzeit.
+Der Umzug von Wix ist abgeschlossen: Domain bei IONOS (DNS auf GitHub Pages), HTTPS erzwungen,
+Kontaktformular über Web3Forms, Buchung über Cal.com, Wix gekündigt.
 
-1. **GitHub Pages einschalten** (1 Min.): Repo → *Settings* → *Pages* → *Source*: **GitHub Actions**.
-   Danach ist die Vorschau unter `https://agentkolja.github.io/phoenix-feder/` erreichbar.
-2. **Daten fürs Impressum** an Claude schicken: Anschrift, E-Mail, ob Kleinunternehmer (§ 19 UStG).
-3. **Kontaktformular** (2 Min.): auf [web3forms.com](https://web3forms.com) E-Mail eintragen, den
-   Schlüssel aus der Mail an Claude geben.
-4. **Online-Buchung** (10 Min.): Konto bei [cal.com](https://cal.com) (Anmeldung mit Google), Google-Kalender
-   verbinden, Termintyp „Erstgespräch, 30 Min.“ anlegen, Link an Claude geben. Bezahlte Termine optional
-   über die Stripe-App in Cal.com.
-5. **Domain umziehen** (15 Min. + Wartezeit):
-   - GitHub: *Settings* → *Pages* → *Custom domain*: `www.phoenix-feder.de` eintragen.
-   - Wix: *Einstellungen* → *Domains* → Domain → *Von Wix wegtransferieren* → Auth-Code kommt per Mail.
-   - Neuer Anbieter (z. B. INWX, netcup, IONOS): Domain-Transfer mit Auth-Code bestellen und dabei
-     gleich diese DNS-Einträge setzen:
-
-     | Typ | Name | Wert |
-     |---|---|---|
-     | A | @ | 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153 |
-     | AAAA | @ | 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153 |
-     | CNAME | www | agentkolja.github.io |
-
-   - Wenn die Seite unter www.phoenix-feder.de erscheint: in GitHub *Enforce HTTPS* anhaken.
-6. **Wix kündigen** – erst wenn alles läuft: Kontakte/Formulareinträge in Wix als CSV exportieren, dann
-   Premium-Abo kündigen (automatische Verlängerung aus).
-7. Optional: [Google Search Console](https://search.google.com/search-console) → Domain hinzufügen →
-   `sitemap.xml` einreichen. Die Datei zur Bestätigung legt Claude ins Repo.
+Optional: [Google Search Console](https://search.google.com/search-console) → Domain hinzufügen →
+`sitemap.xml` einreichen. Die Datei zur Bestätigung legt Claude ins Repo.
 
 ## Technik in einem Satz
 
 `python3 bauen.py` baut aus `inhalt/` den Ordner `docs/`, prüft alle Links und Bilder, und GitHub Actions
-veröffentlicht das Ergebnis. Keine Datenbank, kein CMS, keine Cookies, kein Tracking.
+veröffentlicht das Ergebnis (bei jedem Push und einmal pro Woche). Keine Datenbank, kein CMS, keine Cookies,
+kein Tracking. `werkzeuge/browsertest.js` prüft Website und App im Browser.

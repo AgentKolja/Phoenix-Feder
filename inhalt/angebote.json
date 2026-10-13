@@ -13,7 +13,7 @@
     "dauer": "60 Min.",
     "preis": "40 €",
     "text": "Bestandsaufnahme, Zielsetzung und Interventionen zur Erfüllung deines Herzenswunsches.",
-    "bild": "nikolas-portrait",
+    "bild": "coaching-gespraech",
     "buchung": ""
   },
   {
@@ -31,5 +31,14 @@
     "text": "Entwickle deinen individuellen Yogaflow – perfekt für die Bedürfnisse deines Körpers.",
     "bild": "yoga",
     "buchung": ""
+  },
+  {
+    "titel": "Achtsamkeitsseminar",
+    "dauer": "2 Tage",
+    "preis": "auf Anfrage",
+    "text": "Wahrnehmen, verstehen, bewusst handeln: drei Ebenen der Achtsamkeit mit praktischen Übungen und Austausch in der Gruppe.",
+    "bild": "seminar-meditation",
+    "seite": "/achtsamkeitsseminar/",
+    "breit": true
   }
 ]

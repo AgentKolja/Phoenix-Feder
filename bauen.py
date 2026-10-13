@@ -40,7 +40,8 @@ if _fehlt:
 for _u in UEBUNGEN:
     _e = ERKLAERUNGEN["uebungen"][_u["slug"]]
     _u["erklaerung"], _u["bereich"] = _e["kurz"], _e["bereich"]
-    # heute: konkreter Schritt fuer heute | true (Erklaerung passt schon) | false (wirkt erst ueber Wochen)
+    # heute: konkreter Schritt fuer heute | true (Erklaerung passt schon) | false (nicht spontan: Gewohnheit wirkt
+    # erst ueber Wochen, Quest braucht Planung); monate: nur dann sinnvoll (z. B. Bienen im Sommer)
     if "heute" not in _e:
         raise SystemExit(f"inhalt/erklaerungen.json: \"heute\" fehlt bei {_u['slug']} (Text, true oder false)")
     _u["heute"] = _e["kurz"] if _e["heute"] is True else (_e["heute"] or "")
@@ -50,8 +51,12 @@ for _u in UEBUNGEN:
         if _s not in UEBUNG or not UEBUNG[_s]["heute"] or UEBUNG[_s]["monate"]:
             raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
+# Einstiegsfrage „Woran möchtest du arbeiten?“ (Seite /gewohnheiten/ und App)
+RICHTUNGEN = [{"slug": b["slug"], "emoji": b["emoji"], "titel": b["titel"], "text": b["text"]} for b in BEREICHE] + [
+    {"slug": "erlebnis", "emoji": "🗺️", "titel": "Ein kleines Erlebnis", "text": "Etwas Besonderes für heute – draußen, mit anderen oder zu Hause."},
+    {"slug": "alle", "emoji": "🎲", "titel": "Überrasch mich", "text": "Eine Idee aus allen Bereichen."}]
 ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Habitica-Challenge", "Kostenloses Erstgespräch",
-            "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Etwas anderes"]
+            "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Achtsamkeitsseminar", "Etwas anderes"]
 # Beschriftungen rund um einen Artikel, je nach Sprache des Artikels
 TEXTE = {
     "de": {"essenz": "Auf den Punkt", "probieren": "Zum Ausprobieren", "frage": "Frage an dich",
@@ -186,7 +191,7 @@ def artikel_seite(a, alle):
     mitnehmen = ""
     if a.get("uebung"):
         passend = UEBUNG.get(a.get("passend", ""))
-        gewohnheit = (f'<p class="gewohnheit-link">{t["gewohnheit"]}: <a href="/gewohnheiten/#{passend["slug"]}">'
+        gewohnheit = (f'<p class="gewohnheit-link">{t["gewohnheit"]}: <a href="/app/#idee={passend["slug"]}">'
                       f'{passend["emoji"]} {esc(passend["titel"])}</a></p>') if passend else ""
         frage = f'<p class="frage"><strong>{t["frage"]}:</strong> {esc(a["frage"])}</p>' if a.get("frage") else ""
         mitnehmen = f"""<section class="mitnehmen">
@@ -244,12 +249,18 @@ def themen_chips(aktiv):
             + "</nav>")
 
 
-def themen_html():
+def themen_html(artikel):
+    # Auf der Startseite stehen die Themen neben „Neu im Blog“: dort schon gezeigte Titelbilder nicht doppeln,
+    # sondern ein anderes Bild aus dem Thema nehmen
+    belegt = {a.get("bild") for a in artikel[:3]}
     kacheln = []
     for t in THEMEN:
-        anzahl = sum(a.get("thema") == t["slug"] for a in artikel_laden())
+        anzahl = sum(a.get("thema") == t["slug"] for a in artikel)
+        kandidaten = [t["bild"]] + [a["bild"] for a in artikel if a.get("thema") == t["slug"] and a.get("bild")]
+        name = next((b for b in kandidaten if b not in belegt), t["bild"])
+        belegt.add(name)
         kacheln.append(f"""<a class="thema-kachel" href="/thema/{t['slug']}/">
-  {bild(t["bild"], "", groessen="(min-width: 900px) 270px, 100vw")}
+  {bild(name, "", groessen="(min-width: 900px) 270px, 100vw")}
   <span class="thema-text"><strong>{esc(t['titel'])}</strong><span>{esc(t['essenz'])}</span><span class="meta">{anzahl} Artikel →</span></span>
 </a>""")
     return '<div class="themen">\n' + "\n".join(kacheln) + "\n</div>"
@@ -304,6 +315,12 @@ def text_html(text):
     return "\n".join(teile)
 
 
+def app_link_text(u):
+    if u["heute"] and not u["monate"]:
+        return "Heute ausprobieren"
+    return "Länger ausprobieren" if u["art"] == "gewohnheit" else "In der App ansehen"
+
+
 def uebung_karte(u):
     abhaken = (f'<label class="erledigt" hidden><input type="checkbox" data-quest="{u["slug"]}"> Erledigt</label>'
                if u["art"] == "quest" else "")
@@ -311,7 +328,7 @@ def uebung_karte(u):
   <details>
     <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-kopf"><span class="uebung-titel">{esc(u['titel'])}</span><span class="uebung-erklaerung">{esc(u['erklaerung'])}</span></span></summary>
     <div class="uebung-text">{text_html(u['text'])}
-      <p><a class="in-app" href="/app/#idee={u['slug']}">{"Heute ausprobieren" if u["heute"] else "Länger ausprobieren"} →</a></p>
+      <p><a class="in-app" href="/app/#idee={u['slug']}">{app_link_text(u)} →</a></p>
     </div>
   </details>
   {abhaken}
@@ -330,7 +347,9 @@ def uebungen_html():
         f'<h3 class="gruppe">{b["emoji"]} {esc(b["titel"])} <span class="gruppe-text">– {esc(b["text"])}</span></h3>'
         + raster_([u for u in gewohnheiten if u["bereich"] == b["slug"]])
         for b in BEREICHE if any(u["bereich"] == b["slug"] for u in gewohnheiten))
-    return f"""<h2 id="gewohnheiten-liste">{len(gewohnheiten)} Gewohnheiten</h2>
+    return f"""<details class="alle-uebungen" id="alle">
+<summary><strong>Alle {len(UEBUNGEN)} Ideen ansehen</strong><span>{len(gewohnheiten)} Gewohnheiten · {len(taeglich)} tägliche Aufgaben · {len(quests)} Quests</span></summary>
+<h2 id="gewohnheiten-liste">{len(gewohnheiten)} Gewohnheiten</h2>
 <p class="unterzeile">Keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. Fang mit einem Bereich an, der dich gerade anspricht. Tippe eine Gewohnheit an für Ideen und Hintergrund.</p>
 {nach_bereich}
 <h2 id="taeglich">{len(taeglich)} tägliche Aufgaben</h2>
@@ -343,7 +362,14 @@ def uebungen_html():
   <div class="balken"><span data-balken></span></div>
   <p class="klein">Dein Fortschritt bleibt nur in diesem Browser gespeichert. Nichts davon wird übertragen.</p>
 </div>
-{quest_html}"""
+{quest_html}
+</details>"""
+
+
+def richtungen_html():
+    return '<div class="richtungen">' + "".join(
+        f'<a class="richtung" href="/app/#bereich={r["slug"]}"><span class="richtung-emoji" aria-hidden="true">{r["emoji"]}</span>'
+        f'<span><strong>{esc(r["titel"])}</strong><span>{esc(r["text"])}</span></span></a>' for r in RICHTUNGEN) + "</div>"
 
 
 def impuls_html():
@@ -352,7 +378,7 @@ def impuls_html():
     daten = [{"s": u["slug"], "a": ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else ""), "e": u["emoji"],
               "t": u["titel"], "k": u["heute"], **({"m": u["monate"]} if u["monate"] else {})} for u in pool]
     jetzt = [x for x in daten if date.today().month in x.get("m", [date.today().month])]
-    d = jetzt[date.today().toordinal() % len(jetzt)]
+    d = jetzt[(date.today() - date(1970, 1, 1)).days % len(jetzt)]
     json_text = json.dumps(daten, ensure_ascii=False).replace("</", "<\\/")
     return f"""<div class="impuls" data-impuls>
   <p class="impuls-art" data-feld="art">{esc(d['a'])}</p>
@@ -361,7 +387,6 @@ def impuls_html():
   <p data-feld="kurz">{esc(d['k'])}</p>
   <div class="knopf-reihe">
     <a class="knopf" data-feld="app" href="/app/#idee={d['s']}">Heute ausprobieren</a>
-    <a class="knopf zweit" data-feld="link" href="/gewohnheiten/#{d['s']}">Ganze Übung</a>
     <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
   </div>
 </div>
@@ -374,16 +399,17 @@ def angebote_html():
     angebote = json.loads((INHALT / "angebote.json").read_text(encoding="utf-8"))
     teile = []
     for an in angebote:
-        klasse = "angebot hervorgehoben" if an.get("hervorheben") else "angebot"
+        klasse = "angebot" + (" hervorgehoben" if an.get("hervorheben") else "") + (" breit" if an.get("breit") else "")
         bild_html = bild(an["bild"], an["titel"], "angebot-bild", "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
-        knopf = "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
+        knopf = "Mehr erfahren" if an.get("seite") else "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
+        ziel = an.get("seite") or buchung(an.get("buchung"))
         teile.append(f"""<article class="{klasse}">
   {bild_html}
   <div class="angebot-text">
     <h3>{esc(an['titel'])}</h3>
     <p class="preis"><span>{esc(an['dauer'])}</span><strong>{esc(an['preis'])}</strong></p>
     <p>{esc(an['text'])}</p>
-    <a class="knopf{' zweit' if not an.get('hervorheben') else ''}" href="{esc(buchung(an.get('buchung')))}">{knopf}</a>
+    <a class="knopf{' zweit' if not an.get('hervorheben') else ''}" href="{esc(ziel)}">{knopf}</a>
   </div>
 </article>""")
     return '<div class="angebote">\n' + "\n".join(teile) + "\n</div>"
@@ -430,9 +456,10 @@ def bausteine_einsetzen(text, artikel):
         "{{neueste_artikel}}": lambda: raster(artikel[:3]),
         "{{alle_artikel}}": lambda: raster(artikel),
         "{{impuls}}": impuls_html,
-        "{{themen}}": themen_html,
+        "{{themen}}": lambda: themen_html(artikel),
         "{{themen_chips}}": lambda: themen_chips(None),
         "{{uebungen}}": uebungen_html,
+        "{{richtungen}}": richtungen_html,
         "{{habitica_url}}": lambda: esc(E["habitica_challenge"]),
         "{{buchung_url}}": lambda: esc(buchung()),
         "{{name}}": lambda: esc(E["name"]),
@@ -563,6 +590,7 @@ def app_bauen():
                       "heute": u["heute"], "statt": u["statt"], "monate": u["monate"],
                       "html": text_html(u["text"])} for u in UEBUNGEN],
         "bereiche": BEREICHE,
+        "richtungen": RICHTUNGEN,
         "habitica": E["habitica_challenge"],
     }
     (ziel / "daten.json").write_text(json.dumps(daten, ensure_ascii=False), encoding="utf-8")
@@ -629,6 +657,14 @@ def pruefen():
     return fehler, platzhalter
 
 
+def ungenutzte_bilder():
+    """Bilder in bilder/, auf die keine gebaute Datei verweist."""
+    text = "".join(d.read_text(encoding="utf-8") for d in AUSGABE.rglob("*")
+                   if d.suffix in (".html", ".css", ".js", ".json", ".xml"))
+    namen = {re.sub(r"-(800|1600)$", "", d.stem) for d in (WURZEL / "bilder").glob("*.webp")}
+    return sorted(n for n in namen if f"bilder/{n}-" not in text)
+
+
 # ---------------------------------------------------------------- Ablauf
 
 def main():
@@ -682,6 +718,7 @@ def main():
     app_bauen()
 
     fehler, platzhalter = pruefen()
+    ungenutzt = ungenutzte_bilder()
     seiten = len(list(AUSGABE.rglob("*.html")))
     print(f"Gebaut: {seiten} Seiten, {len(artikel)} Artikel -> docs/")
     if platzhalter:
@@ -696,7 +733,9 @@ def main():
         for f in fehler:
             print("  " + f)
         sys.exit(1)
-    if streng and platzhalter:
+    if ungenutzt:
+        print(f"HINWEIS: ungenutzte Bilder in bilder/ (löschen oder verwenden): {', '.join(ungenutzt)}")
+    if streng and (platzhalter or ungenutzt):
         sys.exit(1)
 
 
