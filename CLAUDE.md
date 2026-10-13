@@ -12,7 +12,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/artikel/<slug>.html` | Ein Blogartikel. URL wird `/post/<slug>/` (entspricht den alten Wix-Adressen) |
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
 | `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink, `seite` (Knopf „Mehr erfahren“ statt Buchung) und `breit` (Karte über die ganze Zeile) |
-| `inhalt/seminar.json` | Nächster Seminartermin: Datum, Zeit, Ort, Mitbringen, Plätze, Preis. Ist er vorbei oder leer, zeigt die Seite automatisch „Termin in Planung“ mit Anfrageformular |
+| `inhalt/seminar.json` | Nächster Seminartermin: `art` (z. B. „Pilot“, leer = normal), Datum, Zeit, Ort (Name, Straße, PLZ, Stadt), Mitbringen, Plätze, Preis (`kostenlos` → Knopf „Kostenlos anmelden“, sonst „Anmelden“). Ist er vorbei oder leer, zeigt die Seite automatisch „Termin in Planung“ mit Anfrageformular |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
 | `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke – auch für Quests, damit sie zur Einstiegsfrage passen) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (nicht spontan: Gewohnheit wirkt erst über Wochen, z. B. feste Schlafenszeiten; Quest braucht Planung, z. B. Ausflug). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
@@ -60,7 +60,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 3. Sichtprüfung bei Design-Änderungen: Screenshot (Playwright, Chromium unter `/opt/pw-browsers`) in Desktop-
    und Handybreite, hell und dunkel.
 4. Commit mit deutscher, verständlicher Nachricht, push auf `main` → nach ca. 1 Minute live. Zusätzlich baut
-   GitHub Actions jeden Montag neu (Jahreszahl, Impuls, Jahreszeit-Ideen).
+   GitHub Actions jeden Morgen neu (Impuls des Tages, Jahreszeit-Ideen, Seminar nach dem Termin auf „in Planung“).
+   Achtung: GitHub pausiert zeitgesteuerte Läufe, wenn 60 Tage lang niemand ins Repo pusht – dann einmal pushen
+   oder unter Actions wieder aktivieren.
 
 ### Neuer Artikel
 - Text als sauberes HTML (`<p>`, `<h2>`, `<h3>`, `<ul>`, `<blockquote>`, `<strong>`, `<em>`, `<a>`), keine
@@ -105,14 +107,15 @@ App-Dateien oder Daten ändern.
   montags/Monatsanfang, Federn + Stufen + eigene Belohnungen, Feedback nach 14 Tagen (Kontaktformular vorausgefüllt).
 - Erinnerungen über Kalender (Google-Link oder .ics), Gerätewechsel über Sicherungsdatei oder Link
   (`#import=…`, Daten gzip+base64 im Fragment – erreicht nie den Server).
-- „Probier’s heute“, Impuls auf der Startseite, „Andere Idee“ und die Wochen-Quest zeigen nur, was heute geht
-  (`heute`, passender Monat). Andere Ideen sind per Link erreichbar und zeigen „Braucht etwas Zeit“ (Gewohnheit),
+- „Probier’s heute“, Impuls auf der Startseite und „Andere Idee“ zeigen nur, was heute geht (`heute`, passender
+  Monat). Die Wochen-Quest filtert nur nach Monat: Quests mit Planung (Ausflug, Lazy Day) passen in eine Woche. Andere Ideen sind per Link erreichbar und zeigen „Braucht etwas Zeit“ (Gewohnheit),
   „Braucht etwas Planung“ (Quest, abhakbar) oder „Gerade nicht die Jahreszeit“ (ohne Kalender-Optionen) plus `statt`.
 - Von der Website verlinken: `/app/#idee=<slug>` zeigt genau diese Idee (legt nichts an; alte `#neu=`-Links
   ebenso), `/app/#bereich=<slug>` beantwortet die Einstiegsfrage (`ruhe`, `koerper`, …, `erlebnis`, `alle`).
 - Sicherungsdatei und Übertragungslink kommen von außen: `bereinigen()` übernimmt nur bekannte Felder in der
   erwarteten Form. Neue Felder im Zustand dort ergänzen, sonst gehen sie beim Gerätewechsel verloren.
-- Fehlen in einer alten, zwischengespeicherten `daten.json` neue Felder, muss die App weiterlaufen (Fallbacks).
+- Fehlen in einer alten, zwischengespeicherten `daten.json` neue Felder, muss die App weiterlaufen: Standardwerte
+  in `starten()` ergänzen (eine Stelle), nicht an jeder Lesestelle.
 - Datenformat nur abwärtskompatibel ändern (`version: 1`); neue Felder in `neuerZustand()` mit Standardwert.
 - Testen: `werkzeuge/browsertest.js` (siehe Arbeitsweise). Zum Öffnen eines `#idee=`-Links im Test erst eine
   andere Seite laden, sonst ist es nur ein Hash-Wechsel; nach `localStorage`-Änderungen neu laden.

@@ -6,9 +6,9 @@ name: Website veröffentlichen
 on:
   push:
     branches: [main]
-  # Einmal pro Woche neu bauen: Jahreszahl im Fuß, Impuls und Jahreszeit-Ideen bleiben aktuell
+  # Jeden Morgen neu bauen: Impuls des Tages, Jahreszeit-Ideen, Seminar nach dem Termin auf „in Planung“
   schedule:
-    - cron: "23 4 * * 1"
+    - cron: "23 4 * * *"
   workflow_dispatch:
 
 permissions:

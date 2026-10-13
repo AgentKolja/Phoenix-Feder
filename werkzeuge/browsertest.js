@@ -72,8 +72,9 @@ function server() {
   pruefe("Quest abhaken bleibt gespeichert", await p.isChecked('input[data-quest="poet"]'));
 
   const roh = fs.readFileSync(path.join(DOCS, "index.html"), "utf8");
-  const vorab = roh.match(/data-feld="titel">([^<]*)</)[1];
   await p.goto(`${B}/`, { waitUntil: "load" });
+  // vorab gerenderter Titel, HTML-Maskierung (z. B. &#x27;) aufgelöst
+  const vorab = await p.evaluate((s) => { const t = document.createElement("textarea"); t.innerHTML = s; return t.value; }, roh.match(/data-feld="titel">([^<]*)</)[1]);
   pruefe("Impuls: vorab gerenderte Idee = Idee nach JavaScript (kein Springen)", (await p.textContent('[data-feld="titel"]')) === vorab, vorab);
   const impulse = JSON.parse(roh.match(/id="impuls-daten">([^<]*)</)[1]).map((x) => x.s);
   pruefe("Impuls schlägt nur Ideen für heute vor", !impulse.some((s) => NICHT_HEUTE.includes(s)));
@@ -97,6 +98,10 @@ function server() {
     pruefe("Seminar-Anmeldung: nur Vorname und E-Mail sind Pflicht", pflicht.join(",") === "Vorname,email");
     const ics = await p.evaluate(async () => (await fetch(document.querySelector('a[href$="termin.ics"]').href)).text());
     pruefe("Kalenderdatei mit Erinnerung am Vortag", ics.includes("TRIGGER:-P1D") && ics.split("\r\n").every((z) => new TextEncoder().encode(z).length <= 75));
+    const ld = await p.$$eval('script[type="application/ld+json"]', (l) => l.map((x) => JSON.parse(x.textContent)).find((x) => x["@type"] === "Event"));
+    pruefe("Termin als schema.org-Event für Suchmaschinen", Boolean(ld?.startDate && ld.location?.address?.streetAddress), ld?.startDate);
+    const og = await p.getAttribute('meta[property="og:image"]', "content");
+    pruefe("Vorschaubild für WhatsApp & Co. als JPG", og.endsWith(".jpg") && fs.existsSync(path.join(DOCS, new URL(og).pathname)));
     await p.route("https://api.web3forms.com/**", (route) => route.fulfill({ contentType: "application/json", body: '{"success":true}' }));
     await p.fill('form[data-danach] [name="Vorname"]', "Test");
     await p.fill('form[data-danach] [name="email"]', "test@example.org");
@@ -155,8 +160,9 @@ function server() {
   await p.click('[data-aktion="laenger"]');
   await p.waitForTimeout(200);
   pruefe("„Länger ausprobieren“ öffnet „Heute“ mit Menüleiste", (await p.evaluate(() => ansicht)) === "heute" && await p.isVisible(".app-navi"));
-  const questVorschlaege = await p.evaluate(() => { const s = new Set(); for (let i = 0; i < 300; i++) { questVorschlag = null; questKarte(); s.add(questVorschlag); } return [...s]; });
-  pruefe("Wochen-Quest schlägt im Oktober keine Bienen vor", !questVorschlaege.includes("bee-love"));
+  // ohne aktive Quest, sonst zeigt questKarte() nur diese und schlägt nichts vor
+  const questVorschlaege = await p.evaluate(() => { Z.quest = null; const s = new Set(); for (let i = 0; i < 300; i++) { questVorschlag = null; questKarte(); s.add(questVorschlag); } return [...s]; });
+  pruefe("Wochen-Quest schlägt im Oktober keine Bienen vor", questVorschlaege.length > 10 && !questVorschlaege.includes("bee-love"), `${questVorschlaege.length} verschiedene`);
   await app.close();
 
   const sommer = await mobil();

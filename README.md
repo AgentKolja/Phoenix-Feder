@@ -28,5 +28,5 @@ Optional: [Google Search Console](https://search.google.com/search-console) → 
 ## Technik in einem Satz
 
 `python3 bauen.py` baut aus `inhalt/` den Ordner `docs/`, prüft alle Links und Bilder, und GitHub Actions
-veröffentlicht das Ergebnis (bei jedem Push und einmal pro Woche). Keine Datenbank, kein CMS, keine Cookies,
+veröffentlicht das Ergebnis (bei jedem Push und jeden Morgen). Keine Datenbank, kein CMS, keine Cookies,
 kein Tracking. `werkzeuge/browsertest.js` prüft Website und App im Browser.

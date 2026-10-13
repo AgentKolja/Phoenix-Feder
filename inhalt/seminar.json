@@ -1,8 +1,15 @@
 {
+  "art": "Pilot",
   "datum": "2026-11-14",
   "beginn": "14:00",
   "ende": "16:30",
-  "ort": "Warung Yoga Aachen, Marienbongard 24, 52062 Aachen (am Ponttor)",
+  "ort": {
+    "name": "Warung Yoga Aachen",
+    "strasse": "Marienbongard 24",
+    "plz": "52062",
+    "stadt": "Aachen",
+    "zusatz": "am Ponttor"
+  },
   "ort_hinweis": "",
   "mitbringen": "Bequeme Kleidung. Matten und Yogablöcke sind da.",
   "plaetze": 12,

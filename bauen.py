@@ -7,6 +7,7 @@ Aufruf:  python3 bauen.py            baut und prueft
 Nur Python-Standardbibliothek. Der Build prueft am Ende jeden internen Link und jedes Bild;
 ist etwas kaputt, endet er mit Fehlercode 1 und docs/ darf so nicht veroeffentlicht werden.
 """
+import functools
 import hashlib
 import html
 import json
@@ -406,7 +407,7 @@ def angebote_html():
         if an.get("seminar"):
             t = seminar_termin()
             an = {**an, "dauer": f"{t['tag_kurz']} · {an['dauer']}" if t else an["dauer"],
-                  "preis": SEMINAR["preis"] if t else "auf Anfrage"}
+                  "preis": SEMINAR["preis"] if t else an.get("preis", "auf Anfrage")}
         klasse = "angebot" + (" hervorgehoben" if an.get("hervorheben") else "") + (" breit" if an.get("breit") else "")
         bild_html = bild(an["bild"], an["titel"], "angebot-bild", "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
         knopf = "Mehr erfahren" if an.get("seite") else "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
@@ -425,6 +426,16 @@ def angebote_html():
     return '<div class="angebote">\n' + "\n".join(teile) + "\n</div>"
 
 
+def formular_anfang(betreff, weiter, zusatz=""):
+    """Gemeinsamer Anfang aller Web3Forms-Formulare: Schlüssel, Betreff, Weiterleitung ohne JavaScript,
+    unsichtbares Feld gegen Spam-Bots."""
+    return f"""<input type="hidden" name="access_key" value="{esc(E['formular_schluessel'])}">
+  <input type="hidden" name="subject" value="{esc(betreff)}">
+  <input type="hidden" name="from_name" value="phoenix-feder.de">
+  <input type="hidden" name="redirect" value="{E['domain']}{weiter}">{zusatz}
+  <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">"""
+
+
 def kontakt_html(vorauswahl=""):
     if not E["formular_schluessel"]:
         wege = []
@@ -435,11 +446,7 @@ def kontakt_html(vorauswahl=""):
         return (f'<div class="hinweis"><p>Das Kontaktformular wird gerade eingerichtet. '
                 f'Bis dahin erreichst du mich über {" oder ".join(wege)}.</p></div>')
     return f"""<form class="formular" action="https://api.web3forms.com/submit" method="POST" data-kontakt>
-  <input type="hidden" name="access_key" value="{esc(E['formular_schluessel'])}">
-  <input type="hidden" name="subject" value="Neue Anfrage über phoenix-feder.de">
-  <input type="hidden" name="from_name" value="phoenix-feder.de">
-  <input type="hidden" name="redirect" value="{E['domain']}/danke/">
-  <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">
+  {formular_anfang("Neue Anfrage über phoenix-feder.de", "/danke/")}
   <div class="felder">
     <label><span>Vorname <span aria-hidden="true">*</span></span><input name="Vorname" required autocomplete="given-name"></label>
     <label><span>Nachname</span><input name="Nachname" autocomplete="family-name"></label>
@@ -461,9 +468,12 @@ def kontakt_html(vorauswahl=""):
 
 # ---------------------------------------------------------------- Seminar
 
+@functools.cache
 def seminar_termin():
-    """Der nächste Termin mit fertigen Texten – oder None, wenn keiner geplant oder er vorbei ist."""
-    if not SEMINAR.get("datum"):
+    """Der nächste Termin mit fertigen Texten – oder None, wenn keiner geplant ist, er vorbei ist oder das
+    Formular fehlt (dann ist keine Anmeldung möglich). Der Bau läuft täglich, also schaltet die Seite am Tag
+    nach dem Termin von selbst auf „in Planung“."""
+    if not SEMINAR.get("datum") or not E["formular_schluessel"]:
         return None
     tag = date.fromisoformat(SEMINAR["datum"])
     if tag < date.today():
@@ -471,11 +481,22 @@ def seminar_termin():
     zone = ZoneInfo("Europe/Berlin")
     start = datetime.fromisoformat(f"{SEMINAR['datum']}T{SEMINAR['beginn']}").replace(tzinfo=zone)
     ende = datetime.fromisoformat(f"{SEMINAR['datum']}T{SEMINAR['ende']}").replace(tzinfo=zone)
-    utc = lambda d: d.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    zeit = f"{SEMINAR['beginn']}–{SEMINAR['ende']} Uhr"
-    return {**SEMINAR, "start": utc(start), "ende_utc": utc(ende), "zeit": zeit,
+    o = SEMINAR["ort"]
+    art = SEMINAR.get("art", "")
+    return {**SEMINAR, "start_iso": start.isoformat(), "ende_iso": ende.isoformat(),
+            "start": start.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
+            "ende_utc": ende.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
+            "zeit": f"{SEMINAR['beginn']}–{SEMINAR['ende']} Uhr", "minuten": int((ende - start).total_seconds() // 60),
+            "ort_text": f"{o['name']}, {o['strasse']}, {o['plz']} {o['stadt']}" + (f" ({o['zusatz']})" if o.get("zusatz") else ""),
+            "kostenlos": SEMINAR["preis"].strip().lower() == "kostenlos",
+            "name": f"Achtsamkeitsseminar ({art})" if art else "Achtsamkeitsseminar",
             "tag_lang": f"{WOCHENTAGE[tag.weekday()]}, {datum_de(SEMINAR['datum'])}",
             "tag_kurz": f"{WOCHENTAGE[tag.weekday()][:2]} {tag.day}.{tag.month}."}
+
+
+def ics_text(text):
+    """Text für Kalenderdateien maskieren (RFC 5545)."""
+    return str(text).replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
 
 
 def ics_falten(zeile):
@@ -490,35 +511,57 @@ def ics_falten(zeile):
 
 
 def seminar_ics(t):
-    """Kalenderdatei mit Erinnerung am Vortag und zwei Stunden vorher."""
-    text = (f"Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln. {t['ort_hinweis']} "
-            f"{('Mitbringen: ' + t['mitbringen']) if t.get('mitbringen') else ''} ".replace("  ", " ")
-            + f"{E['domain']}/achtsamkeitsseminar/").replace(",", "\\,").replace(";", "\\;")
+    """Kalenderdatei mit Erinnerung am Vortag und zwei Stunden vorher. DTSTAMP und SEQUENCE ändern sich bei
+    jedem Bau, damit Kalender eine geänderte Datei (z. B. neuer Ort) als Aktualisierung übernehmen."""
+    jetzt = datetime.now(timezone.utc)
+    stempel = jetzt.strftime("%Y%m%dT%H%M%SZ")
+    beschreibung = " ".join(x for x in (
+        "Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln.", t["ort_hinweis"],
+        f"Mitbringen: {t['mitbringen']}" if t.get("mitbringen") else "", f"{E['domain']}/achtsamkeitsseminar/") if x)
     zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Seminar//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
-              "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{t['start']}",
-              f"DTSTART:{t['start']}", f"DTEND:{t['ende_utc']}", "SUMMARY:Achtsamkeitsseminar (Pilot)",
-              f"LOCATION:{t['ort'].replace(',', chr(92) + ',')}", f"DESCRIPTION:{text}", f"URL:{E['domain']}/achtsamkeitsseminar/"]
+              "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{stempel}", f"LAST-MODIFIED:{stempel}",
+              f"SEQUENCE:{int(jetzt.timestamp()) // 60}", f"DTSTART:{t['start']}", f"DTEND:{t['ende_utc']}",
+              f"SUMMARY:{ics_text(t['name'])}", f"LOCATION:{ics_text(t['ort_text'])}",
+              f"DESCRIPTION:{ics_text(beschreibung)}", f"URL:{E['domain']}/achtsamkeitsseminar/"]
     for vorher in ("-P1D", "-PT2H"):
-        zeilen += ["BEGIN:VALARM", f"TRIGGER:{vorher}", "ACTION:DISPLAY", "DESCRIPTION:Achtsamkeitsseminar", "END:VALARM"]
+        zeilen += ["BEGIN:VALARM", f"TRIGGER:{vorher}", "ACTION:DISPLAY", f"DESCRIPTION:{ics_text(t['name'])}", "END:VALARM"]
     return "\r\n".join(ics_falten(z) for z in zeilen + ["END:VEVENT", "END:VCALENDAR", ""])
+
+
+def seminar_ld(t):
+    """Termin als schema.org-Event, damit Suchmaschinen ihn als Veranstaltung erkennen."""
+    o = t["ort"]
+    ld = {"@context": "https://schema.org", "@type": "Event", "name": t["name"],
+          "description": "Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln – mit Übungen und Austausch.",
+          "startDate": t["start_iso"], "endDate": t["ende_iso"],
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled",
+          "location": {"@type": "Place", "name": o["name"], "address": {"@type": "PostalAddress", "streetAddress": o["strasse"],
+                       "postalCode": o["plz"], "addressLocality": o["stadt"], "addressCountry": "DE"}},
+          "image": [f"{E['domain']}/bilder/og-seminar.jpg"], "maximumAttendeeCapacity": t["plaetze"],
+          "organizer": {"@type": "Person", "name": E["autor"], "url": E["domain"] + "/about/"}}
+    if t["kostenlos"]:
+        ld["offers"] = {"@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock",
+                        "url": f"{E['domain']}/achtsamkeitsseminar/#anmelden"}
+    return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
 
 
 def seminar_kalender_html(t, versteckt=False):
     google = "https://calendar.google.com/calendar/render?" + urlencode({
-        "action": "TEMPLATE", "text": "Achtsamkeitsseminar (Pilot)", "dates": f"{t['start']}/{t['ende_utc']}",
-        "location": t["ort"], "details": f"{t['ort_hinweis']} {E['domain']}/achtsamkeitsseminar/".strip()})
+        "action": "TEMPLATE", "text": t["name"], "dates": f"{t['start']}/{t['ende_utc']}", "location": t["ort_text"],
+        "details": f"{t['ort_hinweis']} {E['domain']}/achtsamkeitsseminar/".strip()})
     return f"""<div class="kalender-block" id="seminar-kalender"{" hidden" if versteckt else ""}>
-  <p><strong>Trag dir den Termin gleich ein</strong> – mit Erinnerung am Vortag:</p>
+  <p><strong>Trag dir den Termin gleich ein:</strong></p>
   <div class="knopf-reihe">
     <a class="knopf zweit klein-knopf" href="{esc(google)}" target="_blank" rel="noopener">Google Kalender</a>
     <a class="knopf zweit klein-knopf" href="/achtsamkeitsseminar/termin.ics" download>Apple, Outlook &amp; Co.</a>
   </div>
+  <p class="klein">Die Datei für Apple, Outlook &amp; Co. erinnert dich am Vortag. Bei Google gilt deine übliche Erinnerung.</p>
 </div>"""
 
 
 def seminar_anmeldung_html():
     t = seminar_termin()
-    if not t or not E["formular_schluessel"]:
+    if not t:
         return f"""<div>
       <p class="oberzeile">Termine</p>
       <h2>Beim nächsten Seminar dabei sein</h2>
@@ -528,44 +571,43 @@ def seminar_anmeldung_html():
     {kontakt_html("Achtsamkeitsseminar")}"""
     betreff = f"Anmeldung Achtsamkeitsseminar {t['tag_lang']}"
     return f"""<div>
-      <p class="oberzeile">Pilot-Termin</p>
+      <p class="oberzeile">{esc(t['art']) + "-Termin" if t.get('art') else "Nächster Termin"}</p>
       <h2>{esc(t['tag_lang'])}</h2>
       <ul class="termin-daten">
-        <li><strong>Zeit:</strong> {esc(t['zeit'])} (150 Minuten mit Pause)</li>
-        <li><strong>Ort:</strong> {esc(t['ort'])}{" – " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
+        <li><strong>Zeit:</strong> {esc(t['zeit'])} ({t['minuten']} Minuten)</li>
+        <li><strong>Ort:</strong> {esc(t['ort_text'])}{" – " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
         {f"<li><strong>Mitbringen:</strong> {esc(t['mitbringen'])}</li>" if t.get('mitbringen') else ""}
         <li><strong>Plätze:</strong> {t['plaetze']}</li>
-        <li><strong>Preis:</strong> {esc(t['preis_hinweis'])}</li>
+        <li><strong>Preis:</strong> {esc(t['preis_hinweis'] or t['preis'])}</li>
       </ul>
       <p class="klein">Du kannst nicht? Sag kurz Bescheid, dann rückt jemand nach. Du möchtest das Seminar für dein Studio, deine Gruppe oder dein Team anfragen? Schreib mir über das <a href="/#kontakt">Kontaktformular</a>.</p>
     </div>
     <div>
       <form class="formular" action="https://api.web3forms.com/submit" method="POST" data-kontakt
             data-erfolg="Danke, du bist angemeldet! Ich schicke dir am Vortag eine kurze Erinnerung." data-danach="seminar-kalender">
-        <input type="hidden" name="access_key" value="{esc(E['formular_schluessel'])}">
-        <input type="hidden" name="subject" value="{esc(betreff)}">
-        <input type="hidden" name="from_name" value="phoenix-feder.de">
-        <input type="hidden" name="Anliegen" value="{esc(betreff)}">
-        <input type="hidden" name="redirect" value="{E['domain']}/angemeldet/">
-        <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">
+        {formular_anfang(betreff, "/angemeldet/", f'<input type="hidden" name="Anliegen" value="{esc(betreff)}">')}
         <div class="felder">
           <label><span>Vorname <span aria-hidden="true">*</span></span><input name="Vorname" required autocomplete="given-name"></label>
           <label><span>E-Mail <span aria-hidden="true">*</span></span><input type="email" name="email" required autocomplete="email"></label>
         </div>
         <label><span>Magst du mir vorab etwas mitgeben? (freiwillig)</span><textarea name="message" rows="2"></textarea></label>
         <p class="klein">Deine Angaben nutze ich nur für dieses Seminar (Bestätigung, Erinnerung, Rückfragen). Mehr in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
-        <button class="knopf" type="submit">Kostenlos anmelden</button>
+        <button class="knopf" type="submit">{"Kostenlos anmelden" if t["kostenlos"] else "Anmelden"}</button>
         <p class="status" role="status" aria-live="polite"></p>
       </form>
       {seminar_kalender_html(t, versteckt=True)}
     </div>
-    <script src="/kontakt.js" defer></script>"""
+    <script src="/kontakt.js" defer></script>
+    {seminar_ld(t)}"""
 
 
 def seminar_hinweis_html():
     t = seminar_termin()
-    return (f'<p class="termin-hinweis"><strong>Pilot: {esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> · {esc(t["ort"].split(",")[0])} · {esc(t["preis"])}</p>'
-            if t else "")
+    if not t:
+        return ""
+    vorne = f"{esc(t['art'])}: " if t.get("art") else ""
+    return (f'<p class="termin-hinweis"><strong>{vorne}{esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> · '
+            f'{esc(t["ort"]["name"])} · {esc(t["preis"])}</p>')
 
 
 def seminar_kalender_seite():
@@ -610,7 +652,8 @@ def bausteine_einsetzen(text, artikel):
 def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", indexieren=True):
     voller_titel = E["name"] + " – " + E["untertitel"] if pfad == "/" else f"{titel} | {E['name']}"
     url = E["domain"] + pfad
-    og = f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"
+    # og_bild: Name eines WebP-Paars oder eine eigene Datei mit Endung (JPG wird überall als Vorschau angezeigt)
+    og = f"{E['domain']}/bilder/{og_bild}" if og_bild and "." in og_bild else f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"
     navi = ""
     for ziel, text in NAVI:
         aktiv = pfad.startswith(ziel) or (ziel == "/blog/" and pfad.startswith(("/post/", "/thema/")))
@@ -791,7 +834,7 @@ def ungenutzte_bilder():
     text = "".join(d.read_text(encoding="utf-8") for d in AUSGABE.rglob("*")
                    if d.suffix in (".html", ".css", ".js", ".json", ".xml"))
     namen = {re.sub(r"-(800|1600)$", "", d.stem) for d in (WURZEL / "bilder").glob("*.webp")}
-    return sorted(n for n in namen if f"bilder/{n}-" not in text)
+    return sorted(n for n in namen if not re.search(rf"bilder/{re.escape(n)}-(800|1600)\.webp", text))
 
 
 # ---------------------------------------------------------------- Ablauf

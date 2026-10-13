@@ -89,7 +89,7 @@
   // Alte Sprungziele wie /gewohnheiten/#waldbaden: Übung und eingeklappte Liste öffnen
   const oeffnen = () => {
     const ziel = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    const details = ziel && (ziel.querySelector("details") || ziel.closest("details"));
+    const details = ziel && (ziel.matches("details") ? ziel : ziel.querySelector("details") || ziel.closest("details"));
     if (!details) return;
     details.open = true;
     for (let d = details.parentElement?.closest("details"); d; d = d.parentElement?.closest("details")) d.open = true;

@@ -66,7 +66,7 @@ function info(slug) {
   const t = TAEGLICH.find((x) => x.slug === slug);
   const u = U[slug] || {};
   return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich,
-    heute: u.heute ?? u.kurz ?? "", statt: u.statt || [], monate: u.monate || [] };
+    heute: u.heute ?? "", statt: u.statt ?? [], monate: u.monate ?? [] };
 }
 
 // ---------------------------------------------------------------- Speicher
@@ -215,10 +215,9 @@ function render() {
 // ---------------------------------------------------------------- Probier's heute
 
 // Nur, was man heute wirklich ausprobieren kann (z. B. nicht „feste Schlafenszeiten“, keine Bienen im Winter).
-// Fehlt „heute“ (alte daten.json aus dem Cache), gilt die Idee als machbar.
-const passtZurJahreszeit = (u) => !u.monate?.length || u.monate.includes(new Date().getMonth() + 1);
-const heuteMoeglich = (u) => Boolean(u.heute ?? u.kurz ?? true) && passtZurJahreszeit(u);
-const richtungen = () => D.richtungen || [...(D.bereiche || []), { slug: "alle", emoji: "🎲", titel: "Überrasch mich", text: "" }];
+const passtZurJahreszeit = (u) => !u.monate.length || u.monate.includes(new Date().getMonth() + 1);
+const heuteMoeglich = (u) => Boolean(u.heute) && passtZurJahreszeit(u);
+const richtungen = () => D.richtungen;
 
 function ideenPool() {
   const alle = D.uebungen.filter((u) => (u.art === "gewohnheit" || u.art === "quest") && heuteMoeglich(u));
@@ -781,10 +780,11 @@ function bereinigen(z) {
     quest: slugOk(z.quest) ? z.quest : null,
     questDaten: Object.fromEntries(eintraege(z.questDaten).filter(([q, d]) => slugOk(q) && datumOk(d))),
     automatik: Object.fromEntries(eintraege(z.automatik).filter(([g]) => slugOk(g)).map(([g, l]) => [g,
-      liste(l).filter((x) => datumOk(x?.datum) && Number.isInteger(x.wert)).map((x) => ({ datum: x.datum, wert: x.wert }))])),
+      liste(l).filter((x) => datumOk(x?.datum) && Number.isInteger(x.wert) && x.wert >= 1 && x.wert <= AUTOMATIK.length)
+        .map((x) => ({ datum: x.datum, wert: x.wert }))])),
     belohnungen: liste(z.belohnungen).filter((b) => /^\d{1,20}$/.test(String(b?.id)) && Number.isFinite(b.kosten))
       .map((b) => ({ id: String(b.id), name: text(b.name, 80), kosten: Math.max(10, Math.round(b.kosten)) })),
-    eingeloest: liste(z.eingeloest).filter((x) => Number.isFinite(x?.kosten))
+    eingeloest: liste(z.eingeloest).filter((x) => Number.isInteger(x?.kosten) && x.kosten >= 0)
       .map((x) => ({ id: String(x.id).slice(0, 20), datum: datumOk(x.datum) ? x.datum : n.start, kosten: x.kosten })),
     hinweise: Object.fromEntries(eintraege(z.hinweise).filter(([k, d]) => /^[a-z0-9-]{1,40}$/.test(k) && datumOk(d))),
     erinnerung: { morgen: zeitOk(z.erinnerung?.morgen) ? z.erinnerung.morgen : n.erinnerung.morgen,
@@ -1099,7 +1099,9 @@ async function starten() {
     $("#app").innerHTML = '<p class="hinweis-app">Die Übungen konnten nicht geladen werden. Prüfe deine Verbindung und lade die Seite neu.</p>';
     return;
   }
-  D.uebungen.forEach((u) => { U[u.slug] = u; });
+  // Eine ältere daten.json aus dem Cache kennt neuere Felder nicht: hier einmal ergänzen statt überall abfragen
+  D.uebungen.forEach((u) => { u.heute ??= u.kurz; u.statt ??= []; u.monate ??= []; U[u.slug] = u; });
+  D.richtungen ??= [...D.bereiche, { slug: "alle", emoji: "🎲", titel: "Überrasch mich", text: "" }];
   Z.gewohnheiten = Z.gewohnheiten.filter((g) => U[g.slug]); // falls eine Übung umbenannt wurde
   route();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
