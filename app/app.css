@@ -53,6 +53,32 @@ body.blatt-offen { overflow: hidden; }
 .chips-app button[aria-pressed="true"], .chips-app button:hover { border-color: var(--akzent); color: var(--akzent); }
 .chips-app button[aria-pressed="true"] { background: var(--akzent); color: var(--auf-akzent); }
 
+/* Willkommen und Auswahl-Listen */
+.wahl-liste { display: grid; gap: 0.55rem; margin-bottom: 0.8rem; }
+.wahl-zeile { display: flex; align-items: center; gap: 0.9rem; width: 100%; text-align: left; padding: 0.85rem 1rem; border: 2px solid var(--linie);
+  border-radius: var(--rund); background: var(--karte); color: var(--text); font: inherit; cursor: pointer; }
+.wahl-zeile .wahl-emoji { font-size: 1.7rem; line-height: 1; flex: none; }
+.wahl-text { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; min-width: 0; }
+.wahl-text span { font-size: 0.92rem; color: var(--leise); }
+.wahl-haken { flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid var(--linie); display: grid; place-items: center; color: transparent; font-weight: 700; }
+.wahl-zeile[aria-pressed="true"] { border-color: var(--akzent); background: color-mix(in srgb, var(--akzent-hell) 12%, var(--karte)); }
+.wahl-zeile[aria-pressed="true"] .wahl-haken { background: var(--akzent); border-color: var(--akzent); color: var(--auf-akzent); }
+.anker-wahl { display: grid; gap: 0.6rem; }
+.anker-wahl > span { display: flex; flex-direction: column; gap: 0.1rem; }
+.punkt-erklaerung { font-size: 0.9rem; color: var(--leise); line-height: 1.35; }
+.gruppe-app { font-size: 1.1rem; margin: 1.6rem 0 0.2rem; }
+.erklaerung-gross { font-size: 1.1rem; margin-bottom: 1rem; }
+.aufklapp { margin: 1rem 0; border-top: 1px solid var(--linie); padding-top: 0.6rem; }
+.aufklapp > summary { cursor: pointer; font-weight: 600; color: var(--akzent); padding: 0.4rem 0; list-style: none; }
+.aufklapp > summary::-webkit-details-marker { display: none; }
+.aufklapp > summary::before { content: "＋ "; }
+.aufklapp[open] > summary::before { content: "－ "; }
+.aufklapp[open] > summary { margin-bottom: 0.6rem; }
+.wort-wahl { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.8rem; margin-bottom: 0.4rem; }
+.wort-wahl > span { font-weight: 600; }
+.wort-wahl .chips-app { margin: 0.2rem 0; }
+.wort-wahl .link-knopf { font-size: 0.88rem; font-weight: 500; color: var(--leise); }
+
 /* Willkommen */
 .willkommen { margin-bottom: 1.2rem; }
 .wahl-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; }

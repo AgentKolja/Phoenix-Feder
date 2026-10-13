@@ -13,6 +13,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/seiten/<name>.html` | Seiten. `index` → `/`, sonst `/<name>/`; `404` → `/404.html` |
 | `inhalt/angebote.json` | Angebote mit Dauer, Preis, Text, Bild, optional eigenem Buchungslink |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
+| `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“) und der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke). Von Hand gepflegt; der Build bricht ab, wenn eine Übung keine Erklärung hat |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
@@ -88,4 +89,7 @@ App-Dateien oder Daten ändern.
   im Test die Seite neu laden (reiner Hash-Wechsel lädt nicht neu).
 - Google-Anmeldung/Sync gibt es bewusst noch nicht: bräuchte eine OAuth-Client-ID (Google Cloud) und würde
   Daten im Drive-App-Ordner des Nutzers ablegen. Erst bauen, wenn die Client-ID existiert, und dann mit ihr testen.
+- Weniger ist mehr: Verspielte Namen (Singvogel, Superhiero …) nie ohne Erklärzeile zeigen. Lange Texte,
+  Einstellungen und Statistiken hinter „Aufklappen“, höchstens ein Hinweis gleichzeitig. Einstieg:
+  Bereich → passende Gewohnheiten → Zeitpunkt.
 

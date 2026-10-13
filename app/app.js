@@ -35,6 +35,7 @@ let ansicht = "heute";
 let tagVersatz = 0; // 0 = heute, -1 = gestern nachtragen
 let filter = "gewohnheit";
 let questVorschlag = null;
+let startBereiche = [];
 let startAuswahl = [];
 let startSchritt = 1;
 let startAnker = {};
@@ -55,7 +56,7 @@ const istTaeglich = (slug) => TAEGLICH.some((t) => t.slug === slug);
 function info(slug) {
   const t = TAEGLICH.find((x) => x.slug === slug);
   const u = U[slug] || {};
-  return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz };
+  return { slug, emoji: t?.emoji || u.emoji || "✨", titel: t?.titel || u.titel || slug, art: u.art, html: u.html, kurz: u.kurz, bereich: u.bereich };
 }
 
 // ---------------------------------------------------------------- Speicher
@@ -197,89 +198,106 @@ function render() {
   $("[data-federn]").textContent = `🪶 ${federnVerfuegbar()}`;
 }
 
+function wahlZeile(aktion, wert, emoji, titel, text, gewaehlt) {
+  return `<button class="wahl-zeile" data-aktion="${aktion}" data-slug="${wert}" aria-pressed="${gewaehlt}">
+  <span class="wahl-emoji" aria-hidden="true">${emoji}</span><span class="wahl-text"><strong>${esc(titel)}</strong><span>${esc(text)}</span></span>
+  <span class="wahl-haken" aria-hidden="true">✓</span></button>`;
+}
+
 function ansichtStart() {
   if (startSchritt === 1) {
-    const auswahl = D.uebungen.filter((u) => u.art === "gewohnheit" && !istTaeglich(u.slug));
     return `<section class="willkommen">
-  <p class="oberzeile">Stressfrei – die Kunst, das Leben zu genießen</p>
-  <h1>Sei der Hauptcharakter deines Lebens.</h1>
-  <p>Wähle <strong>drei Gewohnheiten</strong>, die dich ansprechen. Es sind keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. 1 bis 10 Minuten am Tag genügen.</p>
-  <p class="klein">Kein Konto nötig. Alles bleibt auf diesem Gerät.</p>
+  <p class="oberzeile">Schritt 1 von 3</p>
+  <h1>Was wünschst du dir gerade?</h1>
+  <p>Wähle einen oder zwei Bereiche. Danach zeige ich dir nur die passenden Gewohnheiten.</p>
 </section>
-<div class="wahl-raster">${auswahl.map((u) => `<button class="wahl" data-aktion="start-wahl" data-slug="${u.slug}" aria-pressed="${startAuswahl.includes(u.slug)}">
-  <span class="wahl-emoji" aria-hidden="true">${u.emoji}</span><span>${esc(u.titel)}</span></button>`).join("")}</div>
+<div class="wahl-liste">${D.bereiche.map((b) => wahlZeile("start-bereich", b.slug, b.emoji, b.titel, b.text, startBereiche.includes(b.slug))).join("")}</div>
+<p class="klein">Kein Konto nötig. Alles bleibt auf diesem Gerät.</p>
+<div class="leiste-unten"><button class="knopf" data-aktion="start-weiter" ${startBereiche.length ? "" : "disabled"}>Weiter</button></div>`;
+  }
+  if (startSchritt === 2) {
+    const passend = D.uebungen.filter((u) => u.art === "gewohnheit" && !istTaeglich(u.slug) && startBereiche.includes(u.bereich));
+    return `<section class="willkommen">
+  <p class="oberzeile">Schritt 2 von 3</p>
+  <h1>Wähle bis zu drei Gewohnheiten</h1>
+  <p>Es sind keine Zusatzaufgaben – eher ein Fokus darauf, <em>wie</em> du deinen Tag lebst.</p>
+</section>
+<div class="wahl-liste">${passend.map((u) => wahlZeile("start-wahl", u.slug, u.emoji, u.titel, u.kurz, startAuswahl.includes(u.slug))).join("")}</div>
 ${startAuswahl.length > 3 ? '<p class="klein">Tipp: Mit drei startet es sich leichter. Mehr kannst du jederzeit dazunehmen.</p>' : ""}
-<div class="leiste-unten"><button class="knopf" data-aktion="start-weiter" ${startAuswahl.length ? "" : "disabled"}>Weiter${startAuswahl.length ? ` mit ${startAuswahl.length}` : ""}</button></div>`;
+<div class="leiste-unten"><button class="knopf zweit" data-aktion="start-zurueck">Zurück</button><button class="knopf" data-aktion="start-weiter" ${startAuswahl.length ? "" : "disabled"}>Weiter${startAuswahl.length ? ` mit ${startAuswahl.length}` : ""}</button></div>`;
   }
   return `<section class="willkommen">
-  <p class="oberzeile">Schritt 2 von 2</p>
+  <p class="oberzeile">Schritt 3 von 3</p>
   <h1>Wann passt es in deinen Tag?</h1>
-  <p>Gewohnheiten halten am besten, wenn sie an etwas hängen, das du ohnehin tust: <em>„Nach dem Kaffee …“</em></p>
+  <p>Am besten hängst du eine Gewohnheit an etwas, das du ohnehin tust. Das kannst du später jederzeit ändern.</p>
 </section>
 ${startAuswahl.map((slug) => {
     const u = info(slug);
-    return `<div class="karte-app"><h3>${u.emoji} ${esc(u.titel)}</h3><div class="chips-app">${ANKER.map((a) => `<button data-aktion="start-anker" data-slug="${slug}" data-wert="${esc(a)}" aria-pressed="${startAnker[slug] === a}">${esc(a)}</button>`).join("")}</div></div>`;
+    return `<label class="karte-app anker-wahl"><span><strong>${u.emoji} ${esc(u.titel)}</strong><span class="klein">${esc(u.kurz)}</span></span>
+  <select data-start-anker="${slug}"><option value="">Wann es passt</option>${ANKER.map((a) => `<option ${startAnker[slug] === a ? "selected" : ""}>${esc(a)}</option>`).join("")}</select></label>`;
   }).join("")}
 <div class="leiste-unten"><button class="knopf zweit" data-aktion="start-zurueck">Zurück</button><button class="knopf" data-aktion="start-fertig">Los geht’s</button></div>`;
 }
+
+const guteDinge = (n) => (n === 1 ? "1 gutes Ding" : `${n} gute Dinge`);
 
 function gruss() {
   const h = new Date().getHours();
   return h < 11 ? "Guten Morgen" : h < 17 ? "Hallo" : "Guten Abend";
 }
 
-function punktZeile(slug, d, meta = "") {
+function punktZeile(slug, d, anker = "") {
   const u = info(slug);
   const fertig = erledigt(d, slug);
   const k = kette(slug);
-  const zusatz = [meta, k > 1 ? `🔥 ${k}` : ""].filter(Boolean).join(" · ");
+  const zusatz = [anker, k > 1 ? `🔥 ${k} Tage` : ""].filter(Boolean).join(" · ");
   const sanft = tagVersatz === 0 && !fertig && gesternVerpasst(slug) ? '<span class="sanft">Gestern ausgelassen – kein Problem. Heute zählt.</span>' : "";
   return `<li class="punkt${fertig ? " fertig" : ""}">
   <button class="haken" data-aktion="abhaken" data-slug="${slug}" aria-pressed="${fertig}" aria-label="${esc(u.titel)} ${fertig ? "erledigt" : "abhaken"}">✓</button>
   <button class="punkt-text" data-aktion="details" data-slug="${slug}">
     <span class="punkt-titel"><span aria-hidden="true">${u.emoji}</span> ${esc(u.titel)}</span>
+    <span class="punkt-erklaerung">${esc(u.kurz || "")}</span>
     ${zusatz ? `<span class="punkt-meta">${esc(zusatz)}</span>` : ""}${sanft}
   </button>
 </li>`;
 }
 
+// Höchstens ein Hinweis auf einmal – der wichtigste zuerst
 function hinweisKarten() {
   const heute = tag();
-  const karten = [];
-  const wochentag = new Date().getDay();
-  if (new Date().getDate() === 1 && !Z.hinweise[`neustart-${heute}`]) {
-    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Neuer Monat, frischer Start 🌱</strong> Zeit für deine Monatsrückschau: Was lief gut, was willst du anpassen?</p>
-      <div class="knopf-reihe"><a class="knopf klein-knopf" href="#fortschritt">Rückschau ansehen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Später</button></div></div>`);
-  } else if (wochentag === 1 && !Z.hinweise[`neustart-${heute}`]) {
-    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Neue Woche, frischer Start 🌱</strong> Passt deine Auswahl noch zu dir? Zu leicht oder zu schwer – nimm etwas dazu oder weg.</p>
-      <div class="knopf-reihe"><a class="knopf klein-knopf" href="#entdecken">Anpassen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Passt so</button></div></div>`);
-  }
   const iosBrowser = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone;
   if (iosBrowser && !Z.hinweise.ios) {
-    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Tipp fürs iPhone:</strong> Leg die App auf deinen Home-Bildschirm (Teilen → „Zum Home-Bildschirm“). Sonst kann Safari deine Einträge löschen, wenn du die Seite eine Woche nicht öffnest.</p>
-      <button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="ios">Verstanden</button></div>`);
+    return `<div class="karte-app hinweis-karte"><p><strong>Tipp fürs iPhone:</strong> Leg die App auf deinen Home-Bildschirm (Teilen → „Zum Home-Bildschirm“). Sonst kann Safari deine Einträge löschen, wenn du die Seite eine Woche nicht öffnest.</p>
+      <button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="ios">Verstanden</button></div>`;
   }
   const faellig = automatikFaellig();
   if (faellig) {
     const u = info(faellig.slug);
-    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Kurzer Check:</strong> Wie automatisch läuft <strong>${u.emoji} ${esc(u.titel)}</strong> inzwischen?</p>
-      <div class="chips-app">${AUTOMATIK.map((t, i) => `<button data-aktion="automatik" data-slug="${faellig.slug}" data-wert="${i + 1}">${t}</button>`).join("")}</div></div>`);
+    return `<div class="karte-app hinweis-karte"><p><strong>Kurzer Check:</strong> Wie sehr läuft <strong>${u.emoji} ${esc(u.titel)}</strong> schon von allein?</p>
+      <div class="chips-app">${AUTOMATIK.map((t, i) => `<button data-aktion="automatik" data-slug="${faellig.slug}" data-wert="${i + 1}">${t}</button>`).join("")}</div></div>`;
   }
   if (tageZwischen(Z.start, heute) >= 14 && !Z.hinweise.feedback14) {
-    karten.push(`<div class="karte-app hinweis-karte"><p><strong>Zwei Wochen dabei! 🎉</strong> Magst du erzählen, was dir hilft und was dir schwerfällt? Ich lese jede Nachricht persönlich.</p>
-      <div class="knopf-reihe"><a class="knopf klein-knopf" href="${esc(feedbackLink())}" data-aktion="hinweis-weg" data-wert="feedback14">Erfahrung teilen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="feedback14">Später</button></div></div>`);
+    return `<div class="karte-app hinweis-karte"><p><strong>Zwei Wochen dabei! 🎉</strong> Magst du erzählen, was dir hilft und was dir schwerfällt? Ich lese jede Nachricht persönlich.</p>
+      <div class="knopf-reihe"><a class="knopf klein-knopf" href="${esc(feedbackLink())}" data-aktion="hinweis-weg" data-wert="feedback14">Erfahrung teilen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="feedback14">Später</button></div></div>`;
   }
-  return karten.join("");
+  if (Z.hinweise[`neustart-${heute}`]) return "";
+  if (new Date().getDate() === 1) {
+    return `<div class="karte-app hinweis-karte"><p><strong>Neuer Monat, frischer Start 🌱</strong> Magst du kurz zurückschauen, was gut lief?</p>
+      <div class="knopf-reihe"><a class="knopf klein-knopf" href="#fortschritt">Rückschau ansehen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Später</button></div></div>`;
+  }
+  if (new Date().getDay() === 1) {
+    return `<div class="karte-app hinweis-karte"><p><strong>Neue Woche, frischer Start 🌱</strong> Passt deine Auswahl noch? Zu viel oder zu wenig – nimm etwas dazu oder weg.</p>
+      <div class="knopf-reihe"><a class="knopf klein-knopf" href="#entdecken">Anpassen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Passt so</button></div></div>`;
+  }
+  return "";
 }
 
 function wortKarte(d) {
   const e = Z.log[d];
   if (e?.wort) return `<p class="wort">Dein Wort für heute: <strong>${esc(e.wort)}</strong> <button class="link-knopf" data-aktion="wort" data-wert="">ändern</button></p>`;
-  if (new Date().getHours() >= 14) return "";
-  return `<div class="karte-app"><h3>Dein Wort für heute</h3>
-  <p class="klein">Was zählt heute? Ein Wort als Kompass für deinen Tag.</p>
-  <div class="chips-app">${WOERTER.map((w) => `<button data-aktion="wort" data-wert="${w}">${w}</button>`).join("")}</div>
-  <div class="eigene-eingabe"><input data-feld="wort" placeholder="Eigenes Wort" maxlength="30"><button class="knopf klein-knopf" data-aktion="wort-eigen">Festlegen</button></div></div>`;
+  if (new Date().getHours() >= 14 || Z.hinweise[`wort-${d}`]) return "";
+  return `<div class="wort-wahl"><span>Dein Wort für heute?</span>
+  <div class="chips-app">${WOERTER.slice(0, 5).map((w) => `<button data-aktion="wort" data-wert="${w}">${w}</button>`).join("")}<button class="link-knopf" data-aktion="hinweis-weg" data-wert="wort-${d}">heute nicht</button></div></div>`;
 }
 
 function questKarte() {
@@ -309,7 +327,7 @@ function ansichtHeute() {
   <button class="haken" data-aktion="reflexion" aria-pressed="${Boolean(e.stimmung)}" aria-label="Abendreflexion">✓</button>
   <button class="punkt-text" data-aktion="reflexion">
     <span class="punkt-titel"><span aria-hidden="true">🙏</span> Abendreflexion</span>
-    <span class="punkt-meta">${e.stimmung ? `${STIMMUNGEN[e.stimmung - 1][0]} · ${(e.gutes || []).filter(Boolean).length} gute Dinge` : "Stimmung und drei gute Dinge · 2 Minuten"}</span>
+    <span class="punkt-erklaerung">${e.stimmung ? `${STIMMUNGEN[e.stimmung - 1][0]} · ${guteDinge((e.gutes || []).filter(Boolean).length)} notiert` : "Wie war dein Tag? Und drei Dinge, die schön waren."}</span>
   </button>
 </li>`;
   return `<section class="tag-kopf">
@@ -319,33 +337,36 @@ function ansichtHeute() {
 </section>
 ${tagVersatz === 0 ? hinweisKarten() + wortKarte(d) : ""}
 <h2>Deine Gewohnheiten</h2>
-<p class="klein">Kein Abarbeiten: Lebe deinen Tag und hake ab, worauf du geachtet hast.</p>
+<p class="klein">Hake ab, worauf du heute geachtet hast. Tippe auf den Namen für Ideen.</p>
 <ul class="liste">${Z.gewohnheiten.map((g) => punktZeile(g.slug, d, g.anker)).join("")}</ul>
 <a class="link-knopf" href="#entdecken">+ Gewohnheit hinzufügen</a>
 <h2>Täglich</h2>
-<ul class="liste">${TAEGLICH.map((t) => punktZeile(t.slug, d, "auch 5 Minuten zählen")).join("")}${reflexion}</ul>
+<ul class="liste">${TAEGLICH.map((t) => punktZeile(t.slug, d)).join("")}${reflexion}</ul>
 ${tagVersatz === 0 ? `<h2>Deine Quest</h2>${questKarte()}` : ""}`;
 }
 
 function ansichtEntdecken() {
   const dabei = new Set(Z.gewohnheiten.map((g) => g.slug));
   const fertig = questsLaden();
-  const liste = D.uebungen.filter((u) => u.art === filter);
   const knopf = (u) => {
     if (u.art === "quest") {
       if (fertig.has(u.slug)) return '<span class="marke-app">✓ geschafft</span>';
       return Z.quest === u.slug ? '<span class="marke-app">aktiv</span>' : `<button class="knopf zweit klein-knopf" data-aktion="quest-annehmen" data-slug="${u.slug}">Starten</button>`;
     }
-    if (istTaeglich(u.slug) || u.slug === "reflektion") return '<span class="marke-app">täglich dabei</span>';
+    if (istTaeglich(u.slug)) return '<span class="marke-app">täglich dabei</span>';
     return dabei.has(u.slug) ? `<button class="knopf klein-knopf" data-aktion="entfernen" data-slug="${u.slug}" aria-pressed="true">✓ dabei</button>`
       : `<button class="knopf zweit klein-knopf" data-aktion="hinzufuegen" data-slug="${u.slug}">+ Aufnehmen</button>`;
   };
+  const zeile = (u) => `<li class="karte-app eintrag">
+  <button class="eintrag-text" data-aktion="details" data-slug="${u.slug}"><span class="eintrag-titel"><span aria-hidden="true">${u.emoji}</span> ${esc(u.titel)}</span><span class="punkt-erklaerung">${esc(u.kurz)}</span></button>
+  ${knopf(u)}</li>`;
+  const gruppen = filter === "quest"
+    ? [...new Set(D.uebungen.filter((u) => u.art === "quest").map((u) => u.gruppe))].map((g) => [g, "", D.uebungen.filter((u) => u.art === "quest" && u.gruppe === g)])
+    : D.bereiche.map((b) => [`${b.emoji} ${b.titel}`, b.text, D.uebungen.filter((u) => u.art === "gewohnheit" && u.bereich === b.slug)]);
   return `<h1>Entdecken</h1>
 <div class="umschalter"><button data-aktion="filter" data-wert="gewohnheit" aria-pressed="${filter === "gewohnheit"}">Gewohnheiten</button><button data-aktion="filter" data-wert="quest" aria-pressed="${filter === "quest"}">Quests (${fertig.size}/${D.uebungen.filter((u) => u.art === "quest").length})</button></div>
-<p class="klein">${filter === "quest" ? "Quests sind Erlebnisse, die du dir vornehmen kannst, wann immer du magst." : "Tipp: Lieber drei Gewohnheiten wirklich leben als zehn halb."}</p>
-<ul class="entdecken">${liste.map((u) => `<li class="karte-app eintrag">
-  <button class="eintrag-text" data-aktion="details" data-slug="${u.slug}"><span class="eintrag-titel"><span aria-hidden="true">${u.emoji}</span> ${esc(u.titel)}</span>${u.gruppe ? `<span class="punkt-meta">${esc(u.gruppe)}</span>` : ""}<span class="klein">${esc(u.kurz)}</span></button>
-  ${knopf(u)}</li>`).join("")}</ul>`;
+<p class="klein">${filter === "quest" ? "Kleine Erlebnisse, die du dir vornehmen kannst, wann immer du magst." : "Tipp: Lieber drei Gewohnheiten wirklich leben als zehn halb."}</p>
+${gruppen.map(([titel, text, liste]) => `<h2 class="gruppe-app">${esc(titel)}</h2>${text ? `<p class="klein">${esc(text)}</p>` : ""}<ul class="entdecken">${liste.map(zeile).join("")}</ul>`).join("")}`;
 }
 
 function punkteReihe(slug) {
@@ -387,15 +408,15 @@ ${!e.genug ? `<p class="klein">Mach an ein paar Abenden die Abendreflexion. Ab 7
   <p class="eintrag-titel"><span aria-hidden="true">${u.emoji}</span> ${esc(u.titel)} <span class="punkt-meta">🔥 ${kette(slug)} · ${anzahlImMonat(slug, monat)}× diesen Monat${a ? ` · läuft ${AUTOMATIK[a.wert - 1]}` : ""}</span></p>
   ${punkteReihe(slug)}</li>`; }).join("")}</ul>
 
-<h2>Monatsrückschau</h2>
+<details class="aufklapp"><summary>Monatsrückschau</summary>
 <div class="karte-app"><table class="rueckschau"><thead><tr><th></th><th>diesen Monat</th><th>Vormonat</th></tr></thead><tbody>
   ${alle.map((slug) => { const u = info(slug); return `<tr><td>${u.emoji} ${esc(u.titel)}</td><td>${anzahlImMonat(slug, monat)}</td><td>${anzahlImMonat(slug, vormonat)}</td></tr>`; }).join("")}
   <tr><td>🙏 Reflexionen</td><td>${stimmungen.length}</td><td>${Object.entries(Z.log).filter(([d, x]) => d.startsWith(vormonat) && x.stimmung).length}</td></tr>
   <tr><td>🗺️ Quests</td><td>${Object.values(Z.questDaten).filter((d) => d.startsWith(monat)).length}</td><td>${Object.values(Z.questDaten).filter((d) => d.startsWith(vormonat)).length}</td></tr>
 </tbody></table>
-${stimmungen.length ? `<p class="klein">Ø Stimmung diesen Monat: ${zahl(stimmungen.reduce((a, b) => a + b, 0) / stimmungen.length)} von 5</p>` : ""}</div>
+${stimmungen.length ? `<p class="klein">Ø Stimmung diesen Monat: ${zahl(stimmungen.reduce((a, b) => a + b, 0) / stimmungen.length)} von 5</p>` : ""}</div></details>
 
-${gutes.length ? `<h2>Gute Dinge</h2><ul class="gutes">${gutes.map(([d, x]) => `<li><span class="klein">${datumLang(d)}</span>${x.gutes.filter(Boolean).map((g) => `<span>✨ ${esc(g)}</span>`).join("")}</li>`).join("")}</ul>` : ""}
+${gutes.length ? `<details class="aufklapp"><summary>Deine guten Dinge</summary><ul class="gutes">${gutes.map(([d, x]) => `<li><span class="klein">${datumLang(d)}</span>${x.gutes.filter(Boolean).map((g) => `<span>✨ ${esc(g)}</span>`).join("")}</li>`).join("")}</ul></details>` : ""}
 
 <h2>Belohnungen</h2>
 <p class="klein">Gönn dir etwas – ohne schlechtes Gewissen. Belohnungen ziehen nichts von deinen Gewohnheiten ab.</p>
@@ -467,26 +488,31 @@ function blattSchliessen() {
 function details(slug) {
   const u = info(slug);
   const g = Z.gewohnheiten.find((x) => x.slug === slug);
-  let unten = "";
-  if (g) {
-    unten = `<h3>Deine Version</h3>
-<label>Wann? <select data-feld="anker"><option value="">– jederzeit –</option>${ANKER.map((a) => `<option ${g.anker === a ? "selected" : ""}>${esc(a)}</option>`).join("")}${g.anker && !ANKER.includes(g.anker) ? `<option selected>${esc(g.anker)}</option>` : ""}</select></label>
-<label>Mini-Version für schwere Tage <input data-feld="mini" value="${esc(g.mini || "")}" placeholder="z. B. nur 1 Minute, nur 1 Glas Wasser" maxlength="80"></label>
-<p class="klein">Wenn-dann-Plan: Was könnte dich hindern – und was tust du dann?</p>
-<label>Wenn … <input data-feld="wenn" value="${esc(g.wenn || "")}" placeholder="z. B. ich abends zu müde bin" maxlength="80"></label>
-<label>… dann <input data-feld="dann" value="${esc(g.dann || "")}" placeholder="z. B. mache ich die Mini-Version" maxlength="80"></label>
-<div class="knopf-reihe"><button class="knopf" data-aktion="speichern-gewohnheit" data-slug="${slug}">Speichern</button><button class="link-knopf gefahr" data-aktion="entfernen" data-slug="${slug}">Aus meinen Routinen entfernen</button></div>`;
-  } else if (u.art === "quest") {
-    unten = questsLaden().has(slug) ? '<p class="marke-app">✓ geschafft</p>'
+  const bereich = D.bereiche.find((b) => b.slug === u.bereich);
+  let aktion = "";
+  if (u.art === "quest") {
+    aktion = questsLaden().has(slug) ? '<p class="marke-app">✓ geschafft</p>'
       : Z.quest === slug ? `<button class="knopf" data-aktion="quest-fertig">Geschafft! +${PUNKTE.quest} 🪶</button>`
         : `<button class="knopf" data-aktion="quest-annehmen" data-slug="${slug}">Als Quest starten</button>`;
-  } else if (!istTaeglich(slug) && slug !== "reflektion") {
-    unten = `<button class="knopf" data-aktion="hinzufuegen" data-slug="${slug}">In meine Routinen aufnehmen</button>`;
+  } else if (!g && !istTaeglich(slug) && slug !== "reflektion") {
+    aktion = `<button class="knopf" data-aktion="hinzufuegen" data-slug="${slug}">In meine Routinen aufnehmen</button>`;
   }
-  const plan = g?.wenn && g?.dann ? `<p class="plan">Wenn ${esc(g.wenn)}, dann ${esc(g.dann)}.</p>` : "";
-  blattOeffnen(`<p class="oberzeile">${u.art === "quest" ? "Quest" : istTaeglich(slug) ? "Täglich" : "Gewohnheit"}</p>
-<h2>${u.emoji} ${esc(u.titel)}</h2>${g?.mini ? `<p class="plan">Mini-Version: ${esc(g.mini)}</p>` : ""}${plan}
-<div class="uebung-text">${u.html || ""}</div>${unten}`);
+  const anpassen = g ? `<details class="aufklapp"><summary>Anpassen: Zeitpunkt, Mini-Version, Plan B</summary>
+<label>Wann? <select data-feld="anker"><option value="">Wann es passt</option>${ANKER.map((a) => `<option ${g.anker === a ? "selected" : ""}>${esc(a)}</option>`).join("")}${g.anker && !ANKER.includes(g.anker) ? `<option selected>${esc(g.anker)}</option>` : ""}</select></label>
+<label>Mini-Version für schwere Tage <input data-feld="mini" value="${esc(g.mini || "")}" placeholder="z. B. nur 1 Minute, nur 1 Glas Wasser" maxlength="80"></label>
+<p class="klein">Plan B: Was könnte dich hindern – und was tust du dann?</p>
+<label>Wenn … <input data-feld="wenn" value="${esc(g.wenn || "")}" placeholder="z. B. ich abends zu müde bin" maxlength="80"></label>
+<label>… dann <input data-feld="dann" value="${esc(g.dann || "")}" placeholder="z. B. mache ich die Mini-Version" maxlength="80"></label>
+<div class="knopf-reihe"><button class="knopf" data-aktion="speichern-gewohnheit" data-slug="${slug}">Speichern</button><button class="link-knopf gefahr" data-aktion="entfernen" data-slug="${slug}">Entfernen</button></div>
+</details>` : "";
+  const eigenes = [g?.anker && `Wann: ${g.anker}`, g?.mini && `Mini-Version: ${g.mini}`, g?.wenn && g?.dann && `Wenn ${g.wenn}, dann ${g.dann}.`].filter(Boolean);
+  blattOeffnen(`<p class="oberzeile">${u.art === "quest" ? `Quest${U[slug]?.gruppe ? ` · ${esc(U[slug].gruppe)}` : ""}` : istTaeglich(slug) || slug === "reflektion" ? "Täglich" : `Gewohnheit${bereich ? ` · ${esc(bereich.titel)}` : ""}`}</p>
+<h2>${u.emoji} ${esc(u.titel)}</h2>
+<p class="erklaerung-gross">${esc(u.kurz || "")}</p>
+${eigenes.length ? `<div class="plan">${eigenes.map((x) => `<p>${esc(x)}</p>`).join("")}</div>` : ""}
+${aktion}
+<details class="aufklapp"><summary>Ideen und Hintergrund</summary><div class="uebung-text">${u.html || ""}</div></details>
+${anpassen}`);
 }
 
 function reflexionOeffnen() {
@@ -652,14 +678,23 @@ async function importAusLink(text) {
 }
 
 const AKTIONEN = {
+  "start-bereich": (el, slug) => {
+    startBereiche = startBereiche.includes(slug) ? startBereiche.filter((s) => s !== slug) : [...startBereiche, slug];
+    render();
+  },
   "start-wahl": (el, slug) => {
     startAuswahl = startAuswahl.includes(slug) ? startAuswahl.filter((s) => s !== slug) : [...startAuswahl, slug];
     render();
   },
-  "start-weiter": () => { startSchritt = 2; render(); scrollTo(0, 0); },
-  "start-zurueck": () => { startSchritt = 1; render(); },
-  "start-anker": (el, slug, wert) => { startAnker[slug] = startAnker[slug] === wert ? "" : wert; render(); },
+  "start-weiter": () => {
+    if (startSchritt === 1) startAuswahl = startAuswahl.filter((s) => startBereiche.includes(U[s]?.bereich));
+    startSchritt += 1;
+    render();
+    scrollTo(0, 0);
+  },
+  "start-zurueck": () => { startSchritt -= 1; render(); scrollTo(0, 0); },
   "start-fertig": () => {
+    document.querySelectorAll("[data-start-anker]").forEach((feld) => { startAnker[feld.dataset.startAnker] = feld.value; });
     startAuswahl.forEach((slug) => Z.gewohnheiten.push({ slug, anker: startAnker[slug] || "", seit: tag() }));
     speichern();
     if (location.hash === "#heute") route(); else location.hash = "#heute";
@@ -685,7 +720,6 @@ const AKTIONEN = {
     feiern(neu ? `Danke für deinen Tag. +${PUNKTE.reflexion} 🪶` : "Gespeichert.");
   },
   wort: (el, slug, wert) => { eintrag(tag()).wort = wert; speichern(); render(); if (wert) feiern(`Heute: ${wert}`); },
-  "wort-eigen": () => { const w = $("[data-feld=wort]").value.trim(); if (w) AKTIONEN.wort(null, null, w); },
   "hinweis-weg": (el, slug, wert) => { Z.hinweise[wert] = tag(); speichern(); if (el.tagName !== "A") render(); },
   automatik: (el, slug, wert) => {
     (Z.automatik[slug] ||= []).push({ datum: tag(), wert: Number(wert) });
@@ -740,6 +774,7 @@ const AKTIONEN = {
     Z = neuerZustand();
     questsSpeichern(new Set());
     speichern();
+    startBereiche = [];
     startAuswahl = [];
     startSchritt = 1;
     history.replaceState(null, "", `${location.pathname}#heute`);
@@ -798,7 +833,6 @@ document.addEventListener("change", (ereignis) => {
 
 document.addEventListener("keydown", (ereignis) => {
   if (ereignis.key === "Escape") blattSchliessen();
-  if (ereignis.key === "Enter" && ereignis.target.dataset.feld === "wort") AKTIONEN["wort-eigen"]();
 });
 
 addEventListener("hashchange", route);

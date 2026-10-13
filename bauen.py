@@ -31,6 +31,15 @@ NAVI = [("/blog/", "Artikel"), ("/gewohnheiten/", "Gewohnheiten"), ("/book-onlin
 THEMEN = json.loads((INHALT / "themen.json").read_text(encoding="utf-8"))
 UEBUNGEN = json.loads((INHALT / "uebungen.json").read_text(encoding="utf-8"))
 UEBUNG = {u["slug"]: u for u in UEBUNGEN}
+# Klartext-Erklaerung und Bereich je Uebung (Hand gepflegt, uebersteht einen neuen Habitica-Import)
+ERKLAERUNGEN = json.loads((INHALT / "erklaerungen.json").read_text(encoding="utf-8"))
+BEREICHE = ERKLAERUNGEN["bereiche"]
+_fehlt = [u["slug"] for u in UEBUNGEN if u["slug"] not in ERKLAERUNGEN["uebungen"]]
+if _fehlt:
+    raise SystemExit(f"inhalt/erklaerungen.json: Erklärung fehlt für {_fehlt}")
+for _u in UEBUNGEN:
+    _u["erklaerung"] = ERKLAERUNGEN["uebungen"][_u["slug"]]["kurz"]
+    _u["bereich"] = ERKLAERUNGEN["uebungen"][_u["slug"]]["bereich"]
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Habitica-Challenge", "Kostenloses Erstgespräch",
             "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Etwas anderes"]
@@ -291,7 +300,7 @@ def uebung_karte(u):
                if u["art"] == "quest" else "")
     return f"""<article class="uebung" id="{u['slug']}">
   <details>
-    <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-titel">{esc(u['titel'])}</span></summary>
+    <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-kopf"><span class="uebung-titel">{esc(u['titel'])}</span><span class="uebung-erklaerung">{esc(u['erklaerung'])}</span></span></summary>
     <div class="uebung-text">{text_html(u['text'])}
       <p><a class="in-app" href="/app/#neu={u['slug']}">{"Als Quest in der App starten" if u["art"] == "quest" else "In meine Routinen aufnehmen"} →</a></p>
     </div>
@@ -308,9 +317,13 @@ def uebungen_html():
     gruppen = list(dict.fromkeys(u["gruppe"] for u in quests))
     quest_html = "".join(f'<h3 class="gruppe">{esc(g)}</h3>' + raster_([u for u in quests if u["gruppe"] == g])
                          for g in gruppen)
+    nach_bereich = "".join(
+        f'<h3 class="gruppe">{b["emoji"]} {esc(b["titel"])} <span class="gruppe-text">– {esc(b["text"])}</span></h3>'
+        + raster_([u for u in gewohnheiten if u["bereich"] == b["slug"]])
+        for b in BEREICHE if any(u["bereich"] == b["slug"] for u in gewohnheiten))
     return f"""<h2 id="gewohnheiten-liste">{len(gewohnheiten)} Gewohnheiten</h2>
-<p class="unterzeile">Keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. Tippe eine Gewohnheit an, um sie zu lesen.</p>
-{raster_(gewohnheiten)}
+<p class="unterzeile">Keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. Fang mit einem Bereich an, der dich gerade anspricht. Tippe eine Gewohnheit an für Ideen und Hintergrund.</p>
+{nach_bereich}
 <h2 id="taeglich">{len(taeglich)} tägliche Aufgaben</h2>
 <p class="unterzeile">Kleine tägliche Begleiter, die dir guttun – auch fünf Minuten zählen.</p>
 {raster_(taeglich)}
@@ -324,16 +337,10 @@ def uebungen_html():
 {quest_html}"""
 
 
-def kurz(u):
-    erster = next(z for z in u["text"].split("\n\n") if z.strip())
-    erster = re.sub(r"^[-*] ", "", erster.replace("\n", " ")).strip()
-    return erster if len(erster) <= 220 else erster[:220].rsplit(" ", 1)[0] + " …"
-
-
 def impuls_html():
     pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest")]
     daten = [{"s": u["slug"], "a": ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else ""), "e": u["emoji"],
-              "t": u["titel"], "k": kurz(u)} for u in pool]
+              "t": u["titel"], "k": u["erklaerung"]} for u in pool]
     d = daten[date.today().toordinal() % len(daten)]
     json_text = json.dumps(daten, ensure_ascii=False).replace("</", "<\\/")
     return f"""<div class="impuls" data-impuls>
@@ -541,7 +548,9 @@ def app_bauen():
     shutil.copytree(WURZEL / "app", ziel)
     daten = {
         "uebungen": [{"slug": u["slug"], "art": u["art"], "gruppe": u["gruppe"], "emoji": u["emoji"],
-                      "titel": u["titel"], "kurz": kurz(u), "html": text_html(u["text"])} for u in UEBUNGEN],
+                      "titel": u["titel"], "kurz": u["erklaerung"], "bereich": u["bereich"],
+                      "html": text_html(u["text"])} for u in UEBUNGEN],
+        "bereiche": BEREICHE,
         "habitica": E["habitica_challenge"],
     }
     (ziel / "daten.json").write_text(json.dumps(daten, ensure_ascii=False), encoding="utf-8")
