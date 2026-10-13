@@ -139,7 +139,9 @@ App-Dateien oder Daten ändern.
 ## Achtsamkeitsseminar (`/achtsamkeitsseminar/`)
 
 Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln; Ablauf in fünf
-Schritten mit Minuten und „Methodik“ (MBSR, Body Scan, PMR nach Jacobson, ACT-Defusion, Wertespiel);
+Schritten mit Minuten und „Methodik“ (Fünf Sinne, Atemmeditation/Shamatha, Body Scan, PMR nach Jacobson, Gefühlston
+angenehm/unangenehm/neutral, Gedanken beobachten, ACT-Defusion, Wertespiel, Innehalten, Fragerunde); ein Begleitbogen führt durch den
+Nachmittag (Intention, Notizen, Fragen). Bewusst ohne „Gewahrsein“ – bei Wahrnehmen und Bemerken bleiben;
 Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer). Bilder `seminar-*` stammen aus
 dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Hinweis oben, Anmeldung `#anmelden`), Angebotskarte
 (`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
