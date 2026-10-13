@@ -13,7 +13,6 @@ body.blatt-offen { overflow: hidden; }
 }
 .app-kopf .logo { font-size: 1.15rem; }
 .app-kopf .logo svg { width: 1.6rem; height: 1.6rem; }
-.federn-anzeige { font-weight: 700; color: var(--akzent); font-variant-numeric: tabular-nums; }
 
 .app-inhalt { width: min(640px, 100%); margin: 0 auto; padding: 1.2rem 1.1rem 2rem; }
 .app-inhalt h1 { font-size: clamp(1.7rem, 6vw, 2.2rem); margin-bottom: 0.4em; }
@@ -53,9 +52,9 @@ body.blatt-offen { overflow: hidden; }
 .chips-app button[aria-pressed="true"], .chips-app button:hover { border-color: var(--akzent); color: var(--akzent); }
 .chips-app button[aria-pressed="true"] { background: var(--akzent); color: var(--auf-akzent); }
 
-/* Einfacher Modus: nur "Probier's heute", ohne Menüleiste und Federn */
+/* Einfacher Modus: nur "Probier's heute", ohne Menüleiste */
 body.einfach { padding-bottom: 2rem; }
-body.einfach .app-navi, body.einfach [data-federn] { display: none; }
+body.einfach .app-navi { display: none; }
 
 /* Probier's heute */
 .probieren { margin-bottom: 1.5rem; }
@@ -66,7 +65,6 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .idee .knopf-reihe { justify-content: center; margin-top: 1.2rem; }
 .idee .aufklapp { text-align: left; }
 .geschafft-marke { padding: 0.8rem 1.2rem; border-radius: 999px; background: color-mix(in srgb, var(--akzent-hell) 18%, var(--karte)); }
-.richtung-zeile { text-align: center; margin-top: 0.8rem; }
 .idee .wahl-zeile { margin-top: 0.6rem; text-align: left; }
 .optionen h2 { margin-top: 1.8rem; }
 .option { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.1rem; margin-bottom: 0.7rem; }
@@ -80,7 +78,17 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .option strong { display: block; }
 .option .klein { display: block; margin: 0.15rem 0 0; }
 .option .knopf-reihe { margin-top: 0.8rem; align-items: center; }
-.fuss-app { text-align: center; margin-top: 2rem; }
+.fuss-app { text-align: center; margin-top: 2rem; line-height: 1.8; }
+/* Kalender: Schritte und der eigentliche Export als klar erkennbare Aktion */
+.schritt { font-weight: 700; font-size: 0.92rem; margin: 1rem 0 0.2rem; color: var(--akzent); }
+.option .schritt:first-of-type { margin-top: 0; }
+.kalender-aktion { margin-top: 0.4rem; padding: 0.9rem 1rem; border-radius: 14px; background: var(--flaeche); border: 1px dashed var(--akzent-hell); }
+.kalender-aktion .knopf-reihe { margin-top: 0; }
+.kalender-aktion .klein { margin: 0.7rem 0 0; }
+.kalender-knopf { font-weight: 700; }
+.option .kalender-aktion strong { display: inline; }
+.install-liste { padding-left: 1.2rem; font-size: 0.95rem; }
+.install-liste li { margin-bottom: 0.5rem; }
 
 /* Willkommen und Auswahl-Listen */
 .wahl-liste { display: grid; gap: 0.55rem; margin-bottom: 0.8rem; }
@@ -122,9 +130,6 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 /* Heute */
 .tag-kopf h1 { margin-bottom: 0.2em; }
 .wort { background: var(--flaeche); border-radius: 12px; padding: 0.7rem 1rem; }
-.eigene-eingabe { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
-.eigene-eingabe input { flex: 1; min-width: 0; }
-.eigene-eingabe input[type="number"] { flex: 0 0 5.5rem; }
 .app input, .app select { font: inherit; color: var(--text); background: var(--karte); border: 1px solid var(--linie); border-radius: 10px; padding: 0.6rem 0.8rem; width: 100%; }
 .app input:focus, .app select:focus { outline: 2px solid var(--akzent-hell); outline-offset: 1px; }
 .blatt label { display: grid; gap: 0.3rem; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.8rem; }
@@ -150,8 +155,7 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .eintrag-titel { font-weight: 600; }
 
 /* Fortschritt */
-.stufe h2 { margin: 0 0 0.6rem; font-size: 1.6rem; }
-.stufe .balken { height: 12px; }
+.ueberblick p:last-child { font-size: 1.05rem; }
 .erkenntnisse { padding-left: 1.2rem; }
 .erkenntnisse li { margin-bottom: 0.5rem; }
 .ketten { list-style: none; padding: 0; margin: 0; }
@@ -167,7 +171,6 @@ body.einfach .app-navi, body.einfach [data-federn] { display: none; }
 .rueckschau td + td { text-align: right; font-variant-numeric: tabular-nums; width: 6.5rem; }
 .gutes { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
 .gutes li { display: flex; flex-direction: column; gap: 0.15rem; background: var(--karte); border: 1px solid var(--linie); border-radius: 12px; padding: 0.7rem 0.9rem; }
-.belohnungen { list-style: none; padding: 0; margin: 0; }
 
 /* Mehr */
 .zeiten { display: flex; gap: 1rem; margin-bottom: 0.8rem; }

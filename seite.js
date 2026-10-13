@@ -10,7 +10,7 @@
     },
   };
 
-  // Impuls für heute: jeden Tag ein anderer, auf Wunsch ein neuer
+  // Impuls für heute: bei jedem Besuch ein anderer (nie zweimal derselbe hintereinander), auf Wunsch ein neuer
   const karte = document.querySelector("[data-impuls]");
   const daten = document.getElementById("impuls-daten");
   if (karte && daten) {
@@ -18,7 +18,12 @@
     const liste = JSON.parse(daten.textContent).filter((u) => !u.m || u.m.includes(monat));
     const feld = (name) => karte.querySelector(`[data-feld="${name}"]`);
     const appBasis = feld("app").getAttribute("href").split("#")[0];
-    let index = Math.floor(Date.now() / 864e5) % liste.length;
+    const LETZTER = "phoenix-feder-impuls";
+    const zufallOhne = (slug) => {
+      const auswahl = liste.length > 1 ? liste.filter((u) => u.s !== slug) : liste;
+      return liste.indexOf(auswahl[Math.floor(Math.random() * auswahl.length)]);
+    };
+    let index = zufallOhne(speicher.lesen(LETZTER, ""));
     const zeigen = () => {
       const u = liste[index];
       feld("art").textContent = u.a;
@@ -26,14 +31,13 @@
       feld("titel").textContent = u.t;
       feld("kurz").textContent = u.k;
       feld("app").setAttribute("href", `${appBasis}#idee=${u.s}`);
+      speicher.schreiben(LETZTER, u.s);
     };
     zeigen();
     const neu = karte.querySelector("[data-neu]");
     neu.hidden = false;
     neu.addEventListener("click", () => {
-      let naechster = index;
-      while (liste.length > 1 && naechster === index) naechster = Math.floor(Math.random() * liste.length);
-      index = naechster;
+      index = zufallOhne(liste[index].s);
       zeigen();
       karte.classList.remove("blaettern");
       void karte.offsetWidth; // Animation neu starten
@@ -65,8 +69,6 @@
     const zeigen = () => {
       const anzahl = boxen.filter((b) => b.checked).length;
       fortschritt.querySelector("[data-erledigt]").textContent = anzahl;
-      fortschritt.querySelector("[data-xp]").textContent = anzahl * 10;
-      fortschritt.querySelector("[data-level]").textContent = Math.floor(anzahl / 5) + 1;
       fortschritt.querySelector("[data-balken]").style.width = `${(100 * anzahl) / boxen.length}%`;
     };
     boxen.forEach((box) => {

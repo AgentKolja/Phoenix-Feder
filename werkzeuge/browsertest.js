@@ -73,9 +73,9 @@ function server() {
 
   const roh = fs.readFileSync(path.join(DOCS, "index.html"), "utf8");
   await p.goto(`${B}/`, { waitUntil: "load" });
-  // vorab gerenderter Titel, HTML-Maskierung (z. B. &#x27;) aufgelöst
-  const vorab = await p.evaluate((s) => { const t = document.createElement("textarea"); t.innerHTML = s; return t.value; }, roh.match(/data-feld="titel">([^<]*)</)[1]);
-  pruefe("Impuls: vorab gerenderte Idee = Idee nach JavaScript (kein Springen)", (await p.textContent('[data-feld="titel"]')) === vorab, vorab);
+  const impulsTitel = [await p.textContent('[data-feld="titel"]')];
+  for (let i = 0; i < 3; i++) { await p.reload({ waitUntil: "load" }); impulsTitel.push(await p.textContent('[data-feld="titel"]')); }
+  pruefe("Impuls: bei jedem Laden ein anderer", impulsTitel.every((t, i) => i === 0 || t !== impulsTitel[i - 1]), impulsTitel.join(" → "));
   const impulse = JSON.parse(roh.match(/id="impuls-daten">([^<]*)</)[1]).map((x) => x.s);
   pruefe("Impuls schlägt nur Ideen für heute vor", !impulse.some((s) => NICHT_HEUTE.includes(s)));
   pruefe("Startseite ohne Rollenspiel-Kasten, mit „Über mich“", !(await p.$(".habitica")) && Boolean(await p.$("#ueber-mich")));
@@ -121,27 +121,41 @@ function server() {
   await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
   pruefe("App beginnt mit der Frage, ohne Menüleiste", (await p.textContent("#app h1")).includes("Woran") && !(await p.isVisible(".app-navi")));
   await p.click('[data-aktion="frage"][data-slug="ruhe"]');
-  const ruhe = await p.evaluate(() => { const s = new Set(); for (let i = 0; i < 150; i++) { AKTIONEN["andere-idee"](); s.add(idee); } return [...s].map((x) => [x, U[x].bereich, heuteMoeglich(U[x])]); });
-  pruefe("„Zur Ruhe kommen“ zeigt nur Ruhe-Ideen für heute", ruhe.every(([, b, h]) => b === "ruhe" && h), `${ruhe.length} verschiedene`);
+  pruefe("Zweite Frage: Wie viel Zeit?", (await p.textContent("#app h1")).includes("Zeit"));
+  await p.click('[data-aktion="zeit"][data-slug="kurz"]');
+  const ruhe = await p.$$eval('[data-aktion="idee-zeigen"]', (l) => l.map((x) => x.dataset.slug));
+  const ruheOk = await p.evaluate((l) => l.every((s) => U[s].bereich === "ruhe" && heuteMoeglich(U[s]) && U[s].art !== "quest"), ruhe);
+  pruefe("Ruhe + wenig Zeit: Liste aller passenden Ideen statt einer Zufallsidee", ruhe.length >= 4 && ruheOk, `${ruhe.length} Ideen`);
   await p.click('[data-aktion="neu-fragen"]');
-  pruefe("„Andere Richtung wählen“ führt zur Frage zurück", (await p.textContent("#app h1")).includes("Woran"));
+  pruefe("„Fragen neu beantworten“ führt zur ersten Frage", (await p.textContent("#app h1")).includes("Woran"));
   await p.click('[data-aktion="frage"][data-slug="alle"]');
-  const alle = await p.evaluate(() => { const s = new Set(); for (let i = 0; i < 400; i++) { AKTIONEN["andere-idee"](); s.add(idee); } return [...s]; });
-  pruefe("„Überrasch mich“: nie etwas, das heute nicht geht (auch keine Bienen im Oktober)",
-    !alle.some((s) => NICHT_HEUTE.includes(s) || s === "bee-love"), `${alle.length} verschiedene`);
-
+  await p.click('[data-aktion="zeit"][data-slug="egal"]');
+  const alle = await p.$$eval('[data-aktion="idee-zeigen"]', (l) => l.map((x) => x.dataset.slug));
+  pruefe("Alle Bereiche: nie etwas, das heute nicht geht (auch keine Bienen im Oktober)",
+    alle.length > 30 && !alle.some((s) => NICHT_HEUTE.includes(s) || s === "bee-love" || s === "reflektion"), `${alle.length} Ideen`);
+  await p.click('[data-aktion="idee-zeigen"][data-slug="naturfreund"]');
   await p.click('[data-aktion="ausprobiert"]');
-  const geloggt = await p.evaluate(() => { const u = U[idee]; return u.art === "quest" ? questsLaden().has(idee) : erledigt(tag(), idee); });
-  pruefe("„Hab ich ausprobiert“ wird gespeichert", geloggt);
+  pruefe("„Hab ich ausprobiert“ wird gespeichert", await p.evaluate(() => erledigt(tag(), "naturfreund")));
+  const titel = await p.evaluate(() => U.naturfreund.titel);
+  await p.reload({ waitUntil: "networkidle" });
+  pruefe("App geschlossen und neu geöffnet: geht an derselben Stelle weiter", (await p.textContent(".idee h1")).includes(titel));
+  await p.click('[data-aktion="zur-auswahl"]');
+  pruefe("… zurück zur Auswahl, Ausprobiertes ist markiert",
+    (await p.textContent('[data-aktion="idee-zeigen"][data-slug="naturfreund"]')).includes("✓ Ausprobiert"));
+  await p.click('[data-aktion="idee-zeigen"][data-slug="naturfreund"]');
   await p.click(".optionen details.option > summary");
   await p.click('[data-aktion="kal-zeit"][data-wert="08:00"]');
-  const google = new URL(await p.getAttribute('.option a[href*="calendar.google"]', "href")).searchParams;
+  const google = new URL(await p.getAttribute('.kalender-aktion a[href*="calendar.google"]', "href")).searchParams;
   pruefe("Kalender bleibt offen, Google-Link 14 Tage", await p.evaluate(() => document.querySelector("details.option").open)
     && google.get("recur") === "RRULE:FREQ=DAILY;COUNT=14" && google.get("dates").startsWith("20261014T080000"), google.get("dates"));
   await p.click('[data-aktion="kal-dauer"][data-wert="1"]');
   const [download] = await Promise.all([p.waitForEvent("download"), p.click('[data-aktion="ics-idee"]')]);
   const ics = fs.readFileSync(await download.path(), "utf8");
-  pruefe("ICS-Datei einmalig, ohne Wiederholung", ics.includes("BEGIN:VEVENT") && !ics.includes("RRULE"));
+  pruefe("ICS-Datei einmalig, ohne Wiederholung, mit Hinweis zum Öffnen", ics.includes("BEGIN:VEVENT") && !ics.includes("RRULE")
+    && (await p.textContent("[data-toast]")).includes("Kalenderdatei"));
+  await p.goto(`${B}/app/#entdecken`, { waitUntil: "networkidle" });
+  pruefe("„Alle Ideen“ nach Bereichen, zum Stöbern ohne Aufnehmen-Knöpfe",
+    (await p.locator(".gruppe-app").count()) >= 5 && !(await p.$('#app [data-aktion="hinzufuegen"]')));
 
   await p.goto(`${B}/`); await p.goto(`${B}/app/#idee=nachtfalter`, { waitUntil: "networkidle" });
   pruefe("Nachtfalter: „Braucht etwas Zeit“, kein Abhaken, Ideen für heute",
@@ -155,14 +169,21 @@ function server() {
   await p.goto(`${B}/`); await p.goto(`${B}/app/#idee=bee-love`, { waitUntil: "networkidle" });
   pruefe("Bienen im Oktober: keine Kalender-/Routinen-Optionen", (await p.textContent(".oberzeile")).includes("Jahreszeit") && !(await p.$(".optionen")));
   await p.goto(`${B}/`); await p.goto(`${B}/app/#bereich=erlebnis`, { waitUntil: "networkidle" });
-  pruefe("Link #bereich=erlebnis zeigt eine Quest", await p.evaluate(() => U[idee].art === "quest"));
+  const erlebnisse = await p.$$eval('[data-aktion="idee-zeigen"]', (l) => l.map((x) => x.dataset.slug));
+  pruefe("Link #bereich=erlebnis zeigt nur Quests", erlebnisse.length > 5 && await p.evaluate((l) => l.every((s) => U[s].art === "quest"), erlebnisse));
 
+  await p.click('[data-aktion="idee-zeigen"]');
   await p.click('[data-aktion="laenger"]');
   await p.waitForTimeout(200);
   pruefe("„Länger ausprobieren“ öffnet „Heute“ mit Menüleiste", (await p.evaluate(() => ansicht)) === "heute" && await p.isVisible(".app-navi"));
+  pruefe("„Heute“ legt nichts ungefragt an: keine festen Täglich-Punkte, Abendreflexion nur als Angebot",
+    !(await p.$('[data-slug="bewegung"]')) && !(await p.$('.punkt-text[data-aktion="reflexion"]')) && Boolean(await p.$('[data-aktion="reflexion-wahl"]')));
   // ohne aktive Quest, sonst zeigt questKarte() nur diese und schlägt nichts vor
   const questVorschlaege = await p.evaluate(() => { Z.quest = null; const s = new Set(); for (let i = 0; i < 300; i++) { questVorschlag = null; questKarte(); s.add(questVorschlag); } return [...s]; });
   pruefe("Wochen-Quest schlägt im Oktober keine Bienen vor", questVorschlaege.length > 10 && !questVorschlaege.includes("bee-love"), `${questVorschlaege.length} verschiedene`);
+  await p.goto(`${B}/app/#fortschritt`, { waitUntil: "networkidle" });
+  pruefe("Fortschritt ohne Punkte und Belohnungen, Hinweis auf Habitica",
+    !(await p.$('[data-aktion="einloesen"], .stufe, [data-federn]')) && (await p.textContent("#app")).includes("Habitica"));
   await app.close();
 
   const sommer = await mobil();
@@ -171,18 +192,27 @@ function server() {
   pruefe("Bienen im Juli: ganz normal ausprobierbar", Boolean(await p.$('[data-aktion="ausprobiert"]')) && Boolean(await p.$(".optionen")));
   await sommer.close();
 
-  // ------------------------------------------------------------ App: alte daten.json aus dem Cache
+  // ------------------------------------------------------------ App: alte daten.json aus dem Cache, alter Zustand
   const alt = await mobil();
   p = await seite(alt, OKTOBER);
   await p.route("**/app/daten.json", async (route) => {
     const d = JSON.parse(fs.readFileSync(path.join(DOCS, "app", "daten.json"), "utf8"));
-    d.uebungen.forEach((u) => { delete u.heute; delete u.statt; delete u.monate; });
+    d.uebungen.forEach((u) => { delete u.heute; delete u.statt; delete u.monate; delete u.bereich; });
     delete d.richtungen;
     await route.fulfill({ contentType: "application/json", body: JSON.stringify(d) });
   });
   await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
   await p.click('[data-aktion="frage"]');
+  await p.click('[data-aktion="zeit"]');
+  await p.click('[data-aktion="idee-zeigen"]');
   pruefe("Alte daten.json ohne neue Felder: App läuft weiter", Boolean(await p.$(".idee h1")));
+  await p.unroute("**/app/daten.json");
+  await p.evaluate(() => localStorage.setItem("phoenix-feder-app", JSON.stringify({ version: 1, start: "2026-10-01", modus: "routine",
+    gewohnheiten: [{ slug: "naturfreund", anker: "", seit: "2026-10-01" }], log: { "2026-10-05": { erledigt: ["bewegung", "naturfreund"], stimmung: 3 } },
+    belohnungen: [{ id: "1", name: "Kino", kosten: 100 }], eingeloest: [], hinweise: {}, erinnerung: { morgen: "07:30", abend: "21:00" } })));
+  await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
+  pruefe("Alter Zustand: Genutztes aus „Täglich“ bleibt als eigene Auswahl, Belohnungen entfallen", await p.evaluate(() =>
+    Z.gewohnheiten.map((g) => g.slug).join() === "naturfreund,bewegung" && Z.reflexion === true && !("belohnungen" in Z)));
   await alt.close();
 
   // ------------------------------------------------------------ App: Routinen, Reflexion, offline, Gerätewechsel
@@ -191,16 +221,20 @@ function server() {
   await p.goto(`${B}/app/#start`, { waitUntil: "networkidle" });
   for (const s of ["freude", "koerper"]) await p.click(`[data-aktion="start-bereich"][data-slug="${s}"]`);
   await p.click('[data-aktion="start-weiter"]');
+  pruefe("Eigene Auswahl: Bewegung ist eine normale Wahl bei „Körper“", Boolean(await p.$('[data-aktion="start-wahl"][data-slug="bewegung"]')));
   for (const s of ["naturfreund", "wasserbaendiger"]) await p.click(`[data-aktion="start-wahl"][data-slug="${s}"]`);
   await p.click('[data-aktion="start-weiter"]');
   await p.click('[data-aktion="start-fertig"]');
   await p.click('[data-aktion="abhaken"][data-slug="naturfreund"]');
   pruefe("Auswahl → Heute → Abhaken", (await p.getAttribute('[data-aktion="abhaken"][data-slug="naturfreund"]', "aria-pressed")) === "true");
+  pruefe("„Heute“ zeigt nur die zwei gewählten Gewohnheiten", (await p.locator('.liste [data-aktion="abhaken"]').count()) === 2);
+  await p.click('[data-aktion="reflexion-wahl"][data-wert="ja"]');
   await p.click('.punkt-text[data-aktion="reflexion"]');
   await p.click('.stimmung [data-wert="4"]');
   await p.fill('[data-gut="0"]', "Sonne; Tee, Ruhe");
+  pruefe("Abendreflexion wird sofort gespeichert (auch ohne „Fertig“)", await p.evaluate(() => Z.log[tag()].stimmung === 4
+    && JSON.parse(localStorage.getItem("phoenix-feder-app")).log[tag()].gutes[0] === "Sonne; Tee, Ruhe"));
   await p.click('[data-aktion="reflexion-speichern"]');
-  pruefe("Abendreflexion wird gespeichert", await p.evaluate(() => Z.log[tag()].stimmung === 4));
   await p.waitForTimeout(800);
   await routine.setOffline(true);
   await p.reload({ waitUntil: "load" });
@@ -212,19 +246,20 @@ function server() {
   const p2 = await seite(zweites, OKTOBER);
   await p2.goto(link, { waitUntil: "networkidle" });
   await p2.waitForTimeout(400);
-  pruefe("Übertragungslink: Gewohnheiten auf zweitem Gerät", await p2.evaluate(() => Z.gewohnheiten.length === 2));
+  pruefe("Übertragungslink: Gewohnheiten und Abendreflexion auf zweitem Gerät", await p2.evaluate(() => Z.gewohnheiten.length === 2 && Z.reflexion === true));
   // Präparierter Link: darf kein HTML/JavaScript einschleusen
   const boese = '"><img src=x onerror="window.__xss=1">';
   const giftLink = await p.evaluate(async (b) => `${location.origin}${location.pathname}#import=${await packen({ quests: [b],
     app: { version: 1, start: "2026-10-01", modus: "routine", quest: b, gewohnheiten: [{ slug: "naturfreund", anker: b, seit: b }, { slug: b }],
       log: { "2026-10-12": { erledigt: [b], stimmung: b, gutes: [b], wort: b }, [b]: {} }, erinnerung: { morgen: b, abend: b },
-      belohnungen: [{ id: b, name: b, kosten: b }, { id: "1", name: b, kosten: 50 }], hinweise: { [b]: b } } })}`, boese);
-  for (const ziel of ["", "#heute", "#fortschritt", "#mehr"]) {
+      belohnungen: [{ id: b, name: b, kosten: b }, { id: "1", name: b, kosten: 50 }], hinweise: { [b]: b },
+      reflexion: b, probieren: { bereich: b, zeit: "toString", idee: b } } })}`, boese);
+  for (const ziel of ["", "#heute", "#fortschritt", "#mehr", "#probieren"]) {
     await p2.goto(ziel ? `${B}/app/${ziel}` : giftLink, { waitUntil: "networkidle" });
     await p2.waitForTimeout(200);
   }
   pruefe("Präparierter Übertragungslink schleust nichts ein", await p2.evaluate(() => !window.__xss && !document.querySelector("#app img")
-    && Z.gewohnheiten.length === 1 && Z.erinnerung.morgen === "07:30"));
+    && Z.gewohnheiten.length === 1 && Z.erinnerung.morgen === "07:30" && Z.reflexion === null && Z.probieren.zeit === ""));
   await zweites.close();
   await routine.close();
 

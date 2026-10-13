@@ -34,7 +34,7 @@
     "meditation-und-atmung": { "bereich": "ruhe", "kurz": "Meditieren, beten oder ein paar Minuten bewusst atmen.", "heute": "Atme heute drei Minuten bewusst: ruhig ein, kurze Pause, lang aus." },
     "haltung-bitte": { "bereich": "koerper", "kurz": "Aufrecht stehen und sitzen, Schultern locker, Kinn leicht hoch.", "heute": "Richte dich heute jedes Mal auf, wenn du durch eine Tür gehst: Schultern locker, Kinn leicht hoch." },
     "reflektion": { "bereich": "", "kurz": "Abends kurz auf den Tag schauen: Was ist dir gelungen?", "heute": "Schau heute Abend kurz auf deinen Tag: Was ist dir gelungen?" },
-    "bewegung": { "bereich": "", "kurz": "Dich bewegen, egal wie – auch 5 Minuten zählen.", "heute": "Beweg dich heute – egal wie. Auch fünf Minuten zählen." },
+    "bewegung": { "bereich": "koerper", "kurz": "Dich bewegen, egal wie – auch 5 Minuten zählen.", "heute": "Beweg dich heute – egal wie. Auch fünf Minuten zählen." },
     "spiegel-der-seele": { "bereich": "miteinander", "kurz": "Heute bei jedem Gespräch auf die Augenfarbe achten.", "heute": true },
     "achtsamkeit-to-go": { "bereich": "ruhe", "kurz": "Beim Gehen im Takt deiner Schritte atmen – 5 bis 10 Minuten.", "heute": true },
     "dein-altar": { "bereich": "ruhe", "kurz": "Dir eine kleine Ruhe-Ecke mit Dingen einrichten, die dir guttun.", "heute": true },

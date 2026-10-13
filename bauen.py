@@ -363,7 +363,7 @@ def uebungen_html():
 <h2 id="quests">{len(quests)} Quests</h2>
 <p class="unterzeile">Erlebnisse, die du dir vornehmen kannst, wann immer du magst. Hake ab, was du geschafft hast.</p>
 <div class="fortschritt" data-fortschritt hidden>
-  <p><strong data-erledigt>0</strong> von {len(quests)} Quests · <strong data-xp>0</strong> XP · Level <strong data-level>1</strong></p>
+  <p><strong data-erledigt>0</strong> von {len(quests)} Quests geschafft</p>
   <div class="balken"><span data-balken></span></div>
   <p class="klein">Dein Fortschritt bleibt nur in diesem Browser gespeichert. Nichts davon wird übertragen.</p>
 </div>
@@ -552,10 +552,10 @@ def seminar_kalender_html(t, versteckt=False):
     return f"""<div class="kalender-block" id="seminar-kalender"{" hidden" if versteckt else ""}>
   <p><strong>Trag dir den Termin gleich ein:</strong></p>
   <div class="knopf-reihe">
-    <a class="knopf zweit klein-knopf" href="{esc(google)}" target="_blank" rel="noopener">Google Kalender</a>
-    <a class="knopf zweit klein-knopf" href="/achtsamkeitsseminar/termin.ics" download>Apple, Outlook &amp; Co.</a>
+    <a class="knopf klein-knopf" href="{esc(google)}" target="_blank" rel="noopener">📅 In Google Kalender eintragen</a>
+    <a class="knopf klein-knopf" href="/achtsamkeitsseminar/termin.ics" download>📥 In Apple- oder Outlook-Kalender</a>
   </div>
-  <p class="klein">Die Datei für Apple, Outlook &amp; Co. erinnert dich am Vortag. Bei Google gilt deine übliche Erinnerung.</p>
+  <p class="klein">Google öffnet sich mit dem fertigen Termin – dort nur noch „Speichern“. Für Apple und Outlook lädst du eine Kalenderdatei: öffnen, „Hinzufügen“ – sie erinnert dich am Vortag.</p>
 </div>"""
 
 
