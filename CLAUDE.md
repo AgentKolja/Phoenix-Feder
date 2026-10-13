@@ -18,6 +18,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
 | `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
 | `seite.js` | Impuls für heute, Teilen-Knopf, Quests abhaken (localStorage), Sprungziele öffnen |
+| `app/` | Web-App „Meine Routinen“ unter `/app/` (siehe unten) |
 | `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
 | `werkzeuge/wix-export.py` | Einmaliger Umzug von Wix, erledigt. Nicht erneut nötig |
@@ -64,3 +65,26 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
 - Gesundheitsaussagen nur ohne erfundene Zahlen: Studienangaben mit Prozenten nicht übernehmen, wenn die
   Quelle nicht belegt ist.
+
+## App „Meine Routinen“ (`app/`)
+
+Installierbare Web-App (PWA) ohne Konto und ohne Server. `bauen.py` kopiert `app/` nach `docs/app/`,
+schreibt `daten.json` (Übungen inkl. fertigem HTML) und setzt in `sw.js` eine neue Version, sobald sich
+App-Dateien oder Daten ändern.
+
+- `app.js`: alles in einer Datei, kein Framework. Zustand in `localStorage["phoenix-feder-app"]`,
+  erledigte Quests in `localStorage["phoenix-feder-quests"]` (gemeinsam mit `/gewohnheiten/`).
+- Konzepte: Tiny Habits (Anker, sofort feiern), Wenn-dann-Pläne, „nie zweimal hintereinander auslassen“
+  (Kette mit Nachsicht), Abendreflexion mit Stimmung und drei guten Dingen, Auswertung „Was dir wirklich hilft“
+  (Stimmung an Tagen mit/ohne Gewohnheit, ab 7 Reflexionen), Automatik-Check alle 14 Tage, Neustart-Hinweise
+  montags/Monatsanfang, Federn + Stufen + eigene Belohnungen, Feedback nach 14 Tagen (Kontaktformular vorausgefüllt).
+- Erinnerungen über Kalender (Google-Link oder .ics), Gerätewechsel über Sicherungsdatei oder Link
+  (`#import=…`, Daten gzip+base64 im Fragment – erreicht nie den Server).
+- Von der Website verlinken: `/app/#neu=<slug>` nimmt eine Gewohnheit auf bzw. startet eine Quest.
+- Datenformat nur abwärtskompatibel ändern (`version: 1`); neue Felder in `neuerZustand()` mit Standardwert.
+- Testen mit Playwright: frischer Kontext → Auswahl → Abhaken → Reflexion → Quest → Fortschritt, außerdem
+  offline (`context.setOffline(true)`) und Übertragungslink in zweitem Kontext. Nach `localStorage`-Änderungen
+  im Test die Seite neu laden (reiner Hash-Wechsel lädt nicht neu).
+- Google-Anmeldung/Sync gibt es bewusst noch nicht: bräuchte eine OAuth-Client-ID (Google Cloud) und würde
+  Daten im Drive-App-Ordner des Nutzers ablegen. Erst bauen, wenn die Client-ID existiert, und dann mit ihr testen.
+

@@ -17,6 +17,7 @@
     const liste = JSON.parse(daten.textContent);
     const feld = (name) => karte.querySelector(`[data-feld="${name}"]`);
     const basis = feld("link").getAttribute("href").split("#")[0];
+    const appBasis = feld("app").getAttribute("href").split("#")[0];
     let index = Math.floor(Date.now() / 864e5) % liste.length;
     const zeigen = () => {
       const u = liste[index];
@@ -25,6 +26,8 @@
       feld("titel").textContent = u.t;
       feld("kurz").textContent = u.k;
       feld("link").setAttribute("href", `${basis}#${u.s}`);
+      feld("app").setAttribute("href", `${appBasis}#neu=${u.s}`);
+      feld("app").textContent = u.a.startsWith("Quest") ? "Als Quest starten" : "In meine Routinen";
     };
     zeigen();
     const neu = karte.querySelector("[data-neu]");

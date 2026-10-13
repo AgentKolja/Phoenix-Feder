@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meine Routinen | Phoenix Feder</title>
+<meta name="description" content="Gewohnheiten, Quests und Abendreflexion für weniger Stress und mehr Genuss – ohne Anmeldung, alles bleibt auf deinem Gerät.">
+<link rel="canonical" href="https://www.phoenix-feder.de/app/">
+<meta name="theme-color" content="#fbf7f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1613" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Routinen">
+<link rel="preload" href="../schriften/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../stil.css">
+<link rel="stylesheet" href="app.css">
+<script src="app.js" defer></script>
+</head>
+<body class="app">
+<header class="app-kopf">
+  <a class="logo" href="../" aria-label="Phoenix Feder – zur Website">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><use href="../favicon.svg#feder"/></svg>
+    <span>Meine Routinen</span>
+  </a>
+  <span class="federn-anzeige" data-federn title="Gesammelte Federn"></span>
+</header>
+<main id="app" class="app-inhalt" aria-live="polite">
+  <noscript><p>Die App braucht JavaScript. Die Übungen findest du auch auf der Seite <a href="../gewohnheiten/">Gewohnheiten</a>.</p></noscript>
+</main>
+<nav class="app-navi" aria-label="App-Menü">
+  <a href="#heute" data-tab="heute"><span aria-hidden="true">☀️</span>Heute</a>
+  <a href="#entdecken" data-tab="entdecken"><span aria-hidden="true">🧭</span>Entdecken</a>
+  <a href="#fortschritt" data-tab="fortschritt"><span aria-hidden="true">🪶</span>Fortschritt</a>
+  <a href="#mehr" data-tab="mehr"><span aria-hidden="true">⚙️</span>Mehr</a>
+</nav>
+<div class="blatt-huelle" data-blatt hidden>
+  <div class="blatt" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1"></div>
+</div>
+<div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+</body>
+</html>

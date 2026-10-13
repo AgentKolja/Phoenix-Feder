@@ -7,6 +7,7 @@ Aufruf:  python3 bauen.py            baut und prueft
 Nur Python-Standardbibliothek. Der Build prueft am Ende jeden internen Link und jedes Bild;
 ist etwas kaputt, endet er mit Fehlercode 1 und docs/ darf so nicht veroeffentlicht werden.
 """
+import hashlib
 import html
 import json
 import math
@@ -291,7 +292,9 @@ def uebung_karte(u):
     return f"""<article class="uebung" id="{u['slug']}">
   <details>
     <summary><span class="uebung-emoji" aria-hidden="true">{u['emoji']}</span><span class="uebung-titel">{esc(u['titel'])}</span></summary>
-    <div class="uebung-text">{text_html(u['text'])}</div>
+    <div class="uebung-text">{text_html(u['text'])}
+      <p><a class="in-app" href="/app/#neu={u['slug']}">{"Als Quest in der App starten" if u["art"] == "quest" else "In meine Routinen aufnehmen"} →</a></p>
+    </div>
   </details>
   {abhaken}
 </article>"""
@@ -321,14 +324,14 @@ def uebungen_html():
 {quest_html}"""
 
 
+def kurz(u):
+    erster = next(z for z in u["text"].split("\n\n") if z.strip())
+    erster = re.sub(r"^[-*] ", "", erster.replace("\n", " ")).strip()
+    return erster if len(erster) <= 220 else erster[:220].rsplit(" ", 1)[0] + " …"
+
+
 def impuls_html():
     pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest")]
-
-    def kurz(u):
-        erster = next(z for z in u["text"].split("\n\n") if z.strip())
-        erster = re.sub(r"^[-*] ", "", erster.replace("\n", " ")).strip()
-        return erster if len(erster) <= 220 else erster[:220].rsplit(" ", 1)[0] + " …"
-
     daten = [{"s": u["slug"], "a": ART[u["art"]] + (f" · {u['gruppe']}" if u["gruppe"] else ""), "e": u["emoji"],
               "t": u["titel"], "k": kurz(u)} for u in pool]
     d = daten[date.today().toordinal() % len(daten)]
@@ -339,7 +342,8 @@ def impuls_html():
   <h3 data-feld="titel">{esc(d['t'])}</h3>
   <p data-feld="kurz">{esc(d['k'])}</p>
   <div class="knopf-reihe">
-    <a class="knopf" data-feld="link" href="/gewohnheiten/#{d['s']}">Ganze Übung lesen</a>
+    <a class="knopf" data-feld="app" href="/app/#neu={d['s']}">In meine Routinen</a>
+    <a class="knopf zweit" data-feld="link" href="/gewohnheiten/#{d['s']}">Ganze Übung</a>
     <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
   </div>
 </div>
@@ -474,7 +478,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <span>{esc(E['name'])}</span>
     </a>
     <nav class="navi" aria-label="Hauptmenü">{navi}</nav>
-    <a class="knopf klein-knopf kopf-knopf" href="{esc(buchung())}">Erstgespräch</a>
+    <a class="knopf klein-knopf kopf-knopf" href="/app/">Meine Routinen</a>
   </div>
 </header>
 <main id="inhalt">
@@ -487,7 +491,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <p>{esc(E['untertitel'])}</p>
     </div>
     <nav aria-label="Fußzeile">
-      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
+      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/app/">App: Meine Routinen</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
       <a href="/feed.xml">RSS</a>{sozial}
     </nav>
     <nav aria-label="Rechtliches">
@@ -527,6 +531,27 @@ def umleitung(alt, neu):
 <meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url={"../" * (alt.count("/") - 1)}{neu.lstrip("/")}">
 </head><body><p><a href="{neu}">Weiter</a></p></body></html>
 """)
+
+
+# ---------------------------------------------------------------- App "Meine Routinen"
+
+def app_bauen():
+    """Kopiert app/ nach docs/app/, schreibt die Uebungen als daten.json und versioniert den Service Worker."""
+    ziel = AUSGABE / "app"
+    shutil.copytree(WURZEL / "app", ziel)
+    daten = {
+        "uebungen": [{"slug": u["slug"], "art": u["art"], "gruppe": u["gruppe"], "emoji": u["emoji"],
+                      "titel": u["titel"], "kurz": kurz(u), "html": text_html(u["text"])} for u in UEBUNGEN],
+        "habitica": E["habitica_challenge"],
+    }
+    (ziel / "daten.json").write_text(json.dumps(daten, ensure_ascii=False), encoding="utf-8")
+    # Neue Version, sobald sich App-Dateien oder Daten aendern -> Service Worker laedt neu
+    pruefsumme = hashlib.sha256()
+    for datei in sorted(ziel.rglob("*")):
+        if datei.is_file() and datei.name != "sw.js":
+            pruefsumme.update(datei.read_bytes())
+    sw = ziel / "sw.js"
+    sw.write_text(sw.read_text(encoding="utf-8").replace("__VERSION__", pruefsumme.hexdigest()[:12]), encoding="utf-8")
 
 
 # ---------------------------------------------------------------- Feed, Sitemap, Pruefung
@@ -625,7 +650,7 @@ def main():
 
     (AUSGABE / "feed.xml").write_text(feed(artikel), encoding="utf-8")
     shutil.copy(AUSGABE / "feed.xml", AUSGABE / "blog-feed.xml")  # alte Wix-Adresse des Feeds
-    (AUSGABE / "sitemap.xml").write_text(sitemap(urls), encoding="utf-8")
+    (AUSGABE / "sitemap.xml").write_text(sitemap(urls + [("/app/", None)]), encoding="utf-8")
     (AUSGABE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {E['domain']}/sitemap.xml\n", encoding="utf-8")
     (AUSGABE / "CNAME").write_text(E["domain"].split("://")[1] + "\n", encoding="utf-8")
     (AUSGABE / ".nojekyll").write_text("", encoding="utf-8")
@@ -633,6 +658,7 @@ def main():
         shutil.copy(WURZEL / datei, AUSGABE / datei)
     shutil.copytree(WURZEL / "schriften", AUSGABE / "schriften")
     shutil.copytree(WURZEL / "bilder", AUSGABE / "bilder")
+    app_bauen()
 
     fehler, platzhalter = pruefen()
     seiten = len(list(AUSGABE.rglob("*.html")))
