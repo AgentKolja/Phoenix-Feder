@@ -472,7 +472,9 @@ def angebote_html():
     <a class="knopf{' zweit' if not an.get('hervorheben') else ''}" href="{esc(ziel)}">{knopf}</a>
   </div>
 </article>""")
-    return '<div class="angebote">\n' + "\n".join(teile) + "\n</div>"
+    return ('<div class="angebote">\n' + "\n".join(teile) + "\n</div>\n"
+            '<p class="klein angebote-hinweis">Coaching und Training sind keine Psychotherapie und ersetzen keine ärztliche '
+            'oder psychotherapeutische Behandlung.</p>')
 
 
 def formular_anfang(betreff, weiter, zusatz=""):
