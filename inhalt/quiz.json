@@ -1,5 +1,5 @@
 {
-  "version": "2026-10",
+  "version": "2026-10b",
   "stand": "Oktober 2026",
   "weltbild": {
     "frage": "Bevor es losgeht – dein Bauchgefühl: Wie entwickelt sich die Welt insgesamt?",
@@ -11,42 +11,62 @@
       "frage": "Wie hat sich der Anteil der Menschen in extremer Armut weltweit in den letzten 25 Jahren entwickelt?",
       "antworten": [["Er hat sich fast verdoppelt", "p"], ["Er ist etwa gleich geblieben", "p"], ["Er ist auf weniger als die Hälfte gesunken", "r"]],
       "erklaerung": "Im Jahr 2000 lebten 36 % der Menschen in extremer Armut, also von weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). 2024 waren es rund 10 % – obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
-      "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"]
+      "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"],
+      "studie": [91, 94]
     },
     {
       "thema": "Lebenserwartung",
       "frage": "Wie alt werden Menschen heute weltweit im Durchschnitt?",
       "antworten": [["73 Jahre", "r"], ["63 Jahre", "p"], ["53 Jahre", "p"]],
       "erklaerung": "Die Lebenserwartung bei Geburt liegt weltweit bei gut 73 Jahren (2024). 1990 waren es 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt sie wieder.",
-      "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"]
+      "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"],
+      "studie": [63, 57]
     },
     {
       "thema": "Einkommen",
       "frage": "Wo lebt die Mehrheit der Menschen auf der Welt?",
       "antworten": [["In Ländern mit niedrigem Einkommen", "p"], ["In Ländern mit mittlerem Einkommen", "r"], ["In Ländern mit hohem Einkommen", "o"]],
       "erklaerung": "Rund drei Viertel der Menschen – etwa 6 von 8,2 Milliarden – leben in Ländern mit mittlerem Einkommen (2025). Die Welt ist nicht in „arm“ und „reich“ geteilt: Die meisten Menschen leben dazwischen.",
-      "quelle": ["Weltbank, Bevölkerung nach Einkommensgruppen (Stand 2025)", "https://data.worldbank.org/indicator/SP.POP.TOTL"]
+      "quelle": ["Weltbank, Bevölkerung nach Einkommensgruppen (Stand 2025)", "https://data.worldbank.org/indicator/SP.POP.TOTL"],
+      "studie": [74, 83]
     },
     {
       "thema": "Bildung",
       "frage": "In Ländern mit niedrigem Einkommen: Wie viele Mädchen schließen die Grundschule ab?",
       "antworten": [["20 %", "p"], ["40 %", "p"], ["60 %", "r"]],
       "erklaerung": "In den Ländern mit dem niedrigsten Einkommen schließen 61 % der Mädchen die Grundschule ab (2023). Das reicht noch nicht – aber es ist viel mehr, als die meisten schätzen.",
-      "quelle": ["Weltbank / UNESCO, Grundschulabschluss Mädchen, Länder mit niedrigem Einkommen (Stand 2023)", "https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS"]
+      "quelle": ["Weltbank / UNESCO, Grundschulabschluss Mädchen, Länder mit niedrigem Einkommen (Stand 2023)", "https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS"],
+      "studie": [93, 91]
+    },
+    {
+      "thema": "Digitales",
+      "frage": "Wie viele Menschen auf der Welt nutzen heute das Internet?",
+      "antworten": [["Rund 50 %", "p"], ["Rund 75 %", "r"], ["Über 95 %", "o"]],
+      "erklaerung": "2025 sind rund 6 Milliarden Menschen online – knapp drei Viertel der Menschheit (74 %). 2015 waren es erst 40 %: In zehn Jahren sind rund 3 Milliarden Menschen dazugekommen. 2,2 Milliarden sind noch offline.",
+      "quelle": ["ITU, Facts and Figures 2025; Weltbank (Stand 2025)", "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"]
     },
     {
       "thema": "Impfungen",
       "frage": "Wie viele Kinder weltweit bekommen im ersten Lebensjahr alle drei Impfungen gegen Diphtherie, Tetanus und Keuchhusten?",
       "antworten": [["85 %", "r"], ["55 %", "p"], ["25 %", "p"]],
       "erklaerung": "85 % der Kinder weltweit erhielten 2024 alle drei Dosen. Impfstoffe müssen gekühlt und verteilt werden – dass sie fast überall ankommen, zeigt, wie weit die Grundversorgung heute reicht. Rund 14 Millionen Kinder bekamen allerdings keine einzige Impfung.",
-      "quelle": ["WHO und UNICEF, Impfquoten 2024 (veröffentlicht Juli 2025)", "https://www.who.int/news/item/15-07-2025-global-childhood-vaccination-coverage-holds-steady-yet-over-14-million-infants-remain-unvaccinated-who-unicef"]
+      "quelle": ["WHO und UNICEF, Impfquoten 2024 (veröffentlicht Juli 2025)", "https://www.who.int/news/item/15-07-2025-global-childhood-vaccination-coverage-holds-steady-yet-over-14-million-infants-remain-unvaccinated-who-unicef"],
+      "studie": [87, 94]
     },
     {
       "thema": "Strom",
       "frage": "Wie viele Menschen auf der Welt haben Zugang zu Strom?",
       "antworten": [["30 %", "p"], ["60 %", "p"], ["90 %", "r"]],
       "erklaerung": "92 % der Menschen weltweit haben Zugang zu Strom (2024). 2023 waren noch rund 670 Millionen ohne – die meisten im ländlichen Afrika südlich der Sahara.",
-      "quelle": ["Weltbank / Tracking SDG7 Energy Progress Report 2025", "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS"]
+      "quelle": ["Weltbank / Tracking SDG7 Energy Progress Report 2025", "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS"],
+      "studie": [78, 78]
+    },
+    {
+      "thema": "Energie",
+      "frage": "2024 kamen weltweit neue Kraftwerke ans Netz. Wie viel der neuen Leistung stammt aus erneuerbaren Energien wie Sonne, Wind und Wasser?",
+      "antworten": [["Über 90 %", "r"], ["Rund 60 %", "p"], ["Rund 30 %", "p"]],
+      "erklaerung": "92,5 % – ein Rekord (2023: 85,8 %). Über drei Viertel des Zuwachses waren Solaranlagen. Das Tempo reicht aber noch nicht für das Ziel der Weltklimakonferenz, die erneuerbare Leistung bis 2030 zu verdreifachen. Und der Ausbau ist ungleich verteilt: Nur 0,7 % der neuen Anlagen entstanden in Afrika.",
+      "quelle": ["IRENA, Renewable Capacity Highlights 2025", "https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2025/Mar/IRENA_DAT_RE_Capacity_Highlights_2025.pdf"]
     },
     {
       "thema": "Kindergesundheit",
@@ -60,7 +80,15 @@
       "frage": "Heute gibt es rund 2 Milliarden Kinder unter 15 Jahren. Wie viele werden es laut UN im Jahr 2100 sein?",
       "antworten": [["Weniger als 2 Milliarden", "r"], ["3 Milliarden", "p"], ["4 Milliarden", "p"]],
       "erklaerung": "Die UN rechnet für 2100 mit rund 1,7 Milliarden Kindern – weniger als heute. Die Zahl der Kinder wächst nicht mehr, weil Familien fast überall kleiner werden.",
-      "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"]
+      "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"],
+      "studie": [85, 91]
+    },
+    {
+      "thema": "Finanzen",
+      "frage": "Wie viele Erwachsene weltweit haben ein Konto – bei einer Bank oder per Handy (Mobile Money)?",
+      "antworten": [["Rund 50 %", "p"], ["Rund 80 %", "r"], ["Fast alle – über 95 %", "o"]],
+      "erklaerung": "79 % der Erwachsenen haben ein Konto (2024), 2011 war es erst gut die Hälfte. Vor allem das Handy hat das möglich gemacht: In Afrika südlich der Sahara haben 40 % der Erwachsenen ein Mobile-Money-Konto. 1,3 Milliarden Erwachsene haben noch keins.",
+      "quelle": ["Weltbank, Global Findex 2025 (Daten 2024)", "https://blogs.worldbank.org/en/allaboutfinance/digital-technology-is-unlocking-financial-inclusion"]
     },
     {
       "thema": "Bevölkerung",
@@ -74,7 +102,15 @@
       "frage": "Wie hat sich die Zahl der Todesopfer durch Naturkatastrophen pro Jahr in den letzten 100 Jahren entwickelt?",
       "antworten": [["Sie hat sich mehr als verdoppelt", "p"], ["Sie ist auf weniger als die Hälfte gesunken", "r"], ["Sie ist etwa gleich geblieben", "p"]],
       "erklaerung": "Vor 100 Jahren (1915–1924) starben im Schnitt rund 220.000 Menschen pro Jahr durch Naturkatastrophen, in den letzten zehn Jahren (2015–2024) rund 38.000 – obwohl heute viermal so viele Menschen leben. Frühwarnsysteme, Rettungsdienste und stabilere Häuser retten Leben. Die Daten aus frühen Jahren sind lückenhaft; der Trend ist trotzdem deutlich.",
-      "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"]
+      "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"],
+      "studie": [90, 94]
+    },
+    {
+      "thema": "Anpassung",
+      "frage": "Frühwarnsysteme warnen vor Stürmen, Fluten oder Hitze. Wie hat sich in den letzten zehn Jahren die Zahl der Länder entwickelt, die solche Systeme haben?",
+      "antworten": [["Sie hat sich mehr als verdoppelt", "r"], ["Sie ist etwa gleich geblieben", "p"], ["Sie ist gesunken", "p"]],
+      "erklaerung": "2025 haben 119 Länder – 60 % aller Länder – ein Frühwarnsystem für mehrere Gefahren, 113 % mehr als vor zehn Jahren. So passen sich Länder an ein wärmeres Klima an, und es rettet Leben: Wo die Systeme umfassend sind, sterben bei Katastrophen im Verhältnis fast sechsmal weniger Menschen. Die UN wollen bis 2027 jeden Menschen auf der Erde schützen – bis dahin ist noch viel zu tun.",
+      "quelle": ["WMO und UNDRR, Global Status of Multi-Hazard Early Warning Systems 2025", "https://wmo.int/news/media-centre/early-warning-systems-reach-new-heights-critical-gaps-jeopardize-global-progress"]
     },
     {
       "thema": "Bildung",
@@ -82,6 +118,13 @@
       "antworten": [["Rund 50 %", "p"], ["Rund 70 %", "p"], ["Fast 90 %", "r"]],
       "erklaerung": "Knapp 88 % der Erwachsenen weltweit können lesen und schreiben (2024). Vor wenigen Generationen war es eine Minderheit.",
       "quelle": ["Weltbank / UNESCO-Institut für Statistik (Stand 2024)", "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS"]
+    },
+    {
+      "thema": "Künstliche Intelligenz",
+      "frage": "Proteine sind die chemischen Werkzeuge des Lebens. Die KI AlphaFold sagt voraus, wie sie räumlich aufgebaut sind. Für wie viele Proteine hat sie das bisher geschafft?",
+      "antworten": [["Für fast alle bekannten – rund 200 Millionen", "r"], ["Für rund 2 Millionen", "p"], ["Für rund 2.000", "p"]],
+      "erklaerung": "Für praktisch alle rund 200 Millionen Proteine, die Forschende kennen. Damit hat die KI ein 50 Jahre altes Problem gelöst – 2024 gab es dafür den Nobelpreis für Chemie. Über zwei Millionen Menschen aus 190 Ländern haben AlphaFold schon genutzt, etwa um Antibiotika-Resistenzen besser zu verstehen.",
+      "quelle": ["Nobelpreis für Chemie 2024, Pressemitteilung", "https://www.nobelprize.org/prizes/chemistry/2024/press-release/"]
     },
     {
       "thema": "Deutschland",
@@ -95,7 +138,8 @@
       "frage": "Was erwartet der Weltklimarat (IPCC) für die Temperatur auf der Erde in den nächsten Jahrzehnten?",
       "antworten": [["Es wird wärmer", "r"], ["Sie bleibt etwa gleich", "o"], ["Es wird kälter", "o"]],
       "erklaerung": "Hier liegt die Sorge richtig: Der Weltklimarat erwartet, dass es weiter wärmer wird – wie stark, hängt davon ab, wie schnell die Emissionen sinken. Die Welt realistisch zu sehen heißt nicht, alles schönzureden: Vieles wird besser, manches ist ernst. Beides gilt gleichzeitig.",
-      "quelle": ["IPCC, Sechster Sachstandsbericht, Synthesebericht 2023", "https://www.ipcc.ch/report/ar6/syr/"]
+      "quelle": ["IPCC, Sechster Sachstandsbericht, Synthesebericht 2023", "https://www.ipcc.ch/report/ar6/syr/"],
+      "studie": [13, 12]
     }
   ]
 }

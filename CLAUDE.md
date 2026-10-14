@@ -70,7 +70,7 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Titelbild: `python3 werkzeuge/bild.py <datei> <slug>`. Kein Bild erfinden oder aus dem Netz nehmen
   (Urheberrecht) – ohne Bild vom Nutzer `bild:` weglassen. Ausnahme nur auf ausdrücklichen Wunsch: selbst
   gezeichnete Illustration (eigenes SVG, keine Vorlage), im `bildtext` als „Illustration“ kennzeichnen
-  (so bei „Sehen, was ist“ – durch ein eigenes Foto ersetzbar).
+  (so bei „Die Realität sehen“ – durch ein eigenes Foto ersetzbar).
 - Texte des Autors nicht inhaltlich umschreiben. Tippfehler korrigieren ist ok, im Commit nennen.
 
 ### Recht
@@ -151,12 +151,19 @@ App-Dateien oder Daten ändern.
   Einstellungen und Statistiken hinter „Aufklappen“, höchstens ein Hinweis gleichzeitig. Einstieg:
   zwei Fragen, dann die passenden Ideen; eigene Auswahl (`#start`: Bereich → Gewohnheiten → Zeitpunkt) nur auf Wunsch.
 
-## Quiz „Wie gut kennst du die Welt?“ (`/quiz/`)
+## Realitätscheck „Wie realistisch ist dein Weltbild?“ (`/quiz/`)
 
 Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json` (je Frage 3 Antworten mit Richtung: `r` richtig,
-`p` zu pessimistisch, `o` zu optimistisch, `n` neutral; Erklärung mit Zahl und Jahr; Quelle mit Link). Nur belegte Zahlen
-aus Primärquellen (Weltbank-API, UN WPP, WHO/UNICEF, EM-DAT über OWID, Destatis, IPCC); Stand und `version` pflegen,
-wenn Zahlen aktualisiert werden. Ablauf in `quiz.js`: Bauchgefühl vorab, Fragen mit sofortiger Auflösung, dann die
+`p` zu pessimistisch, `o` zu optimistisch, `n` neutral; Erklärung mit Zahl und Jahr; Quelle mit Link; optional `studie`
+= [% falsch im Schnitt, % falsch Deutschland] aus der Gapminder Misconception Study 2017, nur bei vergleichbarer Frage –
+Werte aus der Gapminder-Datei gapm.io/gms17d, Blatt „country percente per question“). Neben den Factfulness-Klassikern
+auch Entwicklungen der letzten 5–10 Jahre (Internet, KI, erneuerbare Energie, Konten, Frühwarnsysteme); ein paar
+Fragen haben bewusst eine zu optimistische Antwort, damit die Einordnung pessimistisch/realistisch/optimistisch trägt
+(realistisch ab 2/3 richtig, sonst die häufigere Fehlerrichtung). Teaser und Einleitung verraten die Richtung nicht
+(„9 von 10 nicht besser als ein Schimpanse – lass dich überraschen“). Platz: Knopf im Kopfbereich der Startseite und
+eigener Abschnitt direkt über dem Impuls. Nur belegte Zahlen
+aus Primärquellen (Weltbank-API, UN WPP, WHO/UNICEF, EM-DAT über OWID, Destatis, IPCC, ITU, IRENA, WMO, Nobelpreis);
+Stand und `version` pflegen, wenn Fragen oder Zahlen sich ändern. Ablauf in `quiz.js`: Bauchgefühl vorab, Fragen mit sofortiger Auflösung, dann die
 Frage, ob die Antworten anonym beigesteuert werden (Einwilligung, nur bei „Ja“ → Web3Forms, Betreff „Quiz: anonyme
 Antworten“, Feld `Daten` als JSON für die Auswertung). Datenschutzerklärung Abschnitt 4 beschreibt das. Auswertung:
 Mails mit diesem Betreff (z. B. per Gmail-Suche) zusammenzählen. Web3Forms-Kontingent (Gratis: 250/Monat) teilt sich das

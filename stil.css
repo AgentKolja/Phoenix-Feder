@@ -29,6 +29,8 @@
   --akzent: #8f5418;
   --akzent-hell: #c8842f;
   --auf-akzent: #ffffff;
+  --gut: #2f7a4b;
+  --schlecht: #b3261e;
   --linie: #e5d8c7;
   --schatten: 0 1px 2px rgb(60 40 20 / 6%), 0 8px 24px rgb(60 40 20 / 8%);
   --rund: 14px;
@@ -46,6 +48,8 @@
     --akzent: #e3a55e;
     --akzent-hell: #e3a55e;
     --auf-akzent: #1b1613;
+    --gut: #7cc597;
+    --schlecht: #f08a7e;
     --linie: #3b3028;
     --schatten: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 25%);
   }
@@ -373,10 +377,27 @@ p { margin: 0 0 1em; }
   .erstgespraech-bild { width: 3.8rem; height: 3.8rem; }
 }
 
-/* Quiz „Wie gut kennst du die Welt?“ */
+/* Realitätscheck-Quiz „Wie realistisch ist dein Weltbild?“ */
 .quiz-teaser { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; margin-top: 2.5rem; padding: 1.4rem 1.6rem; background: var(--flaeche); border-left: 3px solid var(--akzent-hell); border-radius: 0 var(--rund) var(--rund) 0; }
-.quiz-teaser h3 { margin-bottom: 0.3rem; }
+.quiz-teaser h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); margin-bottom: 0.2rem; }
+.quiz-teaser > div { max-width: 44rem; }
 .quiz-teaser p:last-child { margin-bottom: 0; }
+.abschnitt.kompakt { padding-block: clamp(1.5rem, 4vw, 2.5rem); }
+.abschnitt.kompakt .quiz-teaser { margin-top: 0; }
+/* Skala Pessimistisch – Realistisch – Optimistisch (Teaser und Ergebnis) */
+.quiz-skala { display: flex; gap: 3px; max-width: 26rem; margin: 0.6rem 0 1rem; font-size: 0.8rem; font-weight: 600; }
+.quiz-skala span { flex: 1; text-align: center; padding: 0.35rem 0.4rem; background: var(--grund); color: var(--leise); }
+.quiz-skala span:first-child { border-radius: 999px 0 0 999px; }
+.quiz-skala span:last-child { border-radius: 0 999px 999px 0; }
+.quiz-skala span.aktiv { background: var(--akzent); color: var(--auf-akzent); }
+.quiz-ergebnis .quiz-skala span:not(.aktiv) { background: var(--flaeche); }
+.quiz-typ { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0.1rem 0 0.2rem; color: var(--akzent); }
+.quiz-studie { font-size: 0.95rem; padding: 0.6rem 0.8rem; background: var(--flaeche); border-radius: 10px; }
+.quiz-optionen { list-style: none; padding: 0; margin: 0.3rem 0; }
+.quiz-uebersicht .quiz-optionen li { margin: 0.1rem 0; color: var(--leise); }
+.quiz-uebersicht .quiz-optionen li.ok { color: var(--gut); font-weight: 600; }
+.quiz-uebersicht .quiz-optionen li.du { color: var(--schlecht); }
+.quiz-optionen b { display: inline-block; width: 1.3rem; }
 .quiz { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); box-shadow: var(--schatten); padding: clamp(1.2rem, 4vw, 2rem); margin-top: 1.5rem; }
 .quiz-kopf { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--leise); margin-bottom: 1.2rem; }
 .quiz-balken { flex: 1; height: 6px; border-radius: 3px; background: var(--flaeche); overflow: hidden; }

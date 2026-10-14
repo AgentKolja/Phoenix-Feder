@@ -59,12 +59,14 @@ for _u in UEBUNGEN:
             raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
 # Nächster Seminartermin (leer oder vorbei -> Seite zeigt automatisch „Termin in Planung“)
 SEMINAR = json.loads((INHALT / "seminar.json").read_text(encoding="utf-8"))
-# Quiz „Wie gut kennst du die Welt?“ (nach Hans Roslings Factfulness, aktuelle Zahlen mit Quelle)
+# Realitätscheck-Quiz (nach Hans Roslings Factfulness, aktuelle Zahlen mit Quelle; „studie“ = Gapminder 2017)
 QUIZ = json.loads((INHALT / "quiz.json").read_text(encoding="utf-8"))
 for _q in QUIZ["fragen"]:
     _r = [a[1] for a in _q["antworten"]]
     if len(_r) != 3 or _r.count("r") != 1 or not set(_r) <= {"r", "p", "o", "n"} or not _q["quelle"][1].startswith("https://"):
         raise SystemExit(f"inhalt/quiz.json: Frage „{_q['frage'][:40]}…“ braucht 3 Antworten, genau eine richtige (r) und eine Quelle")
+    if "studie" in _q and not (len(_q["studie"]) == 2 and all(isinstance(z, int) and 0 <= z <= 100 for z in _q["studie"])):
+        raise SystemExit(f"inhalt/quiz.json: „studie“ bei „{_q['frage'][:40]}…“ = [Prozent falsch im Schnitt, Prozent falsch Deutschland]")
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 # Einstiegsfrage „Woran möchtest du arbeiten?“ (Seite /gewohnheiten/ und App)
 RICHTUNGEN = [{"slug": b["slug"], "emoji": b["emoji"], "titel": b["titel"], "text": b["text"]} for b in BEREICHE] + [
@@ -957,6 +959,7 @@ def main():
         umleitung(alt, "/blog/")
     for alt in ("/booking-calendar/", "/service-page/", "/services-4/"):
         umleitung(alt, "/book-online/")
+    umleitung("/post/sehen-was-ist/", "/post/die-realitaet-sehen/")  # umbenannt am 14.10.2026
 
     (AUSGABE / "feed.xml").write_text(feed(artikel), encoding="utf-8")
     shutil.copy(AUSGABE / "feed.xml", AUSGABE / "blog-feed.xml")  # alte Wix-Adresse des Feeds

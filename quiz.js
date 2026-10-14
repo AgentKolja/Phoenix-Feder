@@ -1,5 +1,6 @@
-// Quiz „Wie gut kennst du die Welt?“ – nach Hans Roslings Factfulness, mit aktuellen Zahlen.
-// Ablauf: Bauchgefühl vorab, 13 Fragen mit sofortiger Auflösung und Quelle, dann Ergebnis.
+// Realitätscheck „Wie realistisch ist dein Weltbild?“ – nach Hans Roslings Factfulness, mit aktuellen Zahlen.
+// Ablauf: Bauchgefühl vorab, Fragen mit sofortiger Auflösung, Quelle und Wert aus Roslings Studie, dann Ergebnis
+// mit Einordnung (pessimistisch / realistisch / optimistisch).
 // Antworten gehen nur nach ausdrücklichem Ja anonym über Web3Forms an Nikolas (ohne Namen, ohne E-Mail, ohne Cookies).
 (() => {
   const wurzel = document.querySelector("[data-quiz]");
@@ -44,10 +45,23 @@
       ${beantwortet ? `<div class="quiz-aufloesung">
         <p class="quiz-urteil" tabindex="-1">${gewaehlt === richtig ? "✓ Richtig!" : `Nicht ganz. Richtig ist ${BUCHSTABEN[richtig]}.`}</p>
         <p>${esc(f.erklaerung)}</p>
+        ${studie(f)}
         <p class="klein">Quelle: <a href="${esc(f.quelle[1])}" target="_blank" rel="noopener">${esc(f.quelle[0])}</a></p>
         ${knopf("weiter", "", i + 1 < Q.fragen.length ? "Weiter" : "Zum Ergebnis", "knopf")}
       </div>` : ""}`;
   }
+
+  // Gapminder Misconception Study 2017: Anteil falscher Antworten (Schnitt aus 14 Ländern / Deutschland)
+  const studie = (f) => (f.studie ? `<p class="quiz-studie">In Roslings Studie 2017 lagen hier <strong>${f.studie[0]} %</strong> falsch (Deutschland: ${f.studie[1]} %).</p>` : "");
+
+  const TYPEN = {
+    pessimistisch: ["Eher pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten – und eigentlich ist das eine gute Nachricht."],
+    realistisch: ["Realistisch", "Du siehst die Welt ziemlich so, wie sie ist. Das schaffen die wenigsten."],
+    optimistisch: ["Eher optimistisch", "Du schätzt die Welt eher zu rosig ein – das ist selten. Bei manchen Themen lohnt es sich, genauer hinzusehen."],
+    gemischt: ["Mal zu düster, mal zu rosig", "Deine Fehler halten sich die Waage – kein klarer Hang in eine Richtung."]
+  };
+  const typVon = (e) => (e.richtig >= Math.ceil((Q.fragen.length * 2) / 3) ? "realistisch"
+    : e.pessimistisch > e.optimistisch ? "pessimistisch" : e.optimistisch > e.pessimistisch ? "optimistisch" : "gemischt");
 
   function zeichneBeitragen() {
     if (gemerkt() === Q.version || !Q.schluessel) { gesendet = "aus"; zeichneErgebnis(); return; }
@@ -83,10 +97,11 @@
     form.append("Richtig", `${e.richtig} von ${Q.fragen.length}`);
     form.append("Zu pessimistisch", String(e.pessimistisch));
     form.append("Zu optimistisch", String(e.optimistisch));
+    form.append("Weltbild", TYPEN[typVon(e)][0]);
     form.append("Bauchgefühl vorab", Q.weltbild.antworten[weltbild]);
     form.append("Altersgruppe", alter || "keine Angabe");
     form.append("Antworten", Q.fragen.map((f, i) => `${i + 1}. ${f.thema}: ${BUCHSTABEN[antworten[i]]}${f.antworten[antworten[i]][1] === "r" ? " ✓" : ""}`).join("\n"));
-    form.append("Daten", JSON.stringify({ v: Q.version, w: weltbild, a: antworten, r: e.richtig, p: e.pessimistisch, o: e.optimistisch, alter: alter || "" }));
+    form.append("Daten", JSON.stringify({ v: Q.version, w: weltbild, a: antworten, r: e.richtig, p: e.pessimistisch, o: e.optimistisch, t: typVon(e), alter: alter || "" }));
     try {
       const antwort = await fetch("https://api.web3forms.com/submit", { method: "POST", headers: { Accept: "application/json" }, body: form });
       const daten = await antwort.json();
@@ -115,8 +130,13 @@
       ? `Bei <strong>${e.pessimistisch}</strong> ${e.pessimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt schlechter eingeschätzt, als sie ist${e.optimistisch ? `, bei ${e.optimistisch} besser` : ""}.`
       : e.optimistisch > e.pessimistisch ? `Bei <strong>${e.optimistisch}</strong> ${e.optimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt besser eingeschätzt, als sie ist${e.pessimistisch ? `, bei ${e.pessimistisch} schlechter` : ""}.`
         : e.pessimistisch ? `Du lagst gleich oft zu pessimistisch wie zu optimistisch (je ${e.pessimistisch}-mal).` : "";
+    const typ = typVon(e);
+    const skala = ["pessimistisch", "realistisch", "optimistisch"].map((t) => `<span${t === typ ? ' class="aktiv"' : ""}>${t[0].toUpperCase()}${t.slice(1)}</span>`).join("");
     wurzel.innerHTML = `<div class="quiz-ergebnis">
-      <p class="oberzeile">Dein Ergebnis</p>
+      <p class="oberzeile">Dein Weltbild</p>
+      <p class="quiz-typ" data-typ="${typ}">${TYPEN[typ][0]}</p>
+      <div class="quiz-skala" aria-hidden="true">${skala}</div>
+      <p>${TYPEN[typ][1]}</p>
       <p class="quiz-zahl"><strong>${e.richtig}</strong> von ${n} richtig</p>
       <p>Ein Schimpanse, der zufällig tippt, schafft im Schnitt ${affe} von ${n}. ${vergleich}</p>
       ${richtung ? `<p>${richtung}</p>` : ""}
@@ -125,13 +145,21 @@
     </div>
     <div class="quiz-warum">
       <h3>Warum wir die Welt düsterer sehen, als sie ist</h3>
-      <p>Hans Rosling nennt es den Negativitäts-Instinkt: Schlechte Nachrichten fallen auf, langsame Verbesserungen nicht. Dazu kommt, dass wir uns an ein altes Bild der Welt erinnern. Das ist menschlich – und genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
-      <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/sehen-was-ist/", location.href).pathname)}">Artikel: Sehen, was ist</a></div>
+      <p>Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig – wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller, erinnern es länger und reagieren stärker. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
+      <p>Hans Rosling nennt es den Negativitäts-Instinkt und sieht drei Verstärker: Wir erinnern die Vergangenheit schöner, als sie war. Nachrichten zeigen Katastrophen, aber kaum langsame Verbesserungen. Und es fühlt sich herzlos an zu sagen, dass etwas besser wird, solange es noch schlecht ist.</p>
+      <p>Was uns früher geschützt hat, verzerrt heute unser Bild: Über die Medien erreichen uns die Gefahren der ganzen Welt, rund um die Uhr. Das ist menschlich – und genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
+      <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/die-realitaet-sehen/", location.href).pathname)}">Artikel: Die Realität sehen</a></div>
     </div>
     <details class="quiz-uebersicht"><summary>Alle Fragen und Antworten</summary><ol>${Q.fragen.map((f, i) => {
-      const r = f.antworten.findIndex((a) => a[1] === "r");
-      return `<li><strong>${esc(f.frage)}</strong><br>${antworten[i] === r ? "✓" : "✗"} Richtig: ${esc(f.antworten[r][0])} · <a href="${esc(f.quelle[1])}" target="_blank" rel="noopener">Quelle</a></li>`;
-    }).join("")}</ol><p class="klein">Stand der Zahlen: ${esc(Q.stand)}. Inspiriert durch das Buch „Factfulness“ von Hans Rosling, Ola Rosling und Anna Rosling Rönnlund.</p></details>`;
+      const optionen = f.antworten.map(([text, art], j) => {
+        const du = antworten[i] === j;
+        const klasse = art === "r" ? "ok" : du ? "du" : "";
+        return `<li${klasse ? ` class="${klasse}"` : ""}><b>${BUCHSTABEN[j]}</b> ${esc(text)}${art === "r" ? " ✓" : ""}${du ? " <em>– deine Antwort</em>" : ""}</li>`;
+      }).join("");
+      const studieText = f.studie ? `Studie 2017: ${f.studie[0]} % falsch (Deutschland ${f.studie[1]} %) · ` : "";
+      return `<li><strong>${esc(f.frage)}</strong><ul class="quiz-optionen">${optionen}</ul>
+        <span class="klein">${studieText}<a href="${esc(f.quelle[1])}" target="_blank" rel="noopener">Quelle</a></span></li>`;
+    }).join("")}</ol><p class="klein">Stand der Zahlen: ${esc(Q.stand)}. Studienwerte: Gapminder Misconception Study 2017 mit rund 12.000 Menschen in 14 Ländern, dort teils mit den damaligen Zahlen gefragt (<a href="https://www.gapminder.org/ignorance/studies/gms/" target="_blank" rel="noopener">Gapminder</a>). Inspiriert durch das Buch „Factfulness“ von Hans Rosling, Ola Rosling und Anna Rosling Rönnlund.</p></details>`;
   }
 
   function zeichnen() {
@@ -181,7 +209,7 @@
         const url = location.href.split("#")[0];
         const e = auswertung();
         if (navigator.share) {
-          try { await navigator.share({ title: document.title, text: `Ich hatte ${e.richtig} von ${Q.fragen.length} richtig. Wie gut kennst du die Welt?`, url }); } catch { /* abgebrochen */ }
+          try { await navigator.share({ title: document.title, text: `Mein Weltbild: ${TYPEN[typVon(e)][0].toLowerCase()} – ${e.richtig} von ${Q.fragen.length} richtig. Wie realistisch ist deins?`, url }); } catch { /* abgebrochen */ }
         } else {
           try { await navigator.clipboard.writeText(url); el.textContent = "Link kopiert ✓"; } catch { /* Zwischenablage gesperrt */ }
         }
