@@ -747,9 +747,11 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
         "instagram": '<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r="0.6" fill="currentColor"/>',
         "linkedin": '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 10.5v5.5M8.5 7.8v.1M12 16v-5.5M12 13c0-1.6 1-2.6 2.3-2.6s2.2.9 2.2 2.6V16"/>',
     }
+    # Sichtbar, wohin der Link führt: Instagram-Name aus der Adresse, LinkedIn mit Namen
+    instagram_name = "@" + E["instagram"].rstrip("/").rsplit("/", 1)[-1] if E.get("instagram") else ""
     sozial = "".join(
-        f'<a class="rund-knopf" href="{esc(E[k])}" rel="noopener" aria-label="{t}" title="{t}"><svg viewBox="0 0 24 24" aria-hidden="true">{symbole[k]}</svg></a>'
-        for k, t in (("instagram", "Instagram"), ("linkedin", "LinkedIn")) if E.get(k))
+        f'<a href="{esc(E[k])}" rel="noopener" aria-label="{t}: {esc(name)}"><svg viewBox="0 0 24 24" aria-hidden="true">{symbole[k]}</svg>{esc(name)}</a>'
+        for k, t, name in (("instagram", "Instagram", instagram_name), ("linkedin", "LinkedIn", E["autor"])) if E.get(k))
     kurz_beschreibung = E["beschreibung"].split(". ")[0].rstrip(".") + "."
     return f"""<!doctype html>
 <html lang="de">
