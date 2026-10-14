@@ -68,7 +68,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Text als sauberes HTML (`<p>`, `<h2>`, `<h3>`, `<ul>`, `<blockquote>`, `<strong>`, `<em>`, `<a>`), keine
   Inline-Styles. Datei `inhalt/artikel/<slug>.html`, Slug klein mit Bindestrichen.
 - Titelbild: `python3 werkzeuge/bild.py <datei> <slug>`. Kein Bild erfinden oder aus dem Netz nehmen
-  (Urheberrecht) – ohne Bild vom Nutzer `bild:` weglassen.
+  (Urheberrecht) – ohne Bild vom Nutzer `bild:` weglassen. Ausnahme nur auf ausdrücklichen Wunsch: selbst
+  gezeichnete Illustration (eigenes SVG, keine Vorlage), im `bildtext` als „Illustration“ kennzeichnen
+  (so bei „Sehen, was ist“ – durch ein eigenes Foto ersetzbar).
 - Texte des Autors nicht inhaltlich umschreiben. Tippfehler korrigieren ist ok, im Commit nennen.
 
 ### Recht
