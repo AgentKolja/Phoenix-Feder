@@ -1,5 +1,5 @@
 {
-  "version": "2026-10c",
+  "version": "2026-10d",
   "stand": "Oktober 2026",
   "weltbild": {
     "frage": "Bevor es losgeht: Glaubst du an eine bessere Zukunft für die Welt?",
@@ -139,6 +139,13 @@
       "antworten": [["Rund 30 % weniger", "p"], ["Rund 40 % mehr", "p"], ["Rund 85 % weniger", "r"]],
       "erklaerung": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. 2024 waren es in ganz Deutschland 2.770, obwohl heute viel mehr Autos fahren. Viel bewirkt haben die Gurtpflicht und sicherere Autos, dazu eine bessere Notfallmedizin.",
       "quelle": ["Statistisches Bundesamt (Destatis), Verkehrsunfälle im Zeitvergleich", "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Verkehrsunfaelle/Tabellen/liste-strassenverkehrsunfaelle.html"]
+    },
+    {
+      "thema": "Migration",
+      "frage": "Wie viele Menschen in Deutschland sind selbst eingewandert, also im Ausland geboren und später hergezogen?",
+      "antworten": [["Rund 10 %", "n"], ["Rund 20 %", "r"], ["Rund 35 %", "n"]],
+      "erklaerung": "2025 waren es 19,8 %, also etwa jede fünfte Person (16,4 Millionen). Gefühlt sind es deutlich mehr: In einer großen Studie mit rund 24.000 Befragten in sechs Ländern schätzten Menschen in Deutschland den Anteil 2018 im Schnitt auf 30 %, tatsächlich lag er damals bei knapp 15 %. Auch die Zusammensetzung wurde falsch eingeschätzt: Den Anteil der Muslime unter den Eingewanderten hielten die Befragten für 44 % (tatsächlich 30 %), den der Christen für 32 % (tatsächlich 51 %). Interessant: Wer politisch links und wer rechts steht, überschätzte den Anteil gleich stark. Und die Lage ist gemischt: Von den 25- bis 34-jährigen Eingewanderten haben 33 % einen Hochschulabschluss, fast so viele wie in der Gesamtbevölkerung (34 %). Gleichzeitig hat gut ein Drittel von ihnen keinen Berufsabschluss und ist auch nicht in Ausbildung.",
+      "quelle": ["Statistisches Bundesamt, Mikrozensus 2025; Alesina, Miano und Stantcheva, Review of Economic Studies 2023", "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/04/PD26_128_125.html"]
     },
     {
       "thema": "Klima",

@@ -58,9 +58,10 @@ def main():
     o = s["ort"]
     wo = f"{esc(o['name'])}<br><i>{esc(o['strasse'])}" + (f" ({esc(o['zusatz'])})" if o.get("zusatz") else "") + "</i>"
     kostenlos = s["preis"].strip().lower() == "kostenlos"
-    kosten = (f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
-    oberzeile = ("Kostenloses Pilot-Seminar" if kostenlos and s.get("art") == "Pilot"
-                 else "Kostenloses Seminar" if kostenlos else "Seminar") + f" in {o['stadt']}"
+    kosten = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
+    if s.get("art") == "Pilot":  # dezent, aber offen: zweite Zeile unter dem Preis
+        kosten += "<br><i>Pilotseminar: Dein Feedback hilft mir</i>"
+    oberzeile = f"Achtsamkeitsseminar in {o['stadt']}"
     h, m = map(int, s["beginn"].split(":"))
     h2, m2 = map(int, s["ende"].split(":"))
     minuten = (h2 * 60 + m2) - (h * 60 + m)
@@ -71,41 +72,42 @@ def main():
     fakten = f"""<div class="fakten">
   <div class="fakt"><b>Wann</b><span>{wann}</span></div>
   <div class="fakt"><b>Wo</b><span>{wo}</span></div>
-  <div class="fakt"><b>Preis</b><span>{esc(kosten)}</span></div>
+  <div class="fakt"><b>Preis</b><span>{kosten}</span></div>
 </div>"""
     leiter = f"""<div class="leiter"><img src="{portrait}" alt=""><span>Mit <strong>Nikolas Voth</strong>, Achtsamkeitstrainer und Coach</span></div>"""
 
     def anmelden(text="Jetzt anmelden"):
         return f"""<div class="anmelden"><div class="qr">{qr}</div><div><strong>{text}</strong><div class="adresse">{esc(kurz_url)}</div></div></div>"""
 
-    titel = "Mehr Gelassenheit.<br>Mehr du."
-    beschreibung = (f"In {minuten} Minuten durch drei Ebenen der Achtsamkeit, vom Wahrnehmen bis zum bewussten Handeln. "
-                    "Mit Übungen, die du direkt in deinen Alltag mitnimmst.")
+    titel = "Vom Wahrnehmen<br>zum Handeln."
+    motto = "Die Grundlagen der Meditation, für jeden Tag"
+    beschreibung = (f"In {minuten} Minuten lernst du, wie Meditation funktioniert: vom stillen Wahrnehmen bis zum bewussten "
+                    "Handeln im Alltag. Dazu einfache Übungen, die du jeden Tag machen kannst.")
     seiten = {
         "beitrag": f"""<div class="blatt post">
   <div class="bogen"><img src="{bild}" alt=""></div>
-  <div class="kopf"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p></div>
+  <div class="kopf"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">{esc(motto)}</p></div>
   <div class="rechts"><p class="text">{esc(beschreibung)}</p>{leiter}</div>
   <div class="unten">{fakten}{anmelden()}</div>
 </div>""",
         "story": f"""<div class="blatt story">
   <div class="bogen"><img src="{bild}" alt=""></div>
-  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>
+  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">{esc(motto)}</p>
   {fakten}
   {anmelden()}
 </div>""",
         "plakat": f"""<div class="blatt plakat">
   <div class="bogen"><img src="{bild}" alt=""></div>
-  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>
+  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">{esc(motto)}</p>
   <p class="text">{esc(beschreibung)}</p>
   <div class="unten"><div>{fakten}{leiter}</div>{anmelden("Scannen und anmelden")}</div>
 </div>""",
         "video": f"""<div class="blatt reel">
   <div class="foto"><img src="{bild}" alt=""></div><div class="schleier"></div>
   <div class="szene s1"><h1>Ständig abgelenkt?</h1><p>Zu viel im Kopf, zu wenig im Moment.</p></div>
-  <div class="szene s2"><h1>{titel}</h1><p>Achtsamkeit kannst du üben.</p></div>
-  <div class="szene s3"><p class="oberzeile">{esc(oberzeile)}</p><h1>Achtsamkeits&shy;seminar</h1><p>{esc(kurz_tag)} · {esc(s['beginn'])} bis {esc(s['ende'])} Uhr</p></div>
-  <div class="ende"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>{fakten}{anmelden()}</div>
+  <div class="szene s2"><h1>{titel}</h1><p>{esc(motto)}.</p></div>
+  <div class="szene s3"><p class="oberzeile">In {esc(o['stadt'])}, {"kostenlos" if kostenlos else esc(s['preis'])}</p><h1>Achtsamkeits&shy;seminar</h1><p>{esc(kurz_tag)} · {esc(s['beginn'])} bis {esc(s['ende'])} Uhr</p></div>
+  <div class="ende"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">{esc(motto)}</p>{fakten}{anmelden()}</div>
 </div>""",
     }
     vorlage = (HIER / "vorlage.html").read_text(encoding="utf-8")
