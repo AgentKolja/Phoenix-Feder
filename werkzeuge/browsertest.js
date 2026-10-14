@@ -209,12 +209,18 @@ function server() {
   pruefe(`Quiz: ${N} Fragen, jede sofort aufgelöst mit Quelle, Ergebnis mit Schimpansen-Vergleich`,
     N >= 18 && mitQuelle && (await p.textContent(".quiz-zahl")).includes(`von ${N}`) && (await p.textContent(".quiz-ergebnis")).includes("Schimpanse"));
   const positionen = QD.fragen.map((f) => f.antworten.findIndex((a) => a[1] === "r"));
-  pruefe("Quiz: richtige Antwort steht nicht vorhersehbar an derselben Stelle", [0, 1, 2].every((k) => positionen.filter((x) => x === k).length >= N / 5));
+  pruefe("Quiz: richtige Antwort steht nicht vorhersehbar an derselben Stelle (A bis D)", [0, 1, 2, 3].every((k) => positionen.filter((x) => x === k).length >= N / 6));
+  pruefe("Quiz: jede Frage hat vier Antworten, darunter eine zu pessimistische und eine zu optimistische",
+    QD.fragen.every((f) => f.antworten.length === 4 && f.antworten.some((a) => a[1] === "p") && f.antworten.some((a) => a[1] === "o")));
   pruefe("Quiz: Wert aus Roslings Studie bei jeder vergleichbaren Frage", studienZeilen === QD.fragen.filter((f) => f.studie).length && studienZeilen > 0);
-  pruefe("Quiz: Einordnung des Weltbilds mit Skala (zu pessimistisch geantwortet → eher pessimistisch)",
-    (await p.textContent(".quiz-typ")) === "Eher pessimistisch" && (await p.textContent(".quiz-skala .aktiv")) === "Pessimistisch");
+  const zeiger = await p.$eval(".quiz-zeiger-punkt", (z) => parseFloat(z.style.left));
+  pruefe("Quiz: Einordnung des Weltbilds mit Skala, Zeiger und Verteilung (nur zu pessimistisch → deutlich pessimistisch)",
+    (await p.textContent(".quiz-typ")) === "Deutlich pessimistisch" && (await p.textContent(".quiz-skala .aktiv")) === "Pessimistisch"
+    && zeiger < 10 && Boolean(await p.$(".quiz-verteilung .v-p")) && (await p.textContent(".quiz-verteilung-legende")).includes(`${N} zu pessimistisch`), `Zeiger ${zeiger} %`);
+  pruefe("Quiz: Abschnitt „realistischer Optimismus“ mit Quellen",
+    (await p.textContent(".quiz-optimismus h3")).includes("realistischer Optimismus") && (await p.$$('.quiz-optimismus a[href*="pubmed"]')).length >= 4);
   pruefe("Quiz: Übersicht zeigt alle Antwortmöglichkeiten, die richtige und die eigene",
-    (await p.$$(".quiz-optionen > li")).length === 3 * N && (await p.$$(".quiz-optionen li.ok")).length === N && (await p.$$(".quiz-optionen li.du")).length > 0);
+    (await p.$$(".quiz-optionen > li")).length === QD.fragen.reduce((s, f) => s + f.antworten.length, 0) && (await p.$$(".quiz-optionen li.ok")).length === N && (await p.$$(".quiz-optionen li.du")).length > 0);
   pruefe("Quiz: „Nur Ergebnis zeigen“ sendet nichts", gesendet.length === 0);
   const artikelLink = await p.getAttribute('.knopf-reihe a[href*="/post/"]', "href");
   pruefe("Quiz: Ergebnis verlinkt einen vorhandenen Artikel", Boolean(artikelLink) && (await (await p.context().request.get(`${B}${artikelLink}`)).ok()));

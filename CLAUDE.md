@@ -162,27 +162,32 @@ App-Dateien oder Daten ändern.
 
 ## Realitätscheck „Wie realistisch ist dein Weltbild?“ (`/quiz/`)
 
-Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json` (je Frage 3 Antworten mit Richtung: `r` richtig,
-`p` zu pessimistisch, `o` zu optimistisch, `n` neutral; Erklärung mit Zahl und Jahr; Quelle mit Link; optional `studie`
-= [% falsch im Schnitt, % falsch Deutschland] aus der Gapminder Misconception Study 2017, nur bei vergleichbarer Frage –
-Werte aus der Gapminder-Datei gapm.io/gms17d, Blatt „country percente per question“). Antworten abgestuft: bei Trends mehrere Stärken der Verbesserung (und eine Verschlechterung oder
-ein Überschießen), damit man nicht nur „besser“ erraten kann; die richtige ist nicht immer die größte, und ihre
-Position (A/B/C) wechselt (Browsertest prüft die Verteilung). **Nie** eine Frage zu einer Verbesserung, bei der die richtige
-Antwort im Vergleich zu den anderen wie die schlechteste Entwicklung wirkt (das ist nicht realistisch): beide falschen
-Antworten „zu optimistisch“ nur bei echten Verschlechterungen (Klima, Feld `"verschlechterung": true`). Antworten eindeutig
-formulieren, am besten als konkrete Werte; „um“ (Veränderung) und „auf“ (neuer Wert) nie mischen. bauen.py prüft beides. Neben den Factfulness-Klassikern
-auch Entwicklungen der letzten 5–10 Jahre (Internet, KI mit Nutzen und Risiko, erneuerbare Energie, Konten,
-Frühwarnsysteme) und eine Migrationsfrage (Destatis plus Wahrnehmungsstudie Alesina u. a. 2023, beide falschen
-Antworten „n“, also neutral gewertet). Einstieg: „Glaubst du an eine bessere Zukunft für die Welt?“. Ergebnis erklärt die Medien als
-Hauptursache des zu düsteren Bilds (Robertson u. a. 2023: jedes negative Wort +2,3 % Klicks), dann den Negativitätseffekt;
-alle Antworten stehen offen darunter, markiert blau (richtig) und orange gestrichelt (deine Antwort) plus ✓/✗ statt
-Rot/Grün, damit es auch bei Farbsehschwäche klappt; ein paar
-Fragen haben bewusst eine zu optimistische Antwort, damit die Einordnung pessimistisch/realistisch/optimistisch trägt
-(realistisch ab 2/3 richtig, sonst die häufigere Fehlerrichtung). Teaser und Einleitung verraten die Richtung nicht
-(„9 von 10 nicht besser als ein Schimpanse – lass dich überraschen“). Platz: eigener Abschnitt direkt über dem Impuls
-(kein Knopf im Kopfbereich). Dort steht die Einstiegsfrage als Karte zum Antippen (`{{quiz_einstieg}}`); jede Antwort
-startet das Quiz über `/quiz/#weltbild=0|1|2` direkt bei Frage 1. Nur belegte Zahlen
-aus Primärquellen (Weltbank-API, UN WPP, WHO/UNICEF, EM-DAT über OWID, Destatis, IPCC, ITU, IRENA, WMO, Nobelpreis);
+Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json`. Je Frage **4 Antworten** mit Richtung:
+`r` richtig, `p` zu pessimistisch, `o` zu optimistisch. **Jede Frage hat mindestens eine `p`- und eine `o`-Antwort**, damit
+jede falsche Antwort zeigt, in welche Richtung man danebenliegt (bauen.py prüft das). Damit ist die richtige nie die
+düsterste oder rosigste Option; abwechselnd zwei `p` und ein `o` oder umgekehrt, damit „die mittlere“ nicht trägt.
+Richtige Antwort je fünfmal auf A, B, C und D (Reihenfolge der Optionen bewusst gemischt; Browsertest prüft die
+Verteilung). Falsche Antworten nah genug am echten Wert, dass man nachdenken muss. Fragen ohne klare Richtung
+(z. B. Bevölkerungszahlen, Anteil Eingewanderter) nicht verwenden; bei Migration deshalb die Bildungsfrage
+(Hochschulabschluss), die Wahrnehmungsstudie (Alesina u. a. 2023) steht in der Erklärung. Antworten eindeutig
+formulieren, am besten als konkrete Werte; „um“ (Veränderung) und „auf“ (neuer Wert) nie mischen (bauen.py prüft das).
+Erklärung mit Zahl und Jahr; Quelle mit Link; optional `studie` = [% falsch im Schnitt, % falsch Deutschland] aus der
+Gapminder Misconception Study 2017, nur bei vergleichbarer Frage (Werte aus gapm.io/gms17d, Blatt „country percente per
+question“). Neben den Factfulness-Klassikern auch Entwicklungen der letzten 5 bis 10 Jahre (Internet, KI mit Nutzen und
+Risiko, erneuerbare Energie, Konten, Frühwarnsysteme), dazu Kinderarbeit, Atomwaffen und Klima (2024: +1,55 °C).
+Einstieg: „Glaubst du an eine bessere Zukunft für die Welt?“. Auswertung in `quiz.js`: realistisch ab 60 % richtig,
+sonst nach dem Überhang p minus o: ab 2 „eher“, ab 30 % der Fragen „deutlich“ pessimistisch/optimistisch, sonst
+„mal zu düster, mal zu rosig“; Zeiger auf der Skala, Balken und Legende mit zu pessimistisch / richtig / zu optimistisch,
+Schimpansen-Vergleich aus der Zahl der Antworten. Danach: Medien als Hauptursache des zu düsteren Bilds (Robertson u. a.
+2023: jedes negative Wort +2,3 % Klicks), Negativitätseffekt, dann „Am gesündesten: realistischer Optimismus“
+(Lazarus-Stressmodell, Schneider 2001, Nes und Segerstrom 2006, Rozanski u. a. 2019, Lee u. a. 2019, Oettingen und
+Mayer 2002, Roslings „Possibilist“; alle Werte aus den Abstracts geprüft). Alle Antworten stehen offen darunter,
+markiert blau (richtig) und orange gestrichelt (deine Antwort) plus ✓/✗ statt Rot/Grün, damit es auch bei
+Farbsehschwäche klappt. Teaser und Einleitung verraten die Richtung nicht („9 von 10 nicht besser als ein Schimpanse,
+lass dich überraschen“). Platz: eigener Abschnitt direkt über dem Impuls (kein Knopf im Kopfbereich). Dort steht die
+Einstiegsfrage als Karte zum Antippen (`{{quiz_einstieg}}`); jede Antwort startet das Quiz über `/quiz/#weltbild=0|1|2`
+direkt bei Frage 1. Nur belegte Zahlen
+aus Primärquellen (Weltbank-API, UN WPP, WHO/UNICEF, EM-DAT über OWID, Destatis, IPCC, ITU, IRENA, WMO, ILO/UNICEF, FAS, Nobelpreis);
 Stand und `version` pflegen, wenn Fragen oder Zahlen sich ändern. Ablauf in `quiz.js`: Bauchgefühl vorab, Fragen mit sofortiger Auflösung, dann die
 Frage, ob die Antworten anonym beigesteuert werden (Einwilligung, nur bei „Ja“ → Web3Forms, Betreff „Quiz: anonyme
 Antworten“, Feld `Daten` als JSON für die Auswertung). Datenschutzerklärung Abschnitt 4 beschreibt das. Auswertung:

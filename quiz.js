@@ -7,7 +7,7 @@
   const datenEl = document.getElementById("quiz-daten");
   if (!wurzel || !datenEl) return;
   const Q = JSON.parse(datenEl.textContent);
-  const BUCHSTABEN = ["A", "B", "C"];
+  const BUCHSTABEN = ["A", "B", "C", "D"];
   const GEMERKT = "phoenix-feder-quiz"; // nur: Version, zu der schon beigetragen wurde (keine Doppelzählung)
   // Zahl und Prozentzeichen nicht trennen (" %" → geschütztes Leerzeichen)
   const esc = (t) => String(t).replace(/[&<>"']/g, (z) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[z])).replace(/ %/g, "\u00a0%");
@@ -56,14 +56,36 @@
   // Gapminder Misconception Study 2017: Anteil falscher Antworten (Schnitt aus 14 Ländern / Deutschland)
   const studie = (f) => (f.studie ? `<p class="quiz-studie">In Roslings Studie 2017 lagen bei einer ähnlichen Frage <strong>${f.studie[0]} %</strong> falsch (Deutschland: ${f.studie[1]} %).</p>` : "");
 
+  // Einordnung: realistisch ab 60 % richtig; sonst entscheidet der Überhang der Fehler in eine Richtung
+  // (p minus o), ab 2 Fragen „eher“, ab 30 % der Fragen „deutlich“. Jede Frage hat eine zu pessimistische und eine
+  // zu optimistische Antwort, darum zeigt jede falsche Antwort eine Richtung.
   const TYPEN = {
-    pessimistisch: ["Eher pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten, und eigentlich ist das eine gute Nachricht."],
+    pessimistisch: ["Pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten, und eigentlich ist das eine gute Nachricht."],
     realistisch: ["Realistisch", "Du siehst die Welt ziemlich so, wie sie ist. Das schaffen die wenigsten."],
-    optimistisch: ["Eher optimistisch", "Du schätzt die Welt eher zu rosig ein. Das ist selten. Bei manchen Themen lohnt es sich, genauer hinzusehen."],
+    optimistisch: ["Optimistisch", "Du schätzt die Welt zu rosig ein. Das ist selten. Bei manchen Themen lohnt es sich, genauer hinzusehen."],
     gemischt: ["Mal zu düster, mal zu rosig", "Deine Fehler halten sich die Waage, ohne klaren Hang in eine Richtung."]
   };
-  const typVon = (e) => (e.richtig >= Math.ceil((Q.fragen.length * 2) / 3) ? "realistisch"
-    : e.pessimistisch > e.optimistisch ? "pessimistisch" : e.optimistisch > e.pessimistisch ? "optimistisch" : "gemischt");
+  const typVon = (e) => {
+    const n = Q.fragen.length;
+    const hang = e.pessimistisch - e.optimistisch;
+    if (e.richtig >= Math.ceil(n * 0.6)) return "realistisch";
+    return hang >= 2 ? "pessimistisch" : hang <= -2 ? "optimistisch" : "gemischt";
+  };
+  function einordnung(e) {
+    const n = Q.fragen.length;
+    const typ = typVon(e);
+    const hang = e.pessimistisch - e.optimistisch;
+    const deutlich = Math.abs(hang) >= Math.ceil(n * 0.3);
+    let titel = TYPEN[typ][0];
+    let text = TYPEN[typ][1];
+    if (typ === "pessimistisch" || typ === "optimistisch") titel = `${deutlich ? "Deutlich" : "Eher"} ${titel.toLowerCase()}`;
+    if (typ === "realistisch" && Math.abs(hang) >= 2) text += ` Wenn du danebenlagst, dann eher zu ${hang > 0 ? "düster" : "rosig"}.`;
+    // Zeiger immer im Feld des Ergebnisses (Drittel der Skala), je stärker der Hang, desto weiter außen
+    const staerke = Math.min(1, Math.abs(hang) / (n / 2));
+    const zeiger = typ === "pessimistisch" ? 30 - 26 * staerke : typ === "optimistisch" ? 70 + 26 * staerke
+      : 50 - Math.sign(hang) * Math.min(14, 14 * staerke * 2);
+    return { typ, titel, text, zeiger };
+  }
 
   function zeichneBeitragen() {
     if (gemerkt() === Q.version || !Q.schluessel) { gesendet = "aus"; zeichneErgebnis(); return; }
@@ -99,7 +121,7 @@
     form.append("Richtig", `${e.richtig} von ${Q.fragen.length}`);
     form.append("Zu pessimistisch", String(e.pessimistisch));
     form.append("Zu optimistisch", String(e.optimistisch));
-    form.append("Weltbild", TYPEN[typVon(e)][0]);
+    form.append("Weltbild", einordnung(e).titel);
     form.append("Bauchgefühl vorab", Q.weltbild.antworten[weltbild]);
     form.append("Altersgruppe", alter || "keine Angabe");
     form.append("Antworten", Q.fragen.map((f, i) => `${i + 1}. ${f.thema}: ${BUCHSTABEN[antworten[i]]}${f.antworten[antworten[i]][1] === "r" ? " ✓" : ""}`).join("\n"));
@@ -124,24 +146,28 @@
   function zeichneErgebnis() {
     const e = auswertung();
     const n = Q.fragen.length;
-    const affe = Math.round(n / 3);
+    // Ein Schimpanse tippt zufällig: im Schnitt eine richtige Antwort pro Anzahl der Möglichkeiten
+    const affe = Math.round(Q.fragen.reduce((summe, f) => summe + 1 / f.antworten.length, 0));
     const vergleich = e.richtig > affe + 1 ? "Damit liegst du vor dem Schimpansen. Das schaffen viele nicht."
       : e.richtig >= affe - 1 ? "Damit liegst du etwa gleichauf mit dem Schimpansen. So geht es den meisten."
         : "Damit liegt der Schimpanse vorn. Keine Sorge, so geht es vielen. Unser Kopf liebt Dramatik.";
-    const richtung = e.pessimistisch > e.optimistisch
-      ? `Bei <strong>${e.pessimistisch}</strong> ${e.pessimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt schlechter eingeschätzt, als sie ist${e.optimistisch ? `, bei ${e.optimistisch} besser` : ""}.`
-      : e.optimistisch > e.pessimistisch ? `Bei <strong>${e.optimistisch}</strong> ${e.optimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt besser eingeschätzt, als sie ist${e.pessimistisch ? `, bei ${e.pessimistisch} schlechter` : ""}.`
-        : e.pessimistisch ? `Du lagst gleich oft zu pessimistisch wie zu optimistisch (je ${e.pessimistisch}-mal).` : "";
-    const typ = typVon(e);
-    const skala = ["pessimistisch", "realistisch", "optimistisch"].map((t) => `<span${t === typ ? ' class="aktiv"' : ""}>${t[0].toUpperCase()}${t.slice(1)}</span>`).join("");
+    const ein = einordnung(e);
+    const skala = ["pessimistisch", "realistisch", "optimistisch"].map((t) => `<span${t === ein.typ ? ' class="aktiv"' : ""}>${t[0].toUpperCase()}${t.slice(1)}</span>`).join("");
+    const teil = (anzahl, klasse, text) => (anzahl ? `<span class="${klasse}" style="flex-grow:${anzahl}" title="${anzahl} ${text}"></span>` : "");
     wurzel.innerHTML = `<div class="quiz-ergebnis">
       <p class="oberzeile">Dein Weltbild</p>
-      <p class="quiz-typ" data-typ="${typ}">${TYPEN[typ][0]}</p>
-      <div class="quiz-skala" aria-hidden="true">${skala}</div>
-      <p>${TYPEN[typ][1]}</p>
+      <p class="quiz-typ" data-typ="${ein.typ}">${ein.titel}</p>
+      <div class="quiz-zeiger" role="img" aria-label="Einordnung auf der Skala von pessimistisch über realistisch bis optimistisch: ${ein.titel}">
+        <div class="quiz-skala">${skala}</div><span class="quiz-zeiger-punkt" style="left:${ein.zeiger}%"></span></div>
+      <p>${ein.text}</p>
       <p class="quiz-zahl"><strong>${e.richtig}</strong> von ${n} richtig</p>
+      <div class="quiz-verteilung" aria-hidden="true">${teil(e.pessimistisch, "v-p", "zu pessimistisch")}${teil(e.richtig, "v-r", "richtig")}${teil(e.optimistisch, "v-o", "zu optimistisch")}</div>
+      <ul class="quiz-verteilung-legende">
+        <li><span class="v-p"></span><strong>${e.pessimistisch}</strong> zu pessimistisch</li>
+        <li><span class="v-r"></span><strong>${e.richtig}</strong> richtig</li>
+        <li><span class="v-o"></span><strong>${e.optimistisch}</strong> zu optimistisch</li>
+      </ul>
       <p>Ein Schimpanse, der zufällig tippt, schafft im Schnitt ${affe} von ${n}. ${vergleich}</p>
-      ${richtung ? `<p>${richtung}</p>` : ""}
       <p class="klein">Dein Bauchgefühl vorab: „${esc(Q.weltbild.antworten[weltbild])}“.</p>
       ${statusHtml()}
     </div>
@@ -152,6 +178,21 @@
       <p>Dass das bei uns so gut funktioniert, hat einen alten Grund. Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig. Wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller und reagieren stärker darauf. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
       <p>Hans Rosling nennt es den Negativitäts-Instinkt. Dazu kommt: Wir erinnern die Vergangenheit schöner, als sie war. Und es fühlt sich herzlos an zu sagen, dass etwas besser wird, solange es noch schlecht ist.</p>
       <p>Was uns in der Natur geschützt hat, verzerrt heute unser Bild, denn über die Medien erreichen uns die Gefahren der ganzen Welt rund um die Uhr. Was hilft? Nachrichten bewusst dosieren und bei einer schlimmen Meldung kurz fragen: Ist das typisch oder die Ausnahme? Genau hier hilft Achtsamkeit. Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
+    </div>
+    <div class="quiz-warum quiz-optimismus">
+      <h3>Am gesündesten: realistischer Optimismus</h3>
+      <p class="quiz-kern">Die Welt so sehen, wie sie ist, und trotzdem darauf vertrauen, dass sich etwas verbessern lässt.</p>
+      <p>Realistischer Optimismus ist keine rosa Brille. Er verbindet einen klaren Blick auf die Fakten mit der Zuversicht, dass sich Probleme lösen lassen, auch durch dein eigenes Handeln. Die Psychologin Sandra Schneider unterscheidet dabei zwischen Optimismus, der zu den Fakten passt, und Selbsttäuschung, bei der man sich Wunschdenken ohne Realitätscheck einredet. Hans Rosling nannte sich deshalb lieber einen „Possibilisten“: jemand, der weder ohne Grund hofft noch ohne Grund fürchtet.</p>
+      <h4>Warum er bei Stress hilft</h4>
+      <p>Wie sehr uns etwas stresst, hängt nach dem Stressmodell von Richard Lazarus, der Grundlage vieler Stressmanagement-Programme, von zwei Einschätzungen ab: Wie bedrohlich ist die Lage? Und habe ich, was ich brauche, um damit umzugehen? Genau hier wirkt dein Weltbild. Wer zu pessimistisch ist, sieht überall Gefahr und wenig Möglichkeiten. Das hält in Alarmbereitschaft und lähmt eher, als dass es hilft. Wer zu rosig sieht, unterschätzt echte Risiken und bereitet sich nicht vor. Realistische Optimisten sehen das Problem klar und trauen sich zu, etwas zu tun. So wird aus einer Bedrohung eher eine Herausforderung.</p>
+      <p>Das zeigt sich im Verhalten: Eine Auswertung von 50 Studien mit über 11.000 Menschen fand, dass optimistische Menschen Probleme häufiger aktiv angehen und ihnen seltener ausweichen (Nes und Segerstrom 2006). Und sie passen ihr Vorgehen eher an das an, was die jeweilige Lage verlangt. Das ist der realistische Teil.</p>
+      <h4>Was er für die Gesundheit bedeutet</h4>
+      <p>In einer Übersichtsarbeit über 15 Studien mit rund 229.000 Menschen war Optimismus mit einem um 35&nbsp;% geringeren Risiko für Herz-Kreislauf-Ereignisse wie Herzinfarkt und Schlaganfall verbunden (Rozanski u. a. 2019). In zwei großen Langzeitstudien lebten die optimistischsten Frauen im Schnitt knapp 15&nbsp;% länger als die am wenigsten optimistischen, bei Männern war es ähnlich (Lee u. a. 2019). Das sind Zusammenhänge und noch kein Beweis, dass Optimismus allein gesund macht. Die Forschenden halten Optimismus aber für veränderbar, also für etwas, das sich üben lässt.</p>
+      <h4>Warum nicht einfach positiv denken?</h4>
+      <p>Reines Wunschdenken kann sogar bremsen. Die Psychologin Gabriele Oettingen hat Menschen über Wochen bis zu zwei Jahre begleitet, etwa bei der Jobsuche oder nach einer Hüftoperation. Wer sich die Zukunft vor allem in schönen Tagträumen ausmalte, strengte sich weniger an und kam schlechter voran. Wer dagegen erwartete, dass es wahrscheinlich klappt, hatte mehr Erfolg (Oettingen und Mayer 2002). Realistischer Optimismus heißt deshalb, das Ziel im Blick zu behalten und die Hindernisse auf dem Weg ehrlich zu benennen.</p>
+      <h4>So übst du es im Alltag</h4>
+      <p>Wenn dich eine Nachricht beunruhigt, frag dich zuerst: Wie ist die Lage wirklich, und wie hat sie sich entwickelt? Und dann: Was kann ich selbst beitragen, und sei es noch so wenig? Achtsamkeit hilft, den Moment zu bemerken, in dem dein Kopf dramatisiert. Genau dort beginnt ein realistischer Blick.</p>
+      <p class="klein">Quellen: <a href="https://pubmed.ncbi.nlm.nih.gov/11315251/" target="_blank" rel="noopener">Schneider 2001</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/16859439/" target="_blank" rel="noopener">Nes und Segerstrom 2006</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31560385/" target="_blank" rel="noopener">Rozanski u. a. 2019</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31451635/" target="_blank" rel="noopener">Lee u. a. 2019</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/12416922/" target="_blank" rel="noopener">Oettingen und Mayer 2002</a> · Lazarus und Folkman, „Stress, Appraisal, and Coping“ (1984) · Rosling, „Factfulness“ (2018)</p>
     </div>
     <section class="quiz-uebersicht"><h3>Alle Fragen und Antworten</h3>
     <p class="quiz-legende"><span class="zeichen-ok">✓ Richtig</span> <span class="zeichen-du">✗ Deine Antwort</span></p><ol>${Q.fragen.map((f, i) => {
@@ -216,7 +257,7 @@
         const url = location.href.split("#")[0];
         const e = auswertung();
         if (navigator.share) {
-          try { await navigator.share({ title: document.title, text: `Mein Weltbild: ${TYPEN[typVon(e)][0].toLowerCase()}, ${e.richtig} von ${Q.fragen.length} richtig. Wie realistisch ist deins?`, url }); } catch { /* abgebrochen */ }
+          try { await navigator.share({ title: document.title, text: `Mein Weltbild: ${einordnung(e).titel.toLowerCase()}, ${e.richtig} von ${Q.fragen.length} richtig. Wie realistisch ist deins?`, url }); } catch { /* abgebrochen */ }
         } else {
           try { await navigator.clipboard.writeText(url); el.textContent = "Link kopiert ✓"; } catch { /* Zwischenablage gesperrt */ }
         }

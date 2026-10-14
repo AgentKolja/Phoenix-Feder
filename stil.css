@@ -557,6 +557,20 @@ p { margin: 0 0 1em; }
 .quiz-status { font-size: 0.95rem; color: var(--leise); }
 .quiz-status.ok { color: var(--gut); font-weight: 600; }
 .quiz-warum { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--linie); }
+.quiz-warum h4 { font-size: 1.1rem; margin: 1.3rem 0 0.4rem; }
+/* Ergebnis: Zeiger auf der Skala und Verteilung der Antworten (Farben wie in der Übersicht, dazu Muster für „zu optimistisch“) */
+.quiz-zeiger { position: relative; max-width: 26rem; margin: 0.5rem 0 1.1rem; padding-top: 0.85rem; }
+.quiz-zeiger .quiz-skala { margin: 0; max-width: none; }
+.quiz-zeiger-punkt { position: absolute; top: 0; transform: translateX(-50%); border: 0.45rem solid transparent; border-top: 0.65rem solid var(--text); border-bottom: 0; }
+.quiz-verteilung { display: flex; gap: 2px; max-width: 26rem; height: 0.9rem; border-radius: 999px; overflow: hidden; margin: 0 0 0.6rem; }
+.quiz-verteilung span { flex-basis: 0; }
+.v-p { background: var(--schlecht); }
+.v-r { background: var(--gut); }
+.v-o { background: repeating-linear-gradient(135deg, var(--leise) 0 3px, color-mix(in srgb, var(--leise) 30%, var(--karte)) 3px 6px); }
+.quiz-verteilung-legende { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; font-size: 0.95rem; color: var(--leise); }
+.quiz-verteilung-legende li { display: flex; align-items: center; gap: 0.4rem; }
+.quiz-verteilung-legende span { width: 0.85rem; height: 0.85rem; border-radius: 3px; flex: none; }
+.quiz-verteilung-legende strong { color: var(--text); }
 .quiz-uebersicht { margin-top: 1.5rem; }
 .quiz-uebersicht ol { padding-left: 1.2rem; }
 .quiz-uebersicht li { margin-bottom: 0.7rem; font-size: 0.95rem; }
