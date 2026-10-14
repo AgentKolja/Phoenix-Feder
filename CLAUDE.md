@@ -23,6 +23,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `app/` | Web-App „Probier’s heute“ / „Meine Routinen“ unter `/app/` (siehe unten) |
 | `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
+| `werkzeuge/werbung/erzeugen.py` | Seminar-Werbung aus `seminar.json`: Instagram-Beitrag, Story/Status, 12-s-Video, A4-Plakat mit QR-Code auf `/seminar/` (Kurzadresse, leitet zur Anmeldung). Nach neuem Termin neu erzeugen; braucht `pip install qrcode imageio-ffmpeg` |
 | `werkzeuge/browsertest.js` | Browser-Test für Website und App (Playwright), siehe Arbeitsweise |
 | `werkzeuge/wix-export.py` | Einmaliger Umzug von Wix, erledigt. Nicht erneut nötig |
 

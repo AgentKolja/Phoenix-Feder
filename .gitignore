@@ -1,3 +1,5 @@
 # Wird von bauen.py erzeugt und von GitHub Actions veroeffentlicht
 docs/
 __pycache__/
+# Von werkzeuge/werbung/erzeugen.py erzeugt (Bilder, Video, Plakat)
+werbung-ausgabe/

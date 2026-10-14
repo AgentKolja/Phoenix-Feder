@@ -965,6 +965,7 @@ def main():
     for alt in ("/booking-calendar/", "/service-page/", "/services-4/"):
         umleitung(alt, "/book-online/")
     umleitung("/post/sehen-was-ist/", "/post/die-realitaet-sehen/")  # umbenannt am 14.10.2026
+    umleitung("/seminar/", "/achtsamkeitsseminar/#anmelden")  # Kurzadresse für QR-Code und Werbung
 
     (AUSGABE / "feed.xml").write_text(feed(artikel), encoding="utf-8")
     shutil.copy(AUSGABE / "feed.xml", AUSGABE / "blog-feed.xml")  # alte Wix-Adresse des Feeds

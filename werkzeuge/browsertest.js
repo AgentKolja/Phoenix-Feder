@@ -148,6 +148,8 @@ function server() {
     && Boolean(await p.$('#realitaetscheck .quiz-teaser a[href*="quiz/"]')) && !/düster|pessimistisch eing|zu pessimistisch/i.test(await p.textContent("#realitaetscheck")));
   const umleitung = await (await p.context().request.get(`${B}/post/sehen-was-ist/`)).text();
   pruefe("Umbenannter Artikel: alte Adresse leitet weiter", umleitung.includes("die-realitaet-sehen/"));
+  const kurz = await (await p.context().request.get(`${B}/seminar/`)).text();
+  pruefe("Kurzadresse /seminar/ (QR-Code) führt zur Anmeldung", kurz.includes("achtsamkeitsseminar/#anmelden"));
   await p.goto(`${B}/quiz/`, { waitUntil: "load" });
   const QD = JSON.parse(await p.textContent("#quiz-daten"));
   const N = QD.fragen.length;
