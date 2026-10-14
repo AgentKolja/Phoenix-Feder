@@ -61,7 +61,7 @@ def main():
     kosten = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
     if s.get("art") == "Pilot":  # dezent, aber offen: zweite Zeile unter dem Preis
         kosten += "<br><i>Pilotseminar: Dein Feedback hilft mir</i>"
-    oberzeile = f"Grundlagen der Meditation in {o['stadt']}"
+    oberzeile = "Grundlagen der Meditation"
     h, m = map(int, s["beginn"].split(":"))
     h2, m2 = map(int, s["ende"].split(":"))
     minuten = (h2 * 60 + m2) - (h * 60 + m)
@@ -79,7 +79,7 @@ def main():
     def anmelden(text="Jetzt anmelden"):
         return f"""<div class="anmelden"><div class="qr">{qr}</div><div><strong>{text}</strong><div class="adresse">{esc(kurz_url)}</div></div></div>"""
 
-    titel = "Bewusster leben"
+    titel = "Bewusst leben"
     motto = "Die Grundlagen der Meditation, für jeden Tag"
     beschreibung = (f"In {minuten} Minuten lernst du, wie Meditation funktioniert: vom stillen Wahrnehmen bis zum bewussten "
                     "Handeln im Alltag. Dazu einfache Übungen, die du jeden Tag machen kannst.")
