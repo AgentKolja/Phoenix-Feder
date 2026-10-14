@@ -319,7 +319,7 @@ def thema_seite(t, artikel):
 
 
 def text_html(text):
-    """Klartext aus Habitica (Absaetze, '- ' Listen, Links) -> HTML."""
+    """Klartext der Übungen (Absätze, '- ' Listen, Links als Adresse oder [Text](Adresse)) -> HTML."""
     text = re.sub(r"(\n[-*] [^\n]*)\n\s*\n(?=[-*] )", r"\1\n", text)
     teile = []
     for block in re.split(r"\n\s*\n", text.strip()):
@@ -337,7 +337,9 @@ def text_html(text):
 
         for zeile in zeilen:
             inhalt = esc(zeile.strip())
-            inhalt = re.sub(r"(https?://[^\s<]+)", r'<a href="\1" target="_blank" rel="noopener">\1</a>', inhalt)
+            # [Linktext](https://…) mit eigenem Text, sonst nackte Adressen als Link
+            inhalt = re.sub(r"\[([^\]]+)\]\((https?://[^\s)]+)\)", r'<a href="\2" target="_blank" rel="noopener">\1</a>', inhalt)
+            inhalt = re.sub(r'(?<!href=")(https?://[^\s<"]+)', r'<a href="\1" target="_blank" rel="noopener">\1</a>', inhalt)
             if re.match(r"^[-*] ", zeile.strip()):
                 absatz_abschliessen()
                 liste.append(inhalt[2:].strip())

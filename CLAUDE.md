@@ -103,7 +103,9 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
   Gedankenstriche. bauen.py bricht bei diesen Resten ab.
 - Nur Tipps, die nicht schaden und nichts versprechen, was die Forschung nicht trägt: kein Edelsteinwasser, kein
   „Lachen heilt“, Bienen beobachten statt streicheln, Berührung nur, wenn es für beide stimmt, Kerzen nicht
-  unbeaufsichtigt. Ernährung an den Blue Zones orientiert (viel Pflanzliches, wenig rotes Fleisch, wenig Zucker).
+  unbeaufsichtigt. Ernährung an den Blue Zones orientiert, Mengen nach der DGE (höchstens 300 g Fleisch und Wurst
+  pro Woche, Fisch ein- bis zweimal) und nie pauschal: Eisen und individuellen Bedarf erwähnen (Nikolas, Okt. 2026),
+  kurz halten.
 - Realistischer Optimismus wie im Quiz: Affirmationen glaubwürdig formulieren (Wood, Perunovic und Lee 2009:
   unglaubwürdige Sätze drücken bei geringem Selbstwert die Stimmung), Ziele mit Hindernis und Plan (WOOP,
   Oettingen und Mayer 2002).
