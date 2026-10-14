@@ -1,5 +1,5 @@
 {
-  "version": "2026-10f",
+  "version": "2026-10g",
   "stand": "Oktober 2026",
   "weltbild": {
     "frage": "Bevor es losgeht: Glaubst du an eine bessere Zukunft für die Welt?",
@@ -8,47 +8,47 @@
   "fragen": [
     {
       "thema": "Armut",
-      "frage": "Im Jahr 2000 lebten 36 % der Menschen weltweit in extremer Armut. Wie hoch war dieser Anteil 2024?",
-      "antworten": [["Rund 18 %", "p"], ["Rund 4 %", "o"], ["Rund 10 %", "r"], ["Rund 27 %", "p"]],
-      "erklaerung": "2024 waren es rund 10 %, also weniger als ein Drittel des Werts von 2000. Extreme Armut heißt: weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). Und das, obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
+      "frage": "Im Jahr 2000 lebte gut jeder dritte Mensch weltweit in extremer Armut. Und 2024?",
+      "antworten": [["Immer noch etwa jeder Dritte", "p"], ["Etwa jeder Fünfte", "p"], ["Etwa jeder Zehnte", "r"], ["Fast niemand mehr", "o"]],
+      "erklaerung": "Etwa jeder Zehnte (rund 10 %). Der Anteil ist damit auf weniger als ein Drittel gesunken, obwohl heute 2 Milliarden Menschen mehr leben. Extreme Armut heißt: weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
       "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"],
       "studie": [91, 94]
     },
     {
       "thema": "Lebenserwartung",
-      "frage": "Wie alt werden Menschen heute weltweit im Durchschnitt?",
-      "antworten": [["73 Jahre", "r"], ["65 Jahre", "p"], ["81 Jahre", "o"], ["77 Jahre", "o"]],
-      "erklaerung": "Die Lebenserwartung bei Geburt liegt weltweit bei gut 73 Jahren (2024). 1990 waren es 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt sie wieder.",
+      "frage": "In Deutschland werden Menschen im Schnitt rund 81 Jahre alt. Und weltweit?",
+      "antworten": [["Etwa 60 Jahre", "p"], ["Etwa 73 Jahre", "r"], ["Etwa 80 Jahre, fast wie bei uns", "o"], ["Etwa 85 Jahre, länger als bei uns", "o"]],
+      "erklaerung": "Weltweit sind es gut 73 Jahre (2024), nur gut sieben Jahre weniger als in Deutschland. 1990 waren es weltweit 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt die Lebenserwartung wieder.",
       "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"],
       "studie": [63, 57]
     },
     {
       "thema": "Einkommen",
-      "frage": "Wie viele Menschen auf der Welt leben in Ländern mit niedrigem Einkommen?",
-      "antworten": [["Rund 40 %", "p"], ["Rund 3 %", "o"], ["Rund 20 %", "p"], ["Rund 9 %", "r"]],
+      "frage": "Wie viele Menschen leben in den ärmsten Ländern der Welt, also in Ländern mit niedrigem Einkommen?",
+      "antworten": [["Etwa die Hälfte", "p"], ["Etwa jeder Vierte", "p"], ["Etwa jeder Zehnte", "r"], ["Fast niemand", "o"]],
       "erklaerung": "Rund 9 %, etwa 750 Millionen von 8,1 Milliarden Menschen (2024). Knapp drei Viertel leben in Ländern mit mittlerem Einkommen, gut ein Sechstel in Ländern mit hohem Einkommen. Die Welt ist nicht in „arm“ und „reich“ geteilt: Die meisten Menschen leben dazwischen.",
       "quelle": ["Weltbank, Bevölkerung nach Einkommensgruppen (Stand 2024)", "https://data.worldbank.org/indicator/SP.POP.TOTL"],
       "studie": [74, 83]
     },
     {
       "thema": "Bildung",
-      "frage": "In Ländern mit niedrigem Einkommen: Wie viele Mädchen schließen die Grundschule ab?",
-      "antworten": [["Rund 40 %", "p"], ["Rund 60 %", "r"], ["Rund 90 %", "o"], ["Rund 75 %", "o"]],
-      "erklaerung": "In den Ländern mit dem niedrigsten Einkommen schließen 61 % der Mädchen die Grundschule ab (2023). Das reicht noch nicht. Aber es ist viel mehr, als die meisten schätzen.",
+      "frage": "In den ärmsten Ländern der Welt: Wie viele Mädchen schließen die Grundschule ab?",
+      "antworten": [["Etwa 3 von 10", "p"], ["Etwa 6 von 10", "r"], ["Etwa 8 von 10", "o"], ["Fast alle", "o"]],
+      "erklaerung": "Etwa 6 von 10 (61 %, 2023). Das reicht noch nicht. Aber es ist viel mehr, als die meisten schätzen.",
       "quelle": ["Weltbank / UNESCO, Grundschulabschluss Mädchen, Länder mit niedrigem Einkommen (Stand 2023)", "https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS"],
       "studie": [93, 91]
     },
     {
       "thema": "Digitales",
       "frage": "Wie viele Menschen auf der Welt nutzen heute das Internet?",
-      "antworten": [["Rund 85 %", "o"], ["Rund 60 %", "p"], ["Rund 75 %", "r"], ["Rund 95 %", "o"]],
+      "antworten": [["Etwa die Hälfte", "p"], ["Etwa 3 von 4", "r"], ["Etwa 9 von 10", "o"], ["Fast alle", "o"]],
       "erklaerung": "2025 sind rund 6 Milliarden Menschen online, knapp drei Viertel der Menschheit (74 %). 2015 waren es erst 40 %: In zehn Jahren sind rund 3 Milliarden Menschen dazugekommen. 2,2 Milliarden sind noch offline.",
       "quelle": ["ITU, Facts and Figures 2025; Weltbank (Stand 2025)", "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"]
     },
     {
       "thema": "Impfungen",
       "frage": "Wie viele Kinder weltweit bekommen im ersten Lebensjahr alle drei Impfungen gegen Diphtherie, Tetanus und Keuchhusten?",
-      "antworten": [["Rund 50 %", "p"], ["Rund 95 %", "o"], ["Rund 70 %", "p"], ["Rund 85 %", "r"]],
+      "antworten": [["Etwa die Hälfte", "p"], ["Etwa 2 von 3", "p"], ["Gut 8 von 10", "r"], ["Praktisch alle", "o"]],
       "erklaerung": "85 % der Kinder weltweit erhielten 2024 alle drei Dosen. Impfstoffe müssen gekühlt und verteilt werden. Dass sie fast überall ankommen, zeigt, wie weit die Grundversorgung heute reicht. Rund 14 Millionen Kinder bekamen allerdings keine einzige Impfung.",
       "quelle": ["WHO und UNICEF, Impfquoten 2024 (veröffentlicht Juli 2025)", "https://www.who.int/news/item/15-07-2025-global-childhood-vaccination-coverage-holds-steady-yet-over-14-million-infants-remain-unvaccinated-who-unicef"],
       "studie": [87, 94]
@@ -56,100 +56,100 @@
     {
       "thema": "Strom",
       "frage": "Wie viele Menschen auf der Welt haben Zugang zu Strom?",
-      "antworten": [["Rund 90 %", "r"], ["Rund 80 %", "p"], ["Rund 98 %", "o"], ["Rund 70 %", "p"]],
+      "antworten": [["Etwa die Hälfte", "p"], ["Etwa 3 von 4", "p"], ["Etwa 9 von 10", "r"], ["Wirklich alle", "o"]],
       "erklaerung": "92 % der Menschen weltweit haben Zugang zu Strom (2024). 2023 waren noch rund 670 Millionen ohne, die meisten im ländlichen Afrika südlich der Sahara.",
       "quelle": ["Weltbank / Tracking SDG7 Energy Progress Report 2025", "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS"],
       "studie": [78, 78]
     },
     {
       "thema": "Energie",
-      "frage": "2024 kamen weltweit neue Kraftwerke ans Netz. Wie viel der neuen Leistung stammt aus erneuerbaren Energien wie Sonne, Wind und Wasser?",
-      "antworten": [["Rund 55 %", "p"], ["Rund 92 %", "r"], ["Rund 75 %", "p"], ["Alle, es kamen gar keine fossilen Kraftwerke mehr dazu", "o"]],
-      "erklaerung": "92,5 % und damit ein Rekord (2023: 85,8 %). Über drei Viertel des Zuwachses waren Solaranlagen. Das Tempo reicht aber noch nicht für das Ziel der Weltklimakonferenz, die erneuerbare Leistung bis 2030 zu verdreifachen. Und der Ausbau ist ungleich verteilt: Nur 0,7 % der neuen Anlagen entstanden in Afrika.",
+      "frage": "2024 kamen weltweit neue Kraftwerke ans Netz. Wie viel der neuen Leistung nutzt Sonne, Wind oder Wasser?",
+      "antworten": [["Etwa ein Viertel", "p"], ["Etwa die Hälfte", "p"], ["Etwa 9 von 10", "r"], ["Alles, kein einziges neues fossiles Kraftwerk", "o"]],
+      "erklaerung": "Über 9 von 10, genau 92,5 % und damit ein Rekord (2023: 85,8 %). Über drei Viertel des Zuwachses waren Solaranlagen. Das Tempo reicht aber noch nicht für das Ziel der Weltklimakonferenz, die erneuerbare Leistung bis 2030 zu verdreifachen. Und der Ausbau ist ungleich verteilt: Nur 0,7 % der neuen Anlagen entstanden in Afrika.",
       "quelle": ["IRENA, Renewable Capacity Highlights 2025", "https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2025/Mar/IRENA_DAT_RE_Capacity_Highlights_2025.pdf"]
     },
     {
       "thema": "Kindergesundheit",
-      "frage": "Wie hat sich seit 1990 der Anteil der Kinder entwickelt, die vor ihrem fünften Geburtstag sterben?",
-      "antworten": [["Um rund 60 % gesunken", "r"], ["Um rund 90 % gesunken", "o"], ["Um rund 30 % gesunken", "p"], ["Um rund 75 % gesunken", "o"]],
-      "erklaerung": "1990 starben rund 93 von 1.000 Kindern vor ihrem fünften Geburtstag, 2024 waren es 37. Das sind sechzig Prozent weniger. Jedes verlorene Kind ist eins zu viel, und doch ist das einer der größten Fortschritte unserer Zeit.",
+      "frage": "1990 starben weltweit 9 von 100 Kindern vor ihrem fünften Geburtstag. Wie viele sind es heute?",
+      "antworten": [["Immer noch etwa 9 von 100", "p"], ["Etwa 4 von 100", "r"], ["Etwa 1 von 100", "o"], ["Praktisch keins mehr", "o"]],
+      "erklaerung": "Etwa 4 von 100: 1990 starben rund 93 von 1.000 Kindern vor ihrem fünften Geburtstag, 2024 waren es 37. Das sind sechzig Prozent weniger. Jedes verlorene Kind ist eins zu viel, und doch ist das einer der größten Fortschritte unserer Zeit.",
       "quelle": ["Weltbank / UN Inter-agency Group for Child Mortality Estimation (Stand 2024)", "https://data.worldbank.org/indicator/SH.DYN.MORT"]
     },
     {
       "thema": "Kinderarbeit",
       "frage": "Im Jahr 2000 mussten weltweit 246 Millionen Kinder arbeiten. Wie viele waren es 2024?",
-      "antworten": [["Rund 260 Millionen", "p"], ["Rund 140 Millionen", "r"], ["Rund 60 Millionen", "o"], ["Rund 200 Millionen", "p"]],
+      "antworten": [["Mehr als damals", "p"], ["Etwa gleich viele", "p"], ["Fast nur noch halb so viele", "r"], ["Kaum noch ein Kind", "o"]],
       "erklaerung": "2024 waren es knapp 138 Millionen, also fast halb so viele wie im Jahr 2000. Rund 54 Millionen davon arbeiten unter gefährlichen Bedingungen. Das Ziel der UN, Kinderarbeit bis 2025 ganz zu beenden, wurde verfehlt. Der Fortschritt ist echt, und es bleibt viel zu tun.",
       "quelle": ["ILO und UNICEF, Child Labour: Global estimates 2024 (Juni 2025)", "https://www.unicef.org/press-releases/despite-progress-child-labour-still-affects-138-million-children-globally-ilo-unicef"]
     },
     {
       "thema": "Finanzen",
       "frage": "Wie viele Erwachsene weltweit haben ein Konto, ob bei einer Bank oder per Handy (Mobile Money)?",
-      "antworten": [["Rund 90 %", "o"], ["Rund 55 %", "p"], ["Rund 80 %", "r"], ["Fast alle, über 95 %", "o"]],
+      "antworten": [["Etwa jeder Vierte", "p"], ["Etwa die Hälfte", "p"], ["Etwa 8 von 10", "r"], ["Praktisch alle", "o"]],
       "erklaerung": "79 % der Erwachsenen haben ein Konto (2024), 2011 war es erst gut die Hälfte. Vor allem das Handy hat das möglich gemacht: In Afrika südlich der Sahara haben 40 % der Erwachsenen ein Mobile-Money-Konto. 1,3 Milliarden Erwachsene haben noch keins.",
       "quelle": ["Weltbank, Global Findex 2025 (Daten 2024)", "https://blogs.worldbank.org/en/allaboutfinance/digital-technology-is-unlocking-financial-inclusion"]
     },
     {
       "thema": "Atomwaffen",
       "frage": "1986 gab es weltweit rund 70.000 Atomsprengköpfe. Wie viele sind es heute?",
-      "antworten": [["Rund 35.000", "p"], ["Rund 3.000", "o"], ["Rund 55.000", "p"], ["Rund 12.000", "r"]],
+      "antworten": [["Mehr als damals", "p"], ["Etwa halb so viele", "p"], ["Etwa ein Sechstel davon", "r"], ["Fast keine mehr", "o"]],
       "erklaerung": "Anfang 2026 waren es rund 12.000, gut 80 % weniger als auf dem Höhepunkt des Kalten Kriegs. Etwa 86 % davon besitzen Russland und die USA. Eine Entwarnung ist das nicht: Ein einziger Sprengkopf kann eine Stadt zerstören, der Abbau ist seit den 1990er Jahren deutlich langsamer geworden, und einige Länder wie China bauen ihre Arsenale wieder aus.",
       "quelle": ["Federation of American Scientists, Status of World Nuclear Forces (Stand Anfang 2026)", "https://fas.org/initiative/status-world-nuclear-forces/"]
     },
     {
       "thema": "Naturkatastrophen",
-      "frage": "Wie hat sich die Zahl der Todesopfer durch Naturkatastrophen pro Jahr in den letzten 100 Jahren entwickelt?",
-      "antworten": [["Sie ist um über 80 % gesunken", "r"], ["Sie ist um rund 40 % gestiegen", "p"], ["Sie ist um rund 95 % gesunken", "o"], ["Sie ist um rund 40 % gesunken", "p"]],
+      "frage": "Vor 100 Jahren starben pro Jahr im Schnitt rund 220.000 Menschen durch Naturkatastrophen. Wie viele sind es heute?",
+      "antworten": [["Etwa gleich viele", "p"], ["Rund 40.000", "r"], ["Rund 5.000", "o"], ["Fast niemand mehr", "o"]],
       "erklaerung": "Vor 100 Jahren (1915–1924) starben im Schnitt rund 220.000 Menschen pro Jahr durch Naturkatastrophen, in den letzten zehn Jahren (2015–2024) rund 38.000, obwohl heute viermal so viele Menschen leben. Frühwarnsysteme und stabilere Häuser retten Leben. Die Daten aus frühen Jahren sind lückenhaft; der Trend ist trotzdem deutlich.",
       "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"],
       "studie": [90, 94]
     },
     {
       "thema": "Anpassung",
-      "frage": "Frühwarnsysteme warnen vor Stürmen, Fluten oder Hitze. Wie hat sich in den letzten zehn Jahren die Zahl der Länder entwickelt, die solche Systeme haben?",
-      "antworten": [["Sie ist um rund 20 % gestiegen", "p"], ["Sie hat sich gut verdoppelt", "r"], ["Sie hat sich verzehnfacht", "o"], ["Sie hat sich verfünffacht", "o"]],
+      "frage": "Frühwarnsysteme warnen vor Stürmen, Fluten oder Hitze. Wie hat sich die Zahl der Länder mit solchen Systemen in den letzten zehn Jahren verändert?",
+      "antworten": [["Sie ist etwa gleich geblieben", "p"], ["Sie hat sich mehr als verdoppelt", "r"], ["Sie hat sich verfünffacht", "o"], ["Inzwischen hat jedes Land eins", "o"]],
       "erklaerung": "2025 haben 119 Länder ein Frühwarnsystem für mehrere Gefahren. Das sind 60 % aller Länder und 113 % mehr als vor zehn Jahren. So passen sich Länder an ein wärmeres Klima an, und es rettet Leben: Wo die Systeme umfassend sind, sterben bei Katastrophen im Verhältnis fast sechsmal weniger Menschen. Die UN wollen bis 2027 jeden Menschen auf der Erde schützen. Bis dahin ist noch viel zu tun.",
       "quelle": ["WMO und UNDRR, Global Status of Multi-Hazard Early Warning Systems 2025", "https://wmo.int/news/media-centre/early-warning-systems-reach-new-heights-critical-gaps-jeopardize-global-progress"]
     },
     {
       "thema": "Bildung",
       "frage": "Wie viele Erwachsene weltweit können lesen und schreiben?",
-      "antworten": [["Rund 99 %", "o"], ["Rund 75 %", "p"], ["Knapp 90 %", "r"], ["Rund 95 %", "o"]],
+      "antworten": [["Etwa die Hälfte", "p"], ["Etwa 7 von 10", "p"], ["Fast 9 von 10", "r"], ["Praktisch alle", "o"]],
       "erklaerung": "Knapp 88 % der Erwachsenen weltweit können lesen und schreiben (2024). Vor wenigen Generationen war es eine Minderheit.",
       "quelle": ["Weltbank / UNESCO-Institut für Statistik (Stand 2024)", "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS"]
     },
     {
       "thema": "Künstliche Intelligenz",
-      "frage": "Proteine sind die chemischen Werkzeuge des Lebens. Die KI AlphaFold sagt voraus, wie sie räumlich aufgebaut sind. Für wie viele Proteine hat sie das bisher geschafft?",
-      "antworten": [["Rund 2 Millionen", "p"], ["Rund 2 Milliarden", "o"], ["Rund 20.000", "p"], ["Rund 200 Millionen", "r"]],
+      "frage": "Proteine sind die Werkzeuge des Lebens. Die KI AlphaFold sagt voraus, wie sie räumlich aufgebaut sind. Für wie viele hat sie das bisher geschafft?",
+      "antworten": [["Für einige Tausend", "p"], ["Für etwa jedes hundertste bekannte Protein", "p"], ["Für fast alle bekannten, rund 200 Millionen", "r"], ["Für rund 2 Milliarden, zehnmal mehr als bekannt sind", "o"]],
       "erklaerung": "Für praktisch alle rund 200 Millionen Proteine, die Forschende kennen. Damit hat die KI ein 50 Jahre altes Problem gelöst, 2024 gab es dafür den Nobelpreis für Chemie. Was das bringt: Forschende verstehen damit zum Beispiel Antibiotika-Resistenzen besser und untersuchen Enzyme, die Plastik zersetzen können. Auch in der Medizin hilft KI schon: In einer schwedischen Studie mit über 100.000 Frauen fand KI-gestütztes Brustkrebs-Screening 29 % mehr Krebsfälle, ohne mehr Fehlalarme (The Lancet Digital Health, 2025).",
       "quelle": ["Nobelpreis für Chemie 2024, Pressemitteilung", "https://www.nobelprize.org/prizes/chemistry/2024/press-release/"]
     },
     {
       "thema": "Künstliche Intelligenz",
       "frage": "Rund 2.700 KI-Forschende wurden gefragt, wie wahrscheinlich es ist, dass KI die Menschheit auslöscht oder dauerhaft entmachtet. Was war die typische Antwort (Median)?",
-      "antworten": [["Rund 25 %", "p"], ["Praktisch 0 %", "o"], ["5 bis 10 %", "r"], ["Über 50 %", "p"]],
+      "antworten": [["Etwa 25 von 100", "p"], ["5 bis 10 von 100", "r"], ["Etwa 1 von 100", "o"], ["Praktisch null", "o"]],
       "erklaerung": "Die meisten nannten 5 bis 10 %. Das ist eine Schätzung unter großer Unsicherheit: Die Antworten reichten von extrem optimistisch bis extrem pessimistisch, und erfahrene Prognostiker (Superforecaster) sehen das Risiko bis 2100 bei unter 1 %. Wie könnte es passieren? Fachleute nennen vor allem zwei Wege: Menschen missbrauchen KI, etwa für Biowaffen oder Cyberangriffe. Oder sehr fähige Systeme verfolgen Ziele, die nicht mehr mit unseren übereinstimmen, und entziehen sich der Kontrolle. Deshalb wächst die Forschung zu KI-Sicherheit, 2025 erschien der erste Internationale KI-Sicherheitsbericht von rund 100 Fachleuten aus 30 Ländern. Realistisch heißt hier: das Risiko ernst nehmen, ohne in Angst zu erstarren.",
       "quelle": ["Grace u. a., Thousands of AI Authors on the Future of AI (Umfrage 2023, veröffentlicht 2024)", "https://arxiv.org/abs/2401.02843"]
     },
     {
       "thema": "Deutschland",
-      "frage": "Wie viele Menschen sterben heute in Deutschland im Straßenverkehr, verglichen mit 1970?",
-      "antworten": [["Rund 50 % weniger", "p"], ["Rund 97 % weniger", "o"], ["Rund 20 % mehr", "p"], ["Rund 85 % weniger", "r"]],
+      "frage": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. Wie viele sind es heute in ganz Deutschland?",
+      "antworten": [["Rund 10.000", "p"], ["Rund 2.800", "r"], ["Rund 1.000", "o"], ["Unter 100", "o"]],
       "erklaerung": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. 2024 waren es in ganz Deutschland 2.770, obwohl heute viel mehr Autos fahren. Viel bewirkt haben die Gurtpflicht und sicherere Autos, dazu eine bessere Notfallmedizin.",
       "quelle": ["Statistisches Bundesamt (Destatis), Verkehrsunfälle im Zeitvergleich", "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Verkehrsunfaelle/Tabellen/liste-strassenverkehrsunfaelle.html"]
     },
     {
       "thema": "Migration",
-      "frage": "Wie viele der 25- bis 34-Jährigen, die selbst nach Deutschland eingewandert sind, haben einen Hochschulabschluss?",
-      "antworten": [["Rund 33 %", "r"], ["Rund 10 %", "p"], ["Rund 45 %", "o"], ["Rund 20 %", "p"]],
+      "frage": "Von allen 25- bis 34-Jährigen in Deutschland hat etwa jeder Dritte einen Hochschulabschluss. Und von denen, die selbst eingewandert sind?",
+      "antworten": [["Etwa jeder Zehnte", "p"], ["Auch etwa jeder Dritte", "r"], ["Etwa jeder Zweite", "o"], ["Etwa zwei von drei", "o"]],
       "erklaerung": "33 %, fast so viele wie in der Gesamtbevölkerung dieser Altersgruppe (34 %). Gleichzeitig hat gut ein Drittel der jungen Eingewanderten keinen Berufsabschluss und ist auch nicht in Ausbildung, bei allen 25- bis 34-Jährigen sind es 17 %. Das Bild ist gemischt, aber besser als sein Ruf. Auch die Zahl wird überschätzt: 2025 waren 19,8 % der Menschen in Deutschland selbst eingewandert (16,4 Millionen). In einer großen Studie mit rund 24.000 Befragten in sechs Ländern schätzten Menschen in Deutschland den Anteil 2018 im Schnitt auf 30 %, tatsächlich lag er damals bei knapp 15 %. In allen sechs Ländern hielten die Befragten Eingewanderte außerdem für schlechter ausgebildet und häufiger arbeitslos, als sie sind. Interessant: Wer politisch links und wer rechts steht, überschätzte den Anteil gleich stark.",
       "quelle": ["Statistisches Bundesamt, Mikrozensus 2025; Alesina, Miano und Stantcheva, Review of Economic Studies 2023", "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/04/PD26_128_125.html"]
     },
     {
       "thema": "Klima",
-      "frage": "Wie viel wärmer als vor der Industrialisierung war es 2024 im weltweiten Durchschnitt?",
-      "antworten": [["Rund 0,8 °C", "o"], ["Rund 1,5 °C", "r"], ["Rund 3 °C", "p"], ["Rund 0,3 °C", "o"]],
+      "frage": "Das Pariser Klimaabkommen will die Erwärmung auf 1,5 °C begrenzen. Wie viel wärmer als vor der Industrialisierung war es 2024 weltweit?",
+      "antworten": [["Rund 3 °C, doppelt so viel", "p"], ["Rund 1,5 °C, etwa an der Grenze", "r"], ["Rund 0,8 °C, halb so viel", "o"], ["Kaum wärmer", "o"]],
       "erklaerung": "2024 lag die Temperatur rund 1,55 °C über dem Mittel der Jahre 1850 bis 1900, es war das wärmste Jahr seit Beginn der Messungen. Über viele Jahre gemittelt sind es rund 1,3 °C. Die 1,5-Grad-Grenze aus dem Pariser Abkommen bezieht sich auf solche langen Zeiträume. Sie ist also noch nicht überschritten, aber nah. Hier gibt es keine Entwarnung: Vieles wird besser, manches ist ernst. Beides gilt gleichzeitig.",
       "quelle": ["WMO, 2024 wärmstes Jahr seit Beginn der Messungen (Januar 2025)", "https://wmo.int/news/media-centre/wmo-confirms-2024-warmest-year-record-about-155degc-above-pre-industrial-level"]
     }

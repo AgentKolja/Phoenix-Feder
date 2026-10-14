@@ -185,8 +185,11 @@ Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json`. Je Frag
 `r` richtig, `p` zu pessimistisch, `o` zu optimistisch. **Jede Frage hat mindestens eine `p`- und eine `o`-Antwort**, damit
 jede falsche Antwort zeigt, in welche Richtung man danebenliegt (bauen.py prüft das). Damit ist die richtige nie die
 düsterste oder rosigste Option; abwechselnd zwei `p` und ein `o` oder umgekehrt, damit „die mittlere“ nicht trägt.
-Richtige Antwort je fünfmal auf A, B, C und D (Reihenfolge der Optionen bewusst gemischt; Browsertest prüft die
-Verteilung). Falsche Antworten nah genug am echten Wert, dass man nachdenken muss. Fragen ohne klare Richtung
+**Anschaulich und nicht zu schwer** (Nikolas, Okt. 2026): Werte als „jeder Zehnte“, „4 von 100“, „etwa halb so
+viele“, „Rund 2.800“ statt Prozentrechnen, möglichst mit einem Vergleichswert in der Frage („In Deutschland … rund
+81 Jahre. Und weltweit?“, „Im Jahr 2000 … jeder Dritte. Und 2024?“). Abstände zwischen den Antworten groß genug, dass
+man sie klar unterscheiden kann. Optionen immer von der düstersten zur rosigsten Entwicklung sortiert; die richtige
+steht damit auf B oder C, etwa je zur Hälfte (Browsertest prüft das). Fragen ohne klare Richtung
 (z. B. Bevölkerungszahlen, Anteil Eingewanderter) nicht verwenden; bei Migration deshalb die Bildungsfrage
 (Hochschulabschluss), die Wahrnehmungsstudie (Alesina u. a. 2023) steht in der Erklärung. Antworten eindeutig
 formulieren, am besten als konkrete Werte; „um“ (Veränderung) und „auf“ (neuer Wert) nie mischen (bauen.py prüft das).

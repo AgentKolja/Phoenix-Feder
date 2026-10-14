@@ -209,7 +209,8 @@ function server() {
   pruefe(`Quiz: ${N} Fragen, jede sofort aufgelöst mit Quelle, Ergebnis mit Schimpansen-Vergleich`,
     N >= 18 && mitQuelle && (await p.textContent(".quiz-zahl")).includes(`von ${N}`) && (await p.textContent(".quiz-ergebnis")).includes("Schimpanse"));
   const positionen = QD.fragen.map((f) => f.antworten.findIndex((a) => a[1] === "r"));
-  pruefe("Quiz: richtige Antwort steht nicht vorhersehbar an derselben Stelle (A bis D)", [0, 1, 2, 3].every((k) => positionen.filter((x) => x === k).length >= N / 6));
+  pruefe("Quiz: Antworten von düster nach rosig, richtige nie ganz außen, B und C etwa gleich oft", positionen.every((x) => x === 1 || x === 2)
+    && [1, 2].every((k) => positionen.filter((x) => x === k).length >= N / 3));
   pruefe("Quiz: jede Frage hat vier Antworten, darunter eine zu pessimistische und eine zu optimistische",
     QD.fragen.every((f) => f.antworten.length === 4 && f.antworten.some((a) => a[1] === "p") && f.antworten.some((a) => a[1] === "o")));
   pruefe("Quiz: Wert aus Roslings Studie bei jeder vergleichbaren Frage", studienZeilen === QD.fragen.filter((f) => f.studie).length && studienZeilen > 0);
