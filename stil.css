@@ -251,13 +251,30 @@ p { margin: 0 0 1em; }
 .status.fehler { color: #b3261e; }
 
 /* Fuss */
-.fuss { border-top: 1px solid var(--linie); padding-block: 3rem 1.5rem; margin-top: 0; background: var(--flaeche); }
-.fuss-innen { display: flex; flex-wrap: wrap; gap: 2rem 4rem; justify-content: space-between; margin-bottom: 1.5rem; }
-.fuss nav { display: flex; flex-direction: column; gap: 0; }
-.fuss nav a { color: var(--text); text-decoration: none; padding-block: 0.4rem; }
-.fuss nav a:hover { color: var(--akzent); }
-.logo-text { font: 500 1.3rem/1.2 var(--serif); margin-bottom: 0.25rem; }
-.fuss p { color: var(--leise); }
+.fuss { position: relative; overflow: hidden; padding-block: 3.5rem 1.25rem; background: var(--flaeche);
+  border-radius: 2rem 2rem 0 0; box-shadow: 0 -1px 0 var(--linie); }
+.fuss-feder { position: absolute; right: -3rem; bottom: -4rem; width: 22rem; height: 22rem; opacity: 0.07; transform: rotate(-12deg); pointer-events: none; }
+.fuss-raster { position: relative; display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); gap: 2.5rem 3rem; }
+.fuss p { color: var(--leise); margin: 0; }
+.fuss-marke { max-width: 24rem; }
+.fuss-marke .logo { margin-bottom: 0.9rem; }
+.fuss .fuss-motto { font: italic 400 1.15rem/1.4 var(--serif); color: var(--text); margin-bottom: 0.4rem; }
+.sozial { display: flex; gap: 0.6rem; margin-top: 1.25rem; }
+.sozial svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fuss-gruppe { display: flex; flex-direction: column; align-items: flex-start; }
+.fuss .fuss-titel { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--akzent); margin-bottom: 0.4rem; }
+.fuss-gruppe a { color: var(--text); text-decoration: none; padding-block: 0.4rem; }
+.fuss a:hover { color: var(--akzent); }
+.fuss-unten { position: relative; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem 1.5rem;
+  margin-top: 2.75rem; padding-top: 1rem; border-top: 1px solid var(--linie); font-size: 0.9rem; }
+.fuss-unten nav { display: flex; flex-wrap: wrap; gap: 0 1.25rem; }
+.fuss-unten a { color: var(--leise); text-decoration: none; padding-block: 0.5rem; }
+@media (max-width: 760px) {
+  .fuss { padding-top: 2.75rem; border-radius: 1.5rem 1.5rem 0 0; }
+  .fuss-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem; }
+  .fuss-marke { grid-column: 1 / -1; }
+  .fuss-feder { width: 15rem; height: 15rem; right: -2.5rem; bottom: auto; top: 1rem; }
+}
 
 /* Themen */
 .themen { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }

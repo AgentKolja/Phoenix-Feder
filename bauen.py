@@ -742,8 +742,15 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
         navi += f'<a href="{ziel}"' + (' aria-current="page"' if aktiv else "") + f">{text}</a>"
     kanonisch = f'<link rel="canonical" href="{url}">' if indexieren else '<meta name="robots" content="noindex">'
     jahr = date.today().year
+    # Selbst gezeichnete, schlichte Symbole (keine Original-Logos)
+    symbole = {
+        "instagram": '<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r="0.6" fill="currentColor"/>',
+        "linkedin": '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 10.5v5.5M8.5 7.8v.1M12 16v-5.5M12 13c0-1.6 1-2.6 2.3-2.6s2.2.9 2.2 2.6V16"/>',
+    }
     sozial = "".join(
-        f'<a href="{esc(E[k])}" rel="noopener">{t}</a>' for k, t in (("instagram", "Instagram"), ("linkedin", "LinkedIn")) if E.get(k))
+        f'<a class="rund-knopf" href="{esc(E[k])}" rel="noopener" aria-label="{t}" title="{t}"><svg viewBox="0 0 24 24" aria-hidden="true">{symbole[k]}</svg></a>'
+        for k, t in (("instagram", "Instagram"), ("linkedin", "LinkedIn")) if E.get(k))
+    kurz_beschreibung = E["beschreibung"].split(". ")[0].rstrip(".") + "."
     return f"""<!doctype html>
 <html lang="de">
 <head>
@@ -788,20 +795,27 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
 {inhalt}
 </main>
 <footer class="fuss">
-  <div class="huelle fuss-innen">
-    <div>
-      <p class="logo-text">{esc(E['name'])}</p>
-      <p>{esc(E['untertitel'])}</p>
+  <svg class="fuss-feder" viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg>
+  <div class="huelle fuss-raster">
+    <div class="fuss-marke">
+      <a class="logo" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg><span>{esc(E['name'])}</span></a>
+      <p class="fuss-motto">{esc(E['untertitel'])}</p>
+      <p>{esc(kurz_beschreibung)}</p>
+      <div class="sozial">{sozial}</div>
     </div>
-    <nav aria-label="Fußzeile">
-      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/app/">Probier’s heute</a><a href="/book-online/">Begleitung</a><a href="/about/">Über mich</a>
-      <a href="/feed.xml">RSS</a>{sozial}
+    <nav class="fuss-gruppe" aria-label="Entdecken">
+      <p class="fuss-titel">Entdecken</p>
+      <a href="/blog/">Artikel</a><a href="/gewohnheiten/">Gewohnheiten</a><a href="/app/">Probier’s heute</a><a href="/quiz/">Realitätscheck</a>
     </nav>
-    <nav aria-label="Rechtliches">
-      <a href="/impressum/">Impressum</a><a href="/datenschutz/">Datenschutz</a>
+    <nav class="fuss-gruppe" aria-label="Begleitung">
+      <p class="fuss-titel">Begleitung</p>
+      <a href="/book-online/">Angebote</a><a href="/achtsamkeitsseminar/">Achtsamkeitsseminar</a><a href="/about/">Über mich</a><a href="/#kontakt">Kontakt</a>
     </nav>
   </div>
-  <p class="huelle klein">© {jahr} {esc(E['autor'])}</p>
+  <div class="huelle fuss-unten">
+    <p>© {jahr} {esc(E['autor'])}</p>
+    <nav aria-label="Rechtliches"><a href="/impressum/">Impressum</a><a href="/datenschutz/">Datenschutz</a><a href="/feed.xml">RSS</a></nav>
+  </div>
 </footer>
 </body>
 </html>
