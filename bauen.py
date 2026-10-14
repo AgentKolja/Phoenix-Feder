@@ -596,7 +596,7 @@ def seminar_ics(t):
     jetzt = datetime.now(timezone.utc)
     stempel = jetzt.strftime("%Y%m%dT%H%M%SZ")
     beschreibung = " ".join(x for x in (
-        "Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln.", t["ort_hinweis"],
+        "Grundlagen der Meditation. Du schärfst deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.", t["ort_hinweis"],
         f"Mitbringen: {t['mitbringen']}" if t.get("mitbringen") else "", f"{E['domain']}/achtsamkeitsseminar/") if x)
     zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Phoenix Feder//Seminar//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
               "BEGIN:VEVENT", f"UID:seminar-{t['datum']}@phoenix-feder.de", f"DTSTAMP:{stempel}", f"LAST-MODIFIED:{stempel}",
@@ -612,7 +612,7 @@ def seminar_ld(t):
     """Termin als schema.org-Event, damit Suchmaschinen ihn als Veranstaltung erkennen."""
     o = t["ort"]
     ld = {"@context": "https://schema.org", "@type": "Event", "name": t["name"],
-          "description": "Drei Ebenen der Achtsamkeit, vom Wahrnehmen bis zum bewussten Handeln. Mit Übungen und Austausch.",
+          "description": "Grundlagen der Meditation. Du schärfst deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.",
           "startDate": t["start_iso"], "endDate": t["ende_iso"],
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled",
           "location": {"@type": "Place", "name": o["name"], "address": {"@type": "PostalAddress", "streetAddress": o["strasse"],
@@ -823,10 +823,17 @@ def schreiben(pfad_url, text):
     ziel.write_text(text, encoding="utf-8")
 
 
-def umleitung(alt, neu):
-    """GitHub Pages kann keine Server-Umleitungen; alte Wix-Adressen leiten per HTML weiter."""
+def umleitung(alt, neu, vorschau=None):
+    """GitHub Pages kann keine Server-Umleitungen; alte Wix-Adressen leiten per HTML weiter.
+    vorschau = (Titel, Beschreibung, Bilddatei): Link-Vorschau für Messenger, die der Weiterleitung nicht folgen."""
+    og = ""
+    if vorschau:
+        t, b, bild_datei = vorschau
+        og = (f'<meta property="og:title" content="{esc(t)}"><meta property="og:description" content="{esc(b)}">'
+              f'<meta property="og:image" content="{E["domain"]}/bilder/{bild_datei}"><meta property="og:url" content="{E["domain"]}{alt}">'
+              '<meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">\n')
     schreiben(alt, f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
-<title>Weiterleitung</title><link rel="canonical" href="{E['domain']}{neu}">
+<title>Weiterleitung</title><link rel="canonical" href="{E['domain']}{neu}">{og}
 <meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url={"../" * (alt.count("/") - 1)}{neu.lstrip("/")}">
 </head><body><p><a href="{neu}">Weiter</a></p></body></html>
 """)
@@ -965,7 +972,8 @@ def main():
     for alt in ("/booking-calendar/", "/service-page/", "/services-4/"):
         umleitung(alt, "/book-online/")
     umleitung("/post/sehen-was-ist/", "/post/die-realitaet-sehen/")  # umbenannt am 14.10.2026
-    umleitung("/seminar/", "/achtsamkeitsseminar/#anmelden")  # Kurzadresse für QR-Code und Werbung
+    umleitung("/seminar/", "/achtsamkeitsseminar/#anmelden",  # Kurzadresse für QR-Code und Werbung
+              ("Achtsamkeitsseminar: Bewusst leben", "Grundlagen der Meditation in Aachen. Jetzt anmelden.", "og-seminar.jpg"))
 
     (AUSGABE / "feed.xml").write_text(feed(artikel), encoding="utf-8")
     shutil.copy(AUSGABE / "feed.xml", AUSGABE / "blog-feed.xml")  # alte Wix-Adresse des Feeds

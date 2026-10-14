@@ -28,6 +28,13 @@ async function bereit(seite) {
     console.log("✓", aus);
   }
 
+  const vorschau = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+  await vorschau.goto(datei("vorschau"));
+  await bereit(vorschau);
+  await vorschau.screenshot({ path: path.join(ziel, "og-seminar.jpg"), type: "jpeg", quality: 88 });
+  await vorschau.close();
+  console.log("✓ og-seminar.jpg");
+
   const plakat = await browser.newPage({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: 2 });
   await plakat.goto(datei("plakat"));
   await bereit(plakat);

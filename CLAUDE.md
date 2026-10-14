@@ -186,11 +186,13 @@ Quiz mit Kontakt und Seminar-Anmeldung – bei viel Andrang auf einen eigenen Sc
 
 ## Achtsamkeitsseminar (`/achtsamkeitsseminar/`)
 
-Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln; Ablauf in fünf
-Schritten mit Minuten und „Methodik“ (Fünf Sinne, Atemmeditation/Shamatha, Body Scan, PMR nach Jacobson, Gefühlston
-angenehm/unangenehm/neutral, Gedanken beobachten, ACT-Defusion, Wertespiel, Innehalten, Fragerunde); ein Begleitbogen führt durch den
-Nachmittag (Intention, Notizen, Fragen). Bewusst ohne „Gewahrsein“ – bei Wahrnehmen und Bemerken bleiben;
-Dattel-/Schokoladen-Übung; Hintergrund mit Kabat-Zinn, Lazarus, Hayes, Brewer). Bilder `seminar-*` stammen aus
+Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln). Die Seite soll
+neugierig machen und nicht zu viel vorwegnehmen (Nikolas, Okt. 2026): keine Agenda mit Minuten, nur „Was dich
+erwartet“ (Nachmittag in kleiner Runde, Teepause, Begleitbogen) und eine Liste der Methoden. Den Gefühlston
+(angenehm/unangenehm/neutral) nicht auf der Seite beschreiben, der Teil wird noch überarbeitet. Leitsatz „Bewusst leben“,
+Text „In diesem Pilotseminar schärfst du deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in
+schwierigen Situationen bewusst zu handeln.“ (nach dem Pilot „Pilotseminar“ herausnehmen, auch in der Werbung).
+Vorgeschmack-Übung nur mit Schokolade (keine Dattel). Hintergrund kurz: Kabat-Zinn, Lazarus, Hayes. Bilder `seminar-*` stammen aus
 dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Hinweis oben, Anmeldung `#anmelden`), Angebotskarte
 (`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
 Anmeldung: nur Vorname + E-Mail über Web3Forms; Nikolas nimmt 2–3 Anmeldungen mehr an als Plätze (Absagen-Puffer)

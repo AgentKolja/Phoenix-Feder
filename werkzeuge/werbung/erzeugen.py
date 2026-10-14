@@ -3,7 +3,8 @@
 
 Aufruf:  python3 werkzeuge/werbung/erzeugen.py [Ausgabeordner]
 Ergebnis: instagram-beitrag.png (1080 × 1350), story-status.png (1080 × 1920), kurzvideo.mp4 (12 s, ohne Ton),
-          plakat-a4.pdf (druckfertig, skaliert auch auf A3) und plakat-a4.png (Vorschau).
+          plakat-a4.pdf (druckfertig, skaliert auch auf A3), plakat-a4.png (Vorschau) und og-seminar.jpg
+          (Link-Vorschau 1200 × 630, wird auch nach bilder/ kopiert).
 
 Termin, Ort und Plätze kommen aus inhalt/seminar.json, also nach einem neuen Termin einfach neu erzeugen.
 Der QR-Code führt auf <domain>/seminar/ (leitet zur Anmeldung weiter, siehe bauen.py).
@@ -108,6 +109,11 @@ def main():
   <p class="text">{esc(beschreibung)}</p>
   <div class="unten"><div>{fakten_kurz}{leiter}</div>{anmelden("Scannen und anmelden")}</div>
 </div>""",
+        "vorschau": f"""<div class="blatt vorschau">
+  <div class="bogen"><img src="{bild}" alt=""></div>
+  <div><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar in {esc(o['stadt'])}</p>
+  <div class="leiter"><img src="{portrait}" alt=""><span>Mit <strong>Nikolas Voth</strong> · {esc(kurz_url.split('/')[0])}</span></div></div>
+</div>""",
         "video": f"""<div class="blatt reel">
   <div class="foto"><img src="{bild}" alt=""></div><div class="schleier"></div>
   <div class="szene s1"><h1>Ständig abgelenkt?</h1><p>Zu viel im Kopf, zu wenig im Moment.</p></div>
@@ -132,6 +138,10 @@ def main():
     subprocess.run(["node", str(HIER / "rendern.js"), str(ziel)], check=True, env=umgebung)
     for f in ziel.glob("_*.html"):
         f.unlink()
+    # Link-Vorschau der Seminarseite (og:image) gleich in die Website übernehmen
+    import shutil
+    shutil.copy(ziel / "og-seminar.jpg", WURZEL / "bilder" / "og-seminar.jpg")
+    print("bilder/og-seminar.jpg aktualisiert (danach bauen.py und committen)")
     print(f"Fertig: {ziel}  (QR-Code → {url})")
 
 

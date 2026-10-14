@@ -243,6 +243,9 @@ p { margin: 0 0 1em; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: -0.5rem 0 2rem; }
 .chips a { padding: 0.45rem 0.95rem; border: 1px solid var(--linie); border-radius: 999px; color: var(--text); text-decoration: none; font-size: 0.95rem; background: var(--karte); }
 .chips a:hover { border-color: var(--akzent-hell); }
+.methoden-titel { font-size: 1.15rem; margin: 0 0 0.8rem; }
+.methoden { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+.methoden li { padding: 0.45rem 0.95rem; border: 1px solid var(--linie); border-radius: 999px; background: var(--karte); font-size: 0.95rem; }
 .chips a[aria-current] { background: var(--akzent); border-color: var(--akzent); color: var(--auf-akzent); }
 
 /* Impuls für heute */
