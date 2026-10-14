@@ -282,7 +282,8 @@ def themen_html(artikel):
   <ul class="learning-artikel">{punkte}</ul>
   <a class="learning-mehr" href="/thema/{t['slug']}/">Alle {len(liste)} Artikel zum Thema →</a>
 </article>""")
-    return '<div class="learnings">\n' + "\n".join(karten) + "\n</div>"
+    return ('<div class="learnings">\n' + "\n".join(karten) + "\n</div>\n"
+            f'<p class="learning-hinweis klein" aria-hidden="true">Zur Seite wischen für alle {len(karten)} Learnings →</p>')
 
 
 def thema_seite(t, artikel):
@@ -516,6 +517,21 @@ def quiz_html():
 <script src="/quiz.js" defer></script>"""
 
 
+def quiz_einstieg_html():
+    """Startseite: die Einstiegsfrage des Quiz zum Antippen. Jede Antwort startet das Quiz direkt bei Frage 1
+    (quiz.js liest #weltbild=…); ohne JavaScript landet man einfach am Anfang des Quiz."""
+    w = QUIZ["weltbild"]
+    frage = re.sub(r"^Bevor es losgeht:\s*", "", w["frage"])
+    antworten = "".join(f'<a class="quiz-antwort" href="/quiz/#weltbild={i}"><b>{"ABC"[i]}</b> {esc(a)}</a>'
+                        for i, a in enumerate(w["antworten"]))
+    return f"""<div class="quiz-probe">
+  <p class="quiz-kopf"><span>Vorab</span><span class="quiz-balken"><span></span></span></p>
+  <p class="quiz-probe-frage">{esc(frage)}</p>
+  <div class="quiz-antworten">{antworten}</div>
+  <p class="klein">Ein Tipp auf deine Antwort startet das Quiz.</p>
+</div>"""
+
+
 def kontakt_html(vorauswahl=""):
     if not E["formular_schluessel"]:
         wege = []
@@ -703,6 +719,7 @@ def bausteine_einsetzen(text, artikel):
         "{{angebote}}": angebote_html,
         "{{quiz}}": quiz_html,
         "{{quiz_fragen}}": lambda: str(len(QUIZ["fragen"])),
+        "{{quiz_einstieg}}": quiz_einstieg_html,
         "{{neueste_artikel}}": lambda: raster(artikel[:3]),
         "{{alle_artikel}}": lambda: raster(artikel),
         "{{impuls}}": impuls_html,

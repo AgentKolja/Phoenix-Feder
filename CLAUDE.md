@@ -176,8 +176,9 @@ alle Antworten stehen offen darunter, markiert blau (richtig) und orange gestric
 Rot/Grün, damit es auch bei Farbsehschwäche klappt; ein paar
 Fragen haben bewusst eine zu optimistische Antwort, damit die Einordnung pessimistisch/realistisch/optimistisch trägt
 (realistisch ab 2/3 richtig, sonst die häufigere Fehlerrichtung). Teaser und Einleitung verraten die Richtung nicht
-(„9 von 10 nicht besser als ein Schimpanse – lass dich überraschen“). Platz: Knopf im Kopfbereich der Startseite und
-eigener Abschnitt direkt über dem Impuls. Nur belegte Zahlen
+(„9 von 10 nicht besser als ein Schimpanse – lass dich überraschen“). Platz: eigener Abschnitt direkt über dem Impuls
+(kein Knopf im Kopfbereich). Dort steht die Einstiegsfrage als Karte zum Antippen (`{{quiz_einstieg}}`); jede Antwort
+startet das Quiz über `/quiz/#weltbild=0|1|2` direkt bei Frage 1. Nur belegte Zahlen
 aus Primärquellen (Weltbank-API, UN WPP, WHO/UNICEF, EM-DAT über OWID, Destatis, IPCC, ITU, IRENA, WMO, Nobelpreis);
 Stand und `version` pflegen, wenn Fragen oder Zahlen sich ändern. Ablauf in `quiz.js`: Bauchgefühl vorab, Fragen mit sofortiger Auflösung, dann die
 Frage, ob die Antworten anonym beigesteuert werden (Einwilligung, nur bei „Ja“ → Web3Forms, Betreff „Quiz: anonyme

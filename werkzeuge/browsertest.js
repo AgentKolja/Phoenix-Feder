@@ -174,6 +174,12 @@ function server() {
   pruefe("Startseite: Realitätscheck-Quiz über dem Impuls, ohne vorab zu verraten, wohin man sich verschätzt",
     !(await p.$('.held a[href*="quiz/"]')) && Boolean(await p.$('#realitaetscheck ~ #impuls'))
     && Boolean(await p.$('#realitaetscheck .quiz-teaser a[href*="quiz/"]')) && !/düster|pessimistisch eing|zu pessimistisch/i.test(await p.textContent("#realitaetscheck")));
+  const lern = await p.$eval(".learnings", (l) => ({ h: l.getBoundingClientRect().height, wischen: l.scrollWidth > l.clientWidth }));
+  pruefe("Handy: Learnings als Wischleiste statt langer Liste", lern.wischen && lern.h < 700, `${Math.round(lern.h)}px hoch`);
+  await p.click("#realitaetscheck .quiz-probe .quiz-antwort >> nth=0");
+  await p.waitForSelector(".quiz-kopf");
+  pruefe("Startseite: Antwort auf die Einstiegsfrage startet das Quiz direkt bei Frage 1",
+    (await p.textContent(".quiz-kopf")).includes("Frage 1 von") && !p.url().includes("#"));
   const umleitung = await (await p.context().request.get(`${B}/post/sehen-was-ist/`)).text();
   pruefe("Umbenannter Artikel: alte Adresse leitet weiter", umleitung.includes("die-realitaet-sehen/"));
   const kurz = await (await p.context().request.get(`${B}/seminar/`)).text();

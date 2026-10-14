@@ -234,5 +234,13 @@
     }
   });
 
+  // Start von der Startseite: Antwort auf die Einstiegsfrage steckt in #weltbild=0|1|2, weiter direkt mit Frage 1
+  const start = location.hash.match(/^#weltbild=([0-2])$/);
+  if (start) {
+    weltbild = Number(start[1]);
+    schritt = 0;
+    history.replaceState(null, "", location.pathname + location.search);
+  }
   zeichnen();
+  if (start) scrollTo({ top: wurzel.getBoundingClientRect().top + scrollY - 90 });
 })();

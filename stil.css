@@ -318,7 +318,17 @@ p { margin: 0 0 1em; }
 .weg-text span { color: var(--leise); font-size: 0.95rem; }
 .weg-pfeil { margin-left: auto; color: var(--akzent); font-weight: 600; }
 /* Startseite: Meine Learnings */
-.learnings { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem; }
+.learnings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+@media (min-width: 1100px) { .learnings { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* Handy hochkant: Wischleiste statt vier langer Karten untereinander; die nächste Karte schaut am Rand heraus */
+@media (max-width: 599px) {
+  .learnings { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 84%; gap: 0.9rem; overflow-x: auto;
+    scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: -1.25rem; padding: 0.25rem 1.25rem 0.75rem;
+    scroll-padding-inline: 1.25rem; scrollbar-width: none; }
+  .learnings::-webkit-scrollbar { display: none; }
+  .learning { scroll-snap-align: start; }
+  .learning-hinweis { display: block; }
+}
 .learning { display: flex; flex-direction: column; background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1.4rem 1.4rem 1.2rem; }
 .learning-nr { font-family: var(--serif); font-size: 2.2rem; line-height: 1; color: var(--akzent-hell); margin: 0 0 0.6rem; }
 .learning h3 { font-size: 1.3rem; margin-bottom: 0.4rem; }
@@ -328,6 +338,7 @@ p { margin: 0 0 1em; }
 .learning-artikel { list-style: none; padding: 0; margin: 0.4rem 0 1rem; border-top: 1px solid var(--linie); }
 .learning-artikel li { border-bottom: 1px solid var(--linie); font-size: 0.95rem; line-height: 1.4; }
 .learning-artikel a { display: inline-block; padding-block: 0.6rem; }
+.learning-hinweis { display: none; text-align: right; color: var(--leise); margin: 0.25rem 0 0; }
 .learning-mehr { margin-top: auto; align-self: flex-start; padding-block: 0.5rem; font-size: 0.92rem; font-weight: 600; }
 /* Eigene Seite je Idee (/gewohnheiten/<slug>/) */
 .idee-seite h1 { margin-bottom: 0.4em; }
@@ -481,10 +492,24 @@ p { margin: 0 0 1em; }
 }
 
 /* Realitätscheck-Quiz „Wie realistisch ist dein Weltbild?“ */
-.quiz-teaser { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; margin-top: 2.5rem; padding: 1.4rem 1.6rem; background: var(--flaeche); border-left: 3px solid var(--akzent-hell); border-radius: 0 var(--rund) var(--rund) 0; }
-.quiz-teaser h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); margin-bottom: 0.2rem; }
-.quiz-teaser > div { max-width: 44rem; }
-.quiz-teaser p:last-child { margin-bottom: 0; }
+.quiz-teaser { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 1.5rem 3rem; margin-top: 2.5rem;
+  padding: clamp(1.4rem, 4vw, 2.5rem); border-radius: calc(var(--rund) * 1.6); color: var(--auf-akzent);
+  background: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--akzent-hell) 55%, transparent), transparent 60%), var(--akzent); box-shadow: var(--schatten); }
+.quiz-teaser h2 { font-size: clamp(1.6rem, 3.8vw, 2.3rem); margin-bottom: 0.2rem; color: inherit; }
+.quiz-teaser .oberzeile, .quiz-teaser-text p { color: inherit; }
+.quiz-teaser-text p:last-child { margin-bottom: 0; opacity: 0.92; }
+.quiz-teaser .quiz-skala span { background: color-mix(in srgb, var(--auf-akzent) 16%, transparent); color: inherit; }
+/* Einstiegsfrage als echte Quiz-Karte zum Antippen */
+.quiz-probe { background: var(--karte); color: var(--text); border-radius: var(--rund); padding: 1.3rem 1.3rem 0.9rem; box-shadow: 0 18px 40px rgb(40 25 10 / 22%); }
+.quiz-probe .quiz-kopf { margin-bottom: 0.9rem; font-size: 0.85rem; }
+.quiz-probe .quiz-balken span { width: 5%; }
+.quiz-probe-frage { font: 450 clamp(1.2rem, 2.6vw, 1.4rem)/1.3 var(--serif); margin-bottom: 0.9rem; text-wrap: balance; }
+.quiz-probe .quiz-antworten { margin-bottom: 0.7rem; }
+.quiz-probe .quiz-antwort { text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
+.quiz-probe .quiz-antwort:focus-visible { border-color: var(--akzent-hell); }
+@media (hover: hover) { .quiz-probe .quiz-antwort:hover { border-color: var(--akzent-hell); transform: translateX(3px); } }
+.quiz-probe .klein { color: var(--leise); margin: 0; }
+@media (max-width: 860px) { .quiz-teaser { grid-template-columns: minmax(0, 1fr); } }
 .abschnitt.kompakt { padding-block: clamp(1.5rem, 4vw, 2.5rem); }
 .abschnitt.kompakt .quiz-teaser { margin-top: 0; }
 /* Skala Pessimistisch – Realistisch – Optimistisch (Teaser und Ergebnis) */
@@ -515,7 +540,7 @@ p { margin: 0 0 1em; }
 .quiz-antworten { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
 .quiz-antwort { display: flex; gap: 0.8rem; align-items: baseline; width: 100%; text-align: left; font: inherit; color: var(--text); background: var(--grund); border: 2px solid var(--linie); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; }
 .quiz-antwort b { color: var(--akzent); }
-.quiz-antwort:hover:not(:disabled) { border-color: var(--akzent-hell); }
+@media (hover: hover) { .quiz-antwort:hover:not(:disabled) { border-color: var(--akzent-hell); } } /* auf Touch bleibt :hover sonst an der nächsten Antwort hängen */
 .quiz-antwort:disabled { cursor: default; }
 .quiz-antwort.richtig { border-color: var(--gut); background: color-mix(in srgb, var(--gut) 14%, var(--karte)); }
 .quiz-antwort.falsch { border-color: var(--schlecht); border-style: dashed; background: color-mix(in srgb, var(--schlecht) 12%, var(--karte)); }
