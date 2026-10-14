@@ -157,7 +157,10 @@ function server() {
     let mitQuelle = true;
     studienZeilen = 0;
     for (let i = 0; i < N; i++) {
-      await p.click('[data-quiz-aktion="antwort"][data-wert="0"]');
+      // immer die erste zu pessimistische Antwort (sonst die erste falsche) → Ergebnis „eher pessimistisch“
+      const a = QD.fragen[i].antworten;
+      const wahl = a.findIndex((x) => x[1] === "p") >= 0 ? a.findIndex((x) => x[1] === "p") : a.findIndex((x) => x[1] !== "r");
+      await p.click(`[data-quiz-aktion="antwort"][data-wert="${wahl}"]`);
       mitQuelle &&= Boolean(await p.$('.quiz-aufloesung a[href^="https://"]')) && (await p.textContent(".quiz-urteil")).length > 0;
       if (await p.$(".quiz-studie")) studienZeilen += 1;
       await p.click('[data-quiz-aktion="weiter"]');
@@ -169,13 +172,15 @@ function server() {
   const mitQuelle = await quizRunde("nein");
   pruefe(`Quiz: ${N} Fragen, jede sofort aufgelöst mit Quelle, Ergebnis mit Schimpansen-Vergleich`,
     N >= 18 && mitQuelle && (await p.textContent(".quiz-zahl")).includes(`von ${N}`) && (await p.textContent(".quiz-ergebnis")).includes("Schimpanse"));
+  const positionen = QD.fragen.map((f) => f.antworten.findIndex((a) => a[1] === "r"));
+  pruefe("Quiz: richtige Antwort steht nicht vorhersehbar an derselben Stelle", [0, 1, 2].every((k) => positionen.filter((x) => x === k).length >= N / 5));
   pruefe("Quiz: Wert aus Roslings Studie bei jeder vergleichbaren Frage", studienZeilen === QD.fragen.filter((f) => f.studie).length && studienZeilen > 0);
-  pruefe("Quiz: Einordnung des Weltbilds mit Skala (nur A gewählt → eher pessimistisch)",
+  pruefe("Quiz: Einordnung des Weltbilds mit Skala (zu pessimistisch geantwortet → eher pessimistisch)",
     (await p.textContent(".quiz-typ")) === "Eher pessimistisch" && (await p.textContent(".quiz-skala .aktiv")) === "Pessimistisch");
   pruefe("Quiz: Übersicht zeigt alle Antwortmöglichkeiten, die richtige und die eigene",
     (await p.$$(".quiz-optionen > li")).length === 3 * N && (await p.$$(".quiz-optionen li.ok")).length === N && (await p.$$(".quiz-optionen li.du")).length > 0);
   pruefe("Quiz: „Nur Ergebnis zeigen“ sendet nichts", gesendet.length === 0);
-  const artikelLink = await p.getAttribute('.quiz-warum a[href*="/post/"]', "href");
+  const artikelLink = await p.getAttribute('.knopf-reihe a[href*="/post/"]', "href");
   pruefe("Quiz: Ergebnis verlinkt einen vorhandenen Artikel", Boolean(artikelLink) && (await (await p.context().request.get(`${B}${artikelLink}`)).ok()));
   await p.click('[data-quiz-aktion="neu"]');
   await quizRunde("ja");

@@ -163,8 +163,14 @@ App-Dateien oder Daten ändern.
 Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json` (je Frage 3 Antworten mit Richtung: `r` richtig,
 `p` zu pessimistisch, `o` zu optimistisch, `n` neutral; Erklärung mit Zahl und Jahr; Quelle mit Link; optional `studie`
 = [% falsch im Schnitt, % falsch Deutschland] aus der Gapminder Misconception Study 2017, nur bei vergleichbarer Frage –
-Werte aus der Gapminder-Datei gapm.io/gms17d, Blatt „country percente per question“). Neben den Factfulness-Klassikern
-auch Entwicklungen der letzten 5–10 Jahre (Internet, KI, erneuerbare Energie, Konten, Frühwarnsysteme); ein paar
+Werte aus der Gapminder-Datei gapm.io/gms17d, Blatt „country percente per question“). Antworten abgestuft: bei Trends mehrere Stärken der Verbesserung (und eine Verschlechterung oder
+ein Überschießen), damit man nicht nur „besser“ erraten kann; die richtige ist nicht immer die größte, und ihre
+Position (A/B/C) wechselt (Browsertest prüft die Verteilung). Neben den Factfulness-Klassikern
+auch Entwicklungen der letzten 5–10 Jahre (Internet, KI mit Nutzen und Risiko, erneuerbare Energie, Konten,
+Frühwarnsysteme). Einstieg: „Glaubst du an eine bessere Zukunft für die Welt?“. Ergebnis erklärt die Medien als
+Hauptursache des zu düsteren Bilds (Robertson u. a. 2023: jedes negative Wort +2,3 % Klicks), dann den Negativitätseffekt;
+alle Antworten stehen offen darunter, markiert blau (richtig) und orange gestrichelt (deine Antwort) plus ✓/✗ statt
+Rot/Grün, damit es auch bei Farbsehschwäche klappt; ein paar
 Fragen haben bewusst eine zu optimistische Antwort, damit die Einordnung pessimistisch/realistisch/optimistisch trägt
 (realistisch ab 2/3 richtig, sonst die häufigere Fehlerrichtung). Teaser und Einleitung verraten die Richtung nicht
 („9 von 10 nicht besser als ein Schimpanse – lass dich überraschen“). Platz: Knopf im Kopfbereich der Startseite und

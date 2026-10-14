@@ -1,15 +1,15 @@
 {
-  "version": "2026-10b",
+  "version": "2026-10c",
   "stand": "Oktober 2026",
   "weltbild": {
-    "frage": "Bevor es losgeht, dein Bauchgefühl: Wie entwickelt sich die Welt insgesamt?",
-    "antworten": ["Sie wird besser", "Sie bleibt etwa gleich", "Sie wird schlechter"]
+    "frage": "Bevor es losgeht: Glaubst du an eine bessere Zukunft für die Welt?",
+    "antworten": ["Ja, es wird besser", "Es bleibt etwa, wie es ist", "Nein, es wird schlechter"]
   },
   "fragen": [
     {
       "thema": "Armut",
       "frage": "Wie hat sich der Anteil der Menschen in extremer Armut weltweit in den letzten 25 Jahren entwickelt?",
-      "antworten": [["Er hat sich fast verdoppelt", "p"], ["Er ist etwa gleich geblieben", "p"], ["Er ist auf weniger als die Hälfte gesunken", "r"]],
+      "antworten": [["Er ist fast verschwunden (unter 2 %)", "o"], ["Er ist um etwa ein Viertel gesunken", "p"], ["Er ist auf weniger als ein Drittel gesunken", "r"]],
       "erklaerung": "Im Jahr 2000 lebten 36 % der Menschen in extremer Armut, also von weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). 2024 waren es rund 10 %, obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
       "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"],
       "studie": [91, 94]
@@ -17,7 +17,7 @@
     {
       "thema": "Lebenserwartung",
       "frage": "Wie alt werden Menschen heute weltweit im Durchschnitt?",
-      "antworten": [["73 Jahre", "r"], ["63 Jahre", "p"], ["53 Jahre", "p"]],
+      "antworten": [["63 Jahre", "p"], ["73 Jahre", "r"], ["83 Jahre", "o"]],
       "erklaerung": "Die Lebenserwartung bei Geburt liegt weltweit bei gut 73 Jahren (2024). 1990 waren es 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt sie wieder.",
       "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"],
       "studie": [63, 57]
@@ -25,7 +25,7 @@
     {
       "thema": "Einkommen",
       "frage": "Wo lebt die Mehrheit der Menschen auf der Welt?",
-      "antworten": [["In Ländern mit niedrigem Einkommen", "p"], ["In Ländern mit mittlerem Einkommen", "r"], ["In Ländern mit hohem Einkommen", "o"]],
+      "antworten": [["In Ländern mit mittlerem Einkommen", "r"], ["In Ländern mit niedrigem Einkommen", "p"], ["In Ländern mit hohem Einkommen", "o"]],
       "erklaerung": "Rund drei Viertel der Menschen leben in Ländern mit mittlerem Einkommen, etwa 6 von 8,2 Milliarden (2025). Die Welt ist nicht in „arm“ und „reich“ geteilt: Die meisten Menschen leben dazwischen.",
       "quelle": ["Weltbank, Bevölkerung nach Einkommensgruppen (Stand 2025)", "https://data.worldbank.org/indicator/SP.POP.TOTL"],
       "studie": [74, 83]
@@ -33,7 +33,7 @@
     {
       "thema": "Bildung",
       "frage": "In Ländern mit niedrigem Einkommen: Wie viele Mädchen schließen die Grundschule ab?",
-      "antworten": [["20 %", "p"], ["40 %", "p"], ["60 %", "r"]],
+      "antworten": [["Rund 40 %", "p"], ["Rund 60 %", "r"], ["Rund 85 %", "o"]],
       "erklaerung": "In den Ländern mit dem niedrigsten Einkommen schließen 61 % der Mädchen die Grundschule ab (2023). Das reicht noch nicht. Aber es ist viel mehr, als die meisten schätzen.",
       "quelle": ["Weltbank / UNESCO, Grundschulabschluss Mädchen, Länder mit niedrigem Einkommen (Stand 2023)", "https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS"],
       "studie": [93, 91]
@@ -41,14 +41,14 @@
     {
       "thema": "Digitales",
       "frage": "Wie viele Menschen auf der Welt nutzen heute das Internet?",
-      "antworten": [["Rund 50 %", "p"], ["Rund 75 %", "r"], ["Über 95 %", "o"]],
+      "antworten": [["Rund 75 %", "r"], ["Rund 50 %", "p"], ["Über 95 %", "o"]],
       "erklaerung": "2025 sind rund 6 Milliarden Menschen online, knapp drei Viertel der Menschheit (74 %). 2015 waren es erst 40 %: In zehn Jahren sind rund 3 Milliarden Menschen dazugekommen. 2,2 Milliarden sind noch offline.",
       "quelle": ["ITU, Facts and Figures 2025; Weltbank (Stand 2025)", "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"]
     },
     {
       "thema": "Impfungen",
       "frage": "Wie viele Kinder weltweit bekommen im ersten Lebensjahr alle drei Impfungen gegen Diphtherie, Tetanus und Keuchhusten?",
-      "antworten": [["85 %", "r"], ["55 %", "p"], ["25 %", "p"]],
+      "antworten": [["Rund 45 %", "p"], ["Rund 65 %", "p"], ["Rund 85 %", "r"]],
       "erklaerung": "85 % der Kinder weltweit erhielten 2024 alle drei Dosen. Impfstoffe müssen gekühlt und verteilt werden. Dass sie fast überall ankommen, zeigt, wie weit die Grundversorgung heute reicht. Rund 14 Millionen Kinder bekamen allerdings keine einzige Impfung.",
       "quelle": ["WHO und UNICEF, Impfquoten 2024 (veröffentlicht Juli 2025)", "https://www.who.int/news/item/15-07-2025-global-childhood-vaccination-coverage-holds-steady-yet-over-14-million-infants-remain-unvaccinated-who-unicef"],
       "studie": [87, 94]
@@ -56,7 +56,7 @@
     {
       "thema": "Strom",
       "frage": "Wie viele Menschen auf der Welt haben Zugang zu Strom?",
-      "antworten": [["30 %", "p"], ["60 %", "p"], ["90 %", "r"]],
+      "antworten": [["Rund 90 %", "r"], ["Rund 75 %", "p"], ["Rund 60 %", "p"]],
       "erklaerung": "92 % der Menschen weltweit haben Zugang zu Strom (2024). 2023 waren noch rund 670 Millionen ohne, die meisten im ländlichen Afrika südlich der Sahara.",
       "quelle": ["Weltbank / Tracking SDG7 Energy Progress Report 2025", "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS"],
       "studie": [78, 78]
@@ -64,21 +64,21 @@
     {
       "thema": "Energie",
       "frage": "2024 kamen weltweit neue Kraftwerke ans Netz. Wie viel der neuen Leistung stammt aus erneuerbaren Energien wie Sonne, Wind und Wasser?",
-      "antworten": [["Über 90 %", "r"], ["Rund 60 %", "p"], ["Rund 30 %", "p"]],
+      "antworten": [["Rund 40 %", "p"], ["Rund 70 %", "p"], ["Über 90 %", "r"]],
       "erklaerung": "92,5 % und damit ein Rekord (2023: 85,8 %). Über drei Viertel des Zuwachses waren Solaranlagen. Das Tempo reicht aber noch nicht für das Ziel der Weltklimakonferenz, die erneuerbare Leistung bis 2030 zu verdreifachen. Und der Ausbau ist ungleich verteilt: Nur 0,7 % der neuen Anlagen entstanden in Afrika.",
       "quelle": ["IRENA, Renewable Capacity Highlights 2025", "https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2025/Mar/IRENA_DAT_RE_Capacity_Highlights_2025.pdf"]
     },
     {
       "thema": "Kindergesundheit",
       "frage": "Wie hat sich seit 1990 der Anteil der Kinder entwickelt, die vor ihrem fünften Geburtstag sterben?",
-      "antworten": [["Er ist gestiegen", "p"], ["Er ist auf weniger als die Hälfte gesunken", "r"], ["Er ist etwa gleich geblieben", "p"]],
+      "antworten": [["Um rund 10 % gestiegen", "p"], ["Um rund 20 % gesunken", "p"], ["Um rund 60 % gesunken", "r"]],
       "erklaerung": "1990 starben rund 93 von 1.000 Kindern vor ihrem fünften Geburtstag, 2024 waren es 37. Das sind sechzig Prozent weniger. Jedes verlorene Kind ist eins zu viel, und doch ist das einer der größten Fortschritte unserer Zeit.",
       "quelle": ["Weltbank / UN Inter-agency Group for Child Mortality Estimation (Stand 2024)", "https://data.worldbank.org/indicator/SH.DYN.MORT"]
     },
     {
       "thema": "Bevölkerung",
       "frage": "Heute gibt es rund 2 Milliarden Kinder unter 15 Jahren. Wie viele werden es laut UN im Jahr 2100 sein?",
-      "antworten": [["Weniger als 2 Milliarden", "r"], ["3 Milliarden", "p"], ["4 Milliarden", "p"]],
+      "antworten": [["Etwas weniger als heute", "r"], ["Deutlich mehr (3 Milliarden)", "p"], ["Etwa halb so viele (1 Milliarde)", "n"]],
       "erklaerung": "Die UN rechnet für 2100 mit rund 1,7 Milliarden Kindern, also weniger als heute. Die Zahl der Kinder wächst nicht mehr, weil Familien fast überall kleiner werden.",
       "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"],
       "studie": [85, 91]
@@ -93,14 +93,14 @@
     {
       "thema": "Bevölkerung",
       "frage": "Bis 2100 werden laut UN rund 2 Milliarden Menschen mehr auf der Erde leben. Woher kommt dieser Zuwachs vor allem?",
-      "antworten": [["Von mehr Kindern", "n"], ["Von mehr Erwachsenen zwischen 25 und 64", "n"], ["Von mehr Menschen über 65", "r"]],
+      "antworten": [["Von mehr Menschen über 65", "r"], ["Von mehr Kindern", "n"], ["Von mehr Erwachsenen zwischen 25 und 64", "n"]],
       "erklaerung": "Fast 1,6 Milliarden der zusätzlichen Menschen sind über 65, weil wir länger leben. Die Zahl der 25- bis 64-Jährigen wächst um gut 0,8 Milliarden, die Zahl der Kinder sinkt sogar.",
       "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"]
     },
     {
       "thema": "Naturkatastrophen",
       "frage": "Wie hat sich die Zahl der Todesopfer durch Naturkatastrophen pro Jahr in den letzten 100 Jahren entwickelt?",
-      "antworten": [["Sie hat sich mehr als verdoppelt", "p"], ["Sie ist auf weniger als die Hälfte gesunken", "r"], ["Sie ist etwa gleich geblieben", "p"]],
+      "antworten": [["Sie ist um rund 40 % gestiegen", "p"], ["Sie ist um rund ein Drittel gesunken", "p"], ["Sie ist um über 80 % gesunken", "r"]],
       "erklaerung": "Vor 100 Jahren (1915–1924) starben im Schnitt rund 220.000 Menschen pro Jahr durch Naturkatastrophen, in den letzten zehn Jahren (2015–2024) rund 38.000, obwohl heute viermal so viele Menschen leben. Frühwarnsysteme und stabilere Häuser retten Leben. Die Daten aus frühen Jahren sind lückenhaft; der Trend ist trotzdem deutlich.",
       "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"],
       "studie": [90, 94]
@@ -108,28 +108,35 @@
     {
       "thema": "Anpassung",
       "frage": "Frühwarnsysteme warnen vor Stürmen, Fluten oder Hitze. Wie hat sich in den letzten zehn Jahren die Zahl der Länder entwickelt, die solche Systeme haben?",
-      "antworten": [["Sie hat sich mehr als verdoppelt", "r"], ["Sie ist etwa gleich geblieben", "p"], ["Sie ist gesunken", "p"]],
+      "antworten": [["Sie ist um rund 20 % gestiegen", "p"], ["Sie hat sich mehr als verdoppelt", "r"], ["Sie hat sich verzehnfacht", "o"]],
       "erklaerung": "2025 haben 119 Länder ein Frühwarnsystem für mehrere Gefahren. Das sind 60 % aller Länder und 113 % mehr als vor zehn Jahren. So passen sich Länder an ein wärmeres Klima an, und es rettet Leben: Wo die Systeme umfassend sind, sterben bei Katastrophen im Verhältnis fast sechsmal weniger Menschen. Die UN wollen bis 2027 jeden Menschen auf der Erde schützen. Bis dahin ist noch viel zu tun.",
       "quelle": ["WMO und UNDRR, Global Status of Multi-Hazard Early Warning Systems 2025", "https://wmo.int/news/media-centre/early-warning-systems-reach-new-heights-critical-gaps-jeopardize-global-progress"]
     },
     {
       "thema": "Bildung",
       "frage": "Wie viele Erwachsene weltweit können lesen und schreiben?",
-      "antworten": [["Rund 50 %", "p"], ["Rund 70 %", "p"], ["Fast 90 %", "r"]],
+      "antworten": [["Rund 75 %", "p"], ["Rund 90 %", "r"], ["Rund 98 %", "o"]],
       "erklaerung": "Knapp 88 % der Erwachsenen weltweit können lesen und schreiben (2024). Vor wenigen Generationen war es eine Minderheit.",
       "quelle": ["Weltbank / UNESCO-Institut für Statistik (Stand 2024)", "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS"]
     },
     {
       "thema": "Künstliche Intelligenz",
       "frage": "Proteine sind die chemischen Werkzeuge des Lebens. Die KI AlphaFold sagt voraus, wie sie räumlich aufgebaut sind. Für wie viele Proteine hat sie das bisher geschafft?",
-      "antworten": [["Für fast alle bekannten, rund 200 Millionen", "r"], ["Für rund 2 Millionen", "p"], ["Für rund 2.000", "p"]],
-      "erklaerung": "Für praktisch alle rund 200 Millionen Proteine, die Forschende kennen. Damit hat die KI ein 50 Jahre altes Problem gelöst. 2024 gab es dafür den Nobelpreis für Chemie. Über zwei Millionen Menschen aus 190 Ländern haben AlphaFold schon genutzt, etwa um Antibiotika-Resistenzen besser zu verstehen.",
+      "antworten": [["Für fast alle bekannten, rund 200 Millionen", "r"], ["Für rund 2 Millionen", "p"], ["Für rund 20.000", "p"]],
+      "erklaerung": "Für praktisch alle rund 200 Millionen Proteine, die Forschende kennen. Damit hat die KI ein 50 Jahre altes Problem gelöst, 2024 gab es dafür den Nobelpreis für Chemie. Was das bringt: Forschende verstehen damit zum Beispiel Antibiotika-Resistenzen besser und untersuchen Enzyme, die Plastik zersetzen können. Auch in der Medizin hilft KI schon: In einer schwedischen Studie mit über 100.000 Frauen fand KI-gestütztes Brustkrebs-Screening 29 % mehr Krebsfälle, ohne mehr Fehlalarme (The Lancet Digital Health, 2025).",
       "quelle": ["Nobelpreis für Chemie 2024, Pressemitteilung", "https://www.nobelprize.org/prizes/chemistry/2024/press-release/"]
+    },
+    {
+      "thema": "Künstliche Intelligenz",
+      "frage": "Rund 2.700 KI-Forschende wurden gefragt, wie wahrscheinlich es ist, dass KI die Menschheit auslöscht oder dauerhaft entmachtet. Was war die typische Antwort (Median)?",
+      "antworten": [["Praktisch 0 %", "o"], ["5 bis 10 %", "r"], ["Über 50 %", "p"]],
+      "erklaerung": "Die meisten nannten 5 bis 10 %. Das ist eine Schätzung unter großer Unsicherheit: Die Antworten reichten von extrem optimistisch bis extrem pessimistisch, und erfahrene Prognostiker (Superforecaster) sehen das Risiko bis 2100 bei unter 1 %. Wie könnte es passieren? Fachleute nennen vor allem zwei Wege: Menschen missbrauchen KI, etwa für Biowaffen oder Cyberangriffe. Oder sehr fähige Systeme verfolgen Ziele, die nicht mehr mit unseren übereinstimmen, und entziehen sich der Kontrolle. Deshalb wächst die Forschung zu KI-Sicherheit, 2025 erschien der erste Internationale KI-Sicherheitsbericht von rund 100 Fachleuten aus 30 Ländern. Realistisch heißt hier: das Risiko ernst nehmen, ohne in Angst zu erstarren.",
+      "quelle": ["Grace u. a., Thousands of AI Authors on the Future of AI (Umfrage 2023, veröffentlicht 2024)", "https://arxiv.org/abs/2401.02843"]
     },
     {
       "thema": "Deutschland",
       "frage": "Wie viele Menschen sterben heute in Deutschland im Straßenverkehr, verglichen mit 1970?",
-      "antworten": [["Etwa doppelt so viele", "p"], ["Rund 85 % weniger", "r"], ["Etwa gleich viele", "p"]],
+      "antworten": [["Rund 30 % weniger", "p"], ["Rund 40 % mehr", "p"], ["Rund 85 % weniger", "r"]],
       "erklaerung": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. 2024 waren es in ganz Deutschland 2.770, obwohl heute viel mehr Autos fahren. Viel bewirkt haben die Gurtpflicht und sicherere Autos, dazu eine bessere Notfallmedizin.",
       "quelle": ["Statistisches Bundesamt (Destatis), Verkehrsunfälle im Zeitvergleich", "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Verkehrsunfaelle/Tabellen/liste-strassenverkehrsunfaelle.html"]
     },

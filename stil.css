@@ -29,8 +29,8 @@
   --akzent: #8f5418;
   --akzent-hell: #c8842f;
   --auf-akzent: #ffffff;
-  --gut: #2f7a4b;
-  --schlecht: #b3261e;
+  --gut: #1c5fa6;
+  --schlecht: #b04a00;
   --linie: #e5d8c7;
   --schatten: 0 1px 2px rgb(60 40 20 / 6%), 0 8px 24px rgb(60 40 20 / 8%);
   --rund: 14px;
@@ -48,8 +48,8 @@
     --akzent: #e3a55e;
     --akzent-hell: #e3a55e;
     --auf-akzent: #1b1613;
-    --gut: #7cc597;
-    --schlecht: #f08a7e;
+    --gut: #8cbcf2;
+    --schlecht: #f2a463;
     --linie: #3b3028;
     --schatten: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 25%);
   }
@@ -418,9 +418,15 @@ p { margin: 0 0 1em; }
 .quiz-typ { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0.1rem 0 0.2rem; color: var(--akzent); }
 .quiz-studie { font-size: 0.95rem; padding: 0.6rem 0.8rem; background: var(--flaeche); border-radius: 10px; }
 .quiz-optionen { list-style: none; padding: 0; margin: 0.3rem 0; }
-.quiz-uebersicht .quiz-optionen li { margin: 0.1rem 0; color: var(--leise); }
-.quiz-uebersicht .quiz-optionen li.ok { color: var(--gut); font-weight: 600; }
-.quiz-uebersicht .quiz-optionen li.du { color: var(--schlecht); }
+.quiz-uebersicht .quiz-optionen li { display: grid; grid-template-columns: 1.3rem 1fr; gap: 0.25rem 0.4rem; margin: 0.25rem 0; padding: 0.3rem 0.6rem; border: 2px solid transparent; border-radius: 8px; }
+.quiz-uebersicht .quiz-optionen li.ok { border-color: var(--gut); background: color-mix(in srgb, var(--gut) 12%, var(--karte)); font-weight: 600; }
+.quiz-uebersicht .quiz-optionen li.du:not(.ok) { border-color: var(--schlecht); border-style: dashed; background: color-mix(in srgb, var(--schlecht) 10%, var(--karte)); }
+.zeichen-ok, .zeichen-du { font-size: 0.78rem; font-weight: 700; padding: 0.05rem 0.45rem; border-radius: 999px; white-space: nowrap; }
+.zeichen-ok { color: var(--gut); border: 1px solid var(--gut); }
+.zeichen-du { color: var(--schlecht); border: 1px dashed var(--schlecht); }
+.quiz-optionen .marken { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.quiz-legende { display: flex; gap: 0.5rem; font-size: 0.9rem; }
+.quiz-kern { font-family: var(--serif); font-size: 1.25rem; color: var(--akzent); margin-bottom: 0.4rem; }
 .quiz-optionen b { display: inline-block; width: 1.3rem; }
 .quiz { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); box-shadow: var(--schatten); padding: clamp(1.2rem, 4vw, 2rem); margin-top: 1.5rem; }
 .quiz-kopf { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--leise); margin-bottom: 1.2rem; }
@@ -432,8 +438,11 @@ p { margin: 0 0 1em; }
 .quiz-antwort b { color: var(--akzent); }
 .quiz-antwort:hover:not(:disabled) { border-color: var(--akzent-hell); }
 .quiz-antwort:disabled { cursor: default; }
-.quiz-antwort.richtig { border-color: #3d8b5a; background: color-mix(in srgb, #3d8b5a 12%, var(--karte)); }
-.quiz-antwort.falsch { border-color: #b3261e; background: color-mix(in srgb, #b3261e 8%, var(--karte)); }
+.quiz-antwort.richtig { border-color: var(--gut); background: color-mix(in srgb, var(--gut) 14%, var(--karte)); }
+.quiz-antwort.falsch { border-color: var(--schlecht); border-style: dashed; background: color-mix(in srgb, var(--schlecht) 12%, var(--karte)); }
+.quiz-zeichen { margin-left: auto; font-weight: 700; }
+.quiz-antwort.richtig .quiz-zeichen { color: var(--gut); }
+.quiz-antwort.falsch .quiz-zeichen { color: var(--schlecht); }
 .quiz-antwort.still { opacity: 0.55; }
 .quiz-aufloesung { border-top: 1px solid var(--linie); padding-top: 1rem; }
 .quiz-urteil { font-weight: 700; font-size: 1.1rem; outline: none; }
@@ -442,9 +451,8 @@ p { margin: 0 0 1em; }
 .quiz-zahl { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0.2rem 0 0.8rem; }
 .quiz-zahl strong { color: var(--akzent); font-weight: 500; }
 .quiz-status { font-size: 0.95rem; color: var(--leise); }
-.quiz-status.ok { color: #3d8b5a; font-weight: 600; }
+.quiz-status.ok { color: var(--gut); font-weight: 600; }
 .quiz-warum { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--linie); }
 .quiz-uebersicht { margin-top: 1.5rem; }
-.quiz-uebersicht summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
 .quiz-uebersicht ol { padding-left: 1.2rem; }
 .quiz-uebersicht li { margin-bottom: 0.7rem; font-size: 0.95rem; }

@@ -9,7 +9,8 @@
   const Q = JSON.parse(datenEl.textContent);
   const BUCHSTABEN = ["A", "B", "C"];
   const GEMERKT = "phoenix-feder-quiz"; // nur: Version, zu der schon beigetragen wurde (keine Doppelzählung)
-  const esc = (t) => String(t).replace(/[&<>"']/g, (z) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[z]));
+  // Zahl und Prozentzeichen nicht trennen (" %" → geschütztes Leerzeichen)
+  const esc = (t) => String(t).replace(/[&<>"']/g, (z) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[z])).replace(/ %/g, "\u00a0%");
   let weltbild = null;
   let antworten = [];
   let schritt = "weltbild"; // weltbild | 0..n-1 | beitragen | ergebnis
@@ -40,7 +41,8 @@
       <h2 class="quiz-frage">${esc(f.frage)}</h2>
       <div class="quiz-antworten">${f.antworten.map(([text], j) => {
         const klasse = !beantwortet ? "" : j === richtig ? " richtig" : j === gewaehlt ? " falsch" : " still";
-        return `<button type="button" class="quiz-antwort${klasse}" data-quiz-aktion="antwort" data-wert="${j}"${beantwortet ? " disabled" : ""}><b>${BUCHSTABEN[j]}</b> ${esc(text)}</button>`;
+        const zeichen = !beantwortet ? "" : j === richtig ? '<span class="quiz-zeichen">✓</span>' : j === gewaehlt ? '<span class="quiz-zeichen">✗</span>' : "";
+        return `<button type="button" class="quiz-antwort${klasse}" data-quiz-aktion="antwort" data-wert="${j}"${beantwortet ? " disabled" : ""}><b>${BUCHSTABEN[j]}</b> <span>${esc(text)}</span>${zeichen}</button>`;
       }).join("")}</div>
       ${beantwortet ? `<div class="quiz-aufloesung">
         <p class="quiz-urteil" tabindex="-1">${gewaehlt === richtig ? "✓ Richtig!" : `Nicht ganz. Richtig ist ${BUCHSTABEN[richtig]}.`}</p>
@@ -52,7 +54,7 @@
   }
 
   // Gapminder Misconception Study 2017: Anteil falscher Antworten (Schnitt aus 14 Ländern / Deutschland)
-  const studie = (f) => (f.studie ? `<p class="quiz-studie">In Roslings Studie 2017 lagen hier <strong>${f.studie[0]} %</strong> falsch (Deutschland: ${f.studie[1]} %).</p>` : "");
+  const studie = (f) => (f.studie ? `<p class="quiz-studie">In Roslings Studie 2017 lagen bei einer ähnlichen Frage <strong>${f.studie[0]} %</strong> falsch (Deutschland: ${f.studie[1]} %).</p>` : "");
 
   const TYPEN = {
     pessimistisch: ["Eher pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten, und eigentlich ist das eine gute Nachricht."],
@@ -145,21 +147,26 @@
     </div>
     <div class="quiz-warum">
       <h3>Warum wir die Welt düsterer sehen, als sie ist</h3>
-      <p>Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig. Wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller und reagieren stärker darauf. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
-      <p>Hans Rosling nennt es den Negativitäts-Instinkt und sieht drei Verstärker: Wir erinnern die Vergangenheit schöner, als sie war. Nachrichten zeigen Katastrophen, aber kaum langsame Verbesserungen. Und es fühlt sich herzlos an zu sagen, dass etwas besser wird, solange es noch schlecht ist.</p>
-      <p>Was uns früher geschützt hat, verzerrt heute unser Bild: Über die Medien erreichen uns die Gefahren der ganzen Welt, rund um die Uhr. Das ist menschlich. Genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
-      <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/die-realitaet-sehen/", location.href).pathname)}">Artikel: Die Realität sehen</a></div>
+      <p class="quiz-kern">Der größte Verzerrer sind die Medien.</p>
+      <p>Nachrichten berichten über das, was schiefgeht. Ein Flugzeugabsturz ist eine Meldung, Millionen sichere Landungen sind keine. Langsame Verbesserungen wie die sinkende Kindersterblichkeit passieren an keinem einzelnen Tag und schaffen es deshalb kaum in die Schlagzeilen. Online verstärkt sich das: Schlechte Nachrichten werden öfter angeklickt. In einer Studie mit rund 105.000 Varianten von Schlagzeilen steigerte jedes zusätzliche negative Wort die Klickrate um 2,3&nbsp;%, positive Wörter senkten sie (Robertson u. a., Nature Human Behaviour 2023). Und was oft geklickt wird, landet öfter vor unseren Augen.</p>
+      <p>Dass das bei uns so gut funktioniert, hat einen alten Grund. Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig. Wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller und reagieren stärker darauf. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
+      <p>Hans Rosling nennt es den Negativitäts-Instinkt. Dazu kommt: Wir erinnern die Vergangenheit schöner, als sie war. Und es fühlt sich herzlos an zu sagen, dass etwas besser wird, solange es noch schlecht ist.</p>
+      <p>Was uns in der Natur geschützt hat, verzerrt heute unser Bild, denn über die Medien erreichen uns die Gefahren der ganzen Welt rund um die Uhr. Was hilft? Nachrichten bewusst dosieren und bei einer schlimmen Meldung kurz fragen: Ist das typisch oder die Ausnahme? Genau hier hilft Achtsamkeit. Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
     </div>
-    <details class="quiz-uebersicht"><summary>Alle Fragen und Antworten</summary><ol>${Q.fragen.map((f, i) => {
+    <section class="quiz-uebersicht"><h3>Alle Fragen und Antworten</h3>
+    <p class="quiz-legende"><span class="zeichen-ok">✓ Richtig</span> <span class="zeichen-du">✗ Deine Antwort</span></p><ol>${Q.fragen.map((f, i) => {
       const optionen = f.antworten.map(([text, art], j) => {
         const du = antworten[i] === j;
-        const klasse = art === "r" ? "ok" : du ? "du" : "";
-        return `<li${klasse ? ` class="${klasse}"` : ""}><b>${BUCHSTABEN[j]}</b> ${esc(text)}${art === "r" ? " ✓" : ""}${du ? " <em>(deine Antwort)</em>" : ""}</li>`;
+        const ok = art === "r";
+        const klasse = [ok && "ok", du && "du"].filter(Boolean).join(" ");
+        const marken = (ok ? '<span class="zeichen-ok">✓ Richtig</span>' : "") + (du ? `<span class="zeichen-du">${ok ? "Deine Antwort" : "✗ Deine Antwort"}</span>` : "");
+        return `<li${klasse ? ` class="${klasse}"` : ""}><b>${BUCHSTABEN[j]}</b><span>${esc(text)}</span>${marken ? `<span class="marken">${marken}</span>` : ""}</li>`;
       }).join("");
       const studieText = f.studie ? `Studie 2017: ${f.studie[0]} % falsch (Deutschland ${f.studie[1]} %) · ` : "";
       return `<li><strong>${esc(f.frage)}</strong><ul class="quiz-optionen">${optionen}</ul>
         <span class="klein">${studieText}<a href="${esc(f.quelle[1])}" target="_blank" rel="noopener">Quelle</a></span></li>`;
-    }).join("")}</ol><p class="klein">Stand der Zahlen: ${esc(Q.stand)}. Studienwerte: Gapminder Misconception Study 2017 mit rund 12.000 Menschen in 14 Ländern, dort teils mit den damaligen Zahlen gefragt (<a href="https://www.gapminder.org/ignorance/studies/gms/" target="_blank" rel="noopener">Gapminder</a>). Inspiriert durch das Buch „Factfulness“ von Hans Rosling, Ola Rosling und Anna Rosling Rönnlund.</p></details>`;
+    }).join("")}</ol><p class="klein">Stand der Zahlen: ${esc(Q.stand)}. Studienwerte: Gapminder Misconception Study 2017 mit rund 12.000 Menschen in 14 Ländern, dort teils mit den damaligen Zahlen gefragt (<a href="https://www.gapminder.org/ignorance/studies/gms/" target="_blank" rel="noopener">Gapminder</a>). Inspiriert durch das Buch „Factfulness“ von Hans Rosling, Ola Rosling und Anna Rosling Rönnlund.</p></section>
+    <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/die-realitaet-sehen/", location.href).pathname)}">Artikel: Die Realität sehen</a></div>`;
   }
 
   function zeichnen() {

@@ -702,6 +702,7 @@ def bausteine_einsetzen(text, artikel):
     ersatz = {
         "{{angebote}}": angebote_html,
         "{{quiz}}": quiz_html,
+        "{{quiz_fragen}}": lambda: str(len(QUIZ["fragen"])),
         "{{neueste_artikel}}": lambda: raster(artikel[:3]),
         "{{alle_artikel}}": lambda: raster(artikel),
         "{{impuls}}": impuls_html,
