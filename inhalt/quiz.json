@@ -1,0 +1,101 @@
+{
+  "version": "2026-10",
+  "stand": "Oktober 2026",
+  "weltbild": {
+    "frage": "Bevor es losgeht – dein Bauchgefühl: Wie entwickelt sich die Welt insgesamt?",
+    "antworten": ["Sie wird besser", "Sie bleibt etwa gleich", "Sie wird schlechter"]
+  },
+  "fragen": [
+    {
+      "thema": "Armut",
+      "frage": "Wie hat sich der Anteil der Menschen in extremer Armut weltweit in den letzten 25 Jahren entwickelt?",
+      "antworten": [["Er hat sich fast verdoppelt", "p"], ["Er ist etwa gleich geblieben", "p"], ["Er ist auf weniger als die Hälfte gesunken", "r"]],
+      "erklaerung": "Im Jahr 2000 lebten 36 % der Menschen in extremer Armut, also von weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). 2024 waren es rund 10 % – obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
+      "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"]
+    },
+    {
+      "thema": "Lebenserwartung",
+      "frage": "Wie alt werden Menschen heute weltweit im Durchschnitt?",
+      "antworten": [["73 Jahre", "r"], ["63 Jahre", "p"], ["53 Jahre", "p"]],
+      "erklaerung": "Die Lebenserwartung bei Geburt liegt weltweit bei gut 73 Jahren (2024). 1990 waren es 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt sie wieder.",
+      "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"]
+    },
+    {
+      "thema": "Einkommen",
+      "frage": "Wo lebt die Mehrheit der Menschen auf der Welt?",
+      "antworten": [["In Ländern mit niedrigem Einkommen", "p"], ["In Ländern mit mittlerem Einkommen", "r"], ["In Ländern mit hohem Einkommen", "o"]],
+      "erklaerung": "Rund drei Viertel der Menschen – etwa 6 von 8,2 Milliarden – leben in Ländern mit mittlerem Einkommen (2025). Die Welt ist nicht in „arm“ und „reich“ geteilt: Die meisten Menschen leben dazwischen.",
+      "quelle": ["Weltbank, Bevölkerung nach Einkommensgruppen (Stand 2025)", "https://data.worldbank.org/indicator/SP.POP.TOTL"]
+    },
+    {
+      "thema": "Bildung",
+      "frage": "In Ländern mit niedrigem Einkommen: Wie viele Mädchen schließen die Grundschule ab?",
+      "antworten": [["20 %", "p"], ["40 %", "p"], ["60 %", "r"]],
+      "erklaerung": "In den Ländern mit dem niedrigsten Einkommen schließen 61 % der Mädchen die Grundschule ab (2023). Das reicht noch nicht – aber es ist viel mehr, als die meisten schätzen.",
+      "quelle": ["Weltbank / UNESCO, Grundschulabschluss Mädchen, Länder mit niedrigem Einkommen (Stand 2023)", "https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS"]
+    },
+    {
+      "thema": "Impfungen",
+      "frage": "Wie viele Kinder weltweit bekommen im ersten Lebensjahr alle drei Impfungen gegen Diphtherie, Tetanus und Keuchhusten?",
+      "antworten": [["85 %", "r"], ["55 %", "p"], ["25 %", "p"]],
+      "erklaerung": "85 % der Kinder weltweit erhielten 2024 alle drei Dosen. Impfstoffe müssen gekühlt und verteilt werden – dass sie fast überall ankommen, zeigt, wie weit die Grundversorgung heute reicht. Rund 14 Millionen Kinder bekamen allerdings keine einzige Impfung.",
+      "quelle": ["WHO und UNICEF, Impfquoten 2024 (veröffentlicht Juli 2025)", "https://www.who.int/news/item/15-07-2025-global-childhood-vaccination-coverage-holds-steady-yet-over-14-million-infants-remain-unvaccinated-who-unicef"]
+    },
+    {
+      "thema": "Strom",
+      "frage": "Wie viele Menschen auf der Welt haben Zugang zu Strom?",
+      "antworten": [["30 %", "p"], ["60 %", "p"], ["90 %", "r"]],
+      "erklaerung": "92 % der Menschen weltweit haben Zugang zu Strom (2024). 2023 waren noch rund 670 Millionen ohne – die meisten im ländlichen Afrika südlich der Sahara.",
+      "quelle": ["Weltbank / Tracking SDG7 Energy Progress Report 2025", "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS"]
+    },
+    {
+      "thema": "Kindergesundheit",
+      "frage": "Wie hat sich seit 1990 der Anteil der Kinder entwickelt, die vor ihrem fünften Geburtstag sterben?",
+      "antworten": [["Er ist gestiegen", "p"], ["Er ist auf weniger als die Hälfte gesunken", "r"], ["Er ist etwa gleich geblieben", "p"]],
+      "erklaerung": "1990 starben rund 93 von 1.000 Kindern vor ihrem fünften Geburtstag, 2024 waren es 37 – sechzig Prozent weniger. Jedes verlorene Kind ist eins zu viel, und doch ist das einer der größten Fortschritte unserer Zeit.",
+      "quelle": ["Weltbank / UN Inter-agency Group for Child Mortality Estimation (Stand 2024)", "https://data.worldbank.org/indicator/SH.DYN.MORT"]
+    },
+    {
+      "thema": "Bevölkerung",
+      "frage": "Heute gibt es rund 2 Milliarden Kinder unter 15 Jahren. Wie viele werden es laut UN im Jahr 2100 sein?",
+      "antworten": [["Weniger als 2 Milliarden", "r"], ["3 Milliarden", "p"], ["4 Milliarden", "p"]],
+      "erklaerung": "Die UN rechnet für 2100 mit rund 1,7 Milliarden Kindern – weniger als heute. Die Zahl der Kinder wächst nicht mehr, weil Familien fast überall kleiner werden.",
+      "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"]
+    },
+    {
+      "thema": "Bevölkerung",
+      "frage": "Bis 2100 werden laut UN rund 2 Milliarden Menschen mehr auf der Erde leben. Woher kommt dieser Zuwachs vor allem?",
+      "antworten": [["Von mehr Kindern", "n"], ["Von mehr Erwachsenen zwischen 25 und 64", "n"], ["Von mehr Menschen über 65", "r"]],
+      "erklaerung": "Fast 1,6 Milliarden der zusätzlichen Menschen sind über 65 – weil wir länger leben. Die Zahl der 25- bis 64-Jährigen wächst um gut 0,8 Milliarden, die Zahl der Kinder sinkt sogar.",
+      "quelle": ["UN World Population Prospects 2024 (mittlere Variante), über Our World in Data", "https://ourworldindata.org/grapher/population-by-age-group-with-projections"]
+    },
+    {
+      "thema": "Naturkatastrophen",
+      "frage": "Wie hat sich die Zahl der Todesopfer durch Naturkatastrophen pro Jahr in den letzten 100 Jahren entwickelt?",
+      "antworten": [["Sie hat sich mehr als verdoppelt", "p"], ["Sie ist auf weniger als die Hälfte gesunken", "r"], ["Sie ist etwa gleich geblieben", "p"]],
+      "erklaerung": "Vor 100 Jahren (1915–1924) starben im Schnitt rund 220.000 Menschen pro Jahr durch Naturkatastrophen, in den letzten zehn Jahren (2015–2024) rund 38.000 – obwohl heute viermal so viele Menschen leben. Frühwarnsysteme, Rettungsdienste und stabilere Häuser retten Leben. Die Daten aus frühen Jahren sind lückenhaft; der Trend ist trotzdem deutlich.",
+      "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"]
+    },
+    {
+      "thema": "Bildung",
+      "frage": "Wie viele Erwachsene weltweit können lesen und schreiben?",
+      "antworten": [["Rund 50 %", "p"], ["Rund 70 %", "p"], ["Fast 90 %", "r"]],
+      "erklaerung": "Knapp 88 % der Erwachsenen weltweit können lesen und schreiben (2024). Vor wenigen Generationen war es eine Minderheit.",
+      "quelle": ["Weltbank / UNESCO-Institut für Statistik (Stand 2024)", "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS"]
+    },
+    {
+      "thema": "Deutschland",
+      "frage": "Wie viele Menschen sterben heute in Deutschland im Straßenverkehr – verglichen mit 1970?",
+      "antworten": [["Etwa doppelt so viele", "p"], ["Rund 85 % weniger", "r"], ["Etwa gleich viele", "p"]],
+      "erklaerung": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. 2024 waren es in ganz Deutschland 2.770 – obwohl heute viel mehr Autos fahren. Gurtpflicht, sicherere Autos und bessere Notfallmedizin haben viel bewirkt.",
+      "quelle": ["Statistisches Bundesamt (Destatis), Verkehrsunfälle im Zeitvergleich", "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Verkehrsunfaelle/Tabellen/liste-strassenverkehrsunfaelle.html"]
+    },
+    {
+      "thema": "Klima",
+      "frage": "Was erwartet der Weltklimarat (IPCC) für die Temperatur auf der Erde in den nächsten Jahrzehnten?",
+      "antworten": [["Es wird wärmer", "r"], ["Sie bleibt etwa gleich", "o"], ["Es wird kälter", "o"]],
+      "erklaerung": "Hier liegt die Sorge richtig: Der Weltklimarat erwartet, dass es weiter wärmer wird – wie stark, hängt davon ab, wie schnell die Emissionen sinken. Die Welt realistisch zu sehen heißt nicht, alles schönzureden: Vieles wird besser, manches ist ernst. Beides gilt gleichzeitig.",
+      "quelle": ["IPCC, Sechster Sachstandsbericht, Synthesebericht 2023", "https://www.ipcc.ch/report/ar6/syr/"]
+    }
+  ]
+}

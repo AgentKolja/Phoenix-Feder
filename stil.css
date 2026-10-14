@@ -372,3 +372,34 @@ p { margin: 0 0 1em; }
   .erstgespraech { padding: 1.1rem; gap: 0.9rem; }
   .erstgespraech-bild { width: 3.8rem; height: 3.8rem; }
 }
+
+/* Quiz „Wie gut kennst du die Welt?“ */
+.quiz-teaser { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; margin-top: 2.5rem; padding: 1.4rem 1.6rem; background: var(--flaeche); border-left: 3px solid var(--akzent-hell); border-radius: 0 var(--rund) var(--rund) 0; }
+.quiz-teaser h3 { margin-bottom: 0.3rem; }
+.quiz-teaser p:last-child { margin-bottom: 0; }
+.quiz { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); box-shadow: var(--schatten); padding: clamp(1.2rem, 4vw, 2rem); margin-top: 1.5rem; }
+.quiz-kopf { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--leise); margin-bottom: 1.2rem; }
+.quiz-balken { flex: 1; height: 6px; border-radius: 3px; background: var(--flaeche); overflow: hidden; }
+.quiz-balken span { display: block; height: 100%; background: var(--akzent-hell); transition: width 0.3s ease; }
+.quiz-frage { font-size: clamp(1.3rem, 3vw, 1.6rem); margin-bottom: 1rem; }
+.quiz-antworten { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.quiz-antwort { display: flex; gap: 0.8rem; align-items: baseline; width: 100%; text-align: left; font: inherit; color: var(--text); background: var(--grund); border: 2px solid var(--linie); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; }
+.quiz-antwort b { color: var(--akzent); }
+.quiz-antwort:hover:not(:disabled) { border-color: var(--akzent-hell); }
+.quiz-antwort:disabled { cursor: default; }
+.quiz-antwort.richtig { border-color: #3d8b5a; background: color-mix(in srgb, #3d8b5a 12%, var(--karte)); }
+.quiz-antwort.falsch { border-color: #b3261e; background: color-mix(in srgb, #b3261e 8%, var(--karte)); }
+.quiz-antwort.still { opacity: 0.55; }
+.quiz-aufloesung { border-top: 1px solid var(--linie); padding-top: 1rem; }
+.quiz-urteil { font-weight: 700; font-size: 1.1rem; outline: none; }
+.quiz-alter { display: grid; gap: 0.3rem; max-width: 18rem; margin: 1rem 0; font-weight: 600; font-size: 0.95rem; }
+.quiz-alter select { font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--linie); border-radius: 10px; background: var(--grund); color: var(--text); }
+.quiz-zahl { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0.2rem 0 0.8rem; }
+.quiz-zahl strong { color: var(--akzent); font-weight: 500; }
+.quiz-status { font-size: 0.95rem; color: var(--leise); }
+.quiz-status.ok { color: #3d8b5a; font-weight: 600; }
+.quiz-warum { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--linie); }
+.quiz-uebersicht { margin-top: 1.5rem; }
+.quiz-uebersicht summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
+.quiz-uebersicht ol { padding-left: 1.2rem; }
+.quiz-uebersicht li { margin-bottom: 0.7rem; font-size: 0.95rem; }

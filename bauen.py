@@ -59,6 +59,12 @@ for _u in UEBUNGEN:
             raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
 # Nächster Seminartermin (leer oder vorbei -> Seite zeigt automatisch „Termin in Planung“)
 SEMINAR = json.loads((INHALT / "seminar.json").read_text(encoding="utf-8"))
+# Quiz „Wie gut kennst du die Welt?“ (nach Hans Roslings Factfulness, aktuelle Zahlen mit Quelle)
+QUIZ = json.loads((INHALT / "quiz.json").read_text(encoding="utf-8"))
+for _q in QUIZ["fragen"]:
+    _r = [a[1] for a in _q["antworten"]]
+    if len(_r) != 3 or _r.count("r") != 1 or not set(_r) <= {"r", "p", "o", "n"} or not _q["quelle"][1].startswith("https://"):
+        raise SystemExit(f"inhalt/quiz.json: Frage „{_q['frage'][:40]}…“ braucht 3 Antworten, genau eine richtige (r) und eine Quelle")
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 # Einstiegsfrage „Woran möchtest du arbeiten?“ (Seite /gewohnheiten/ und App)
 RICHTUNGEN = [{"slug": b["slug"], "emoji": b["emoji"], "titel": b["titel"], "text": b["text"]} for b in BEREICHE] + [
@@ -494,6 +500,16 @@ def formular_anfang(betreff, weiter, zusatz=""):
   <input type="checkbox" name="botcheck" class="versteckt" tabindex="-1" autocomplete="off" aria-hidden="true">"""
 
 
+def quiz_html():
+    """Quiz-Ablauf in quiz.js; die Antworten gehen nur mit ausdrücklichem Ja anonym über Web3Forms an Nikolas."""
+    daten = json.dumps({**QUIZ, "schluessel": E["formular_schluessel"]}, ensure_ascii=False).replace("</", "<\\/")
+    return f"""<div class="quiz" data-quiz aria-live="polite">
+  <noscript><p>Das Quiz braucht JavaScript. Die Fragen und Quellen kannst du trotzdem gern bei mir anfragen.</p></noscript>
+</div>
+<script type="application/json" id="quiz-daten">{daten}</script>
+<script src="/quiz.js" defer></script>"""
+
+
 def kontakt_html(vorauswahl=""):
     if not E["formular_schluessel"]:
         wege = []
@@ -679,6 +695,7 @@ def bausteine_einsetzen(text, artikel):
     text = re.sub(r"<!--.*?-->\s*", "", text, flags=re.S)  # Notizen in Inhaltsdateien bleiben intern
     ersatz = {
         "{{angebote}}": angebote_html,
+        "{{quiz}}": quiz_html,
         "{{neueste_artikel}}": lambda: raster(artikel[:3]),
         "{{alle_artikel}}": lambda: raster(artikel),
         "{{impuls}}": impuls_html,
@@ -872,7 +889,8 @@ def pruefen():
     for datei in AUSGABE.rglob("*.html"):
         text = datei.read_text(encoding="utf-8")
         rel = datei.relative_to(AUSGABE)
-        for treffer in PLATZHALTER.findall(text):
+        # Platzhalter nur im sichtbaren Text suchen – eingebettete JSON-Daten enthalten [[…]] als Listen
+        for treffer in PLATZHALTER.findall(re.sub(r'<script type="application/json"[^>]*>.*?</script>', "", text, flags=re.S)):
             platzhalter.append(f"{rel}: [[{treffer}]]")
         ziele = re.findall(r'(?:href|src)="([^"]*)"', text)
         ziele += [teil.strip().split(" ")[0] for s in re.findall(r'srcset="([^"]+)"', text) for teil in s.split(",")]
@@ -946,7 +964,7 @@ def main():
     (AUSGABE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {E['domain']}/sitemap.xml\n", encoding="utf-8")
     (AUSGABE / "CNAME").write_text(E["domain"].split("://")[1] + "\n", encoding="utf-8")
     (AUSGABE / ".nojekyll").write_text("", encoding="utf-8")
-    for datei in ("stil.css", "kontakt.js", "seite.js", "favicon.svg"):
+    for datei in ("stil.css", "kontakt.js", "seite.js", "quiz.js", "favicon.svg"):
         shutil.copy(WURZEL / datei, AUSGABE / datei)
     shutil.copytree(WURZEL / "schriften", AUSGABE / "schriften")
     shutil.copytree(WURZEL / "bilder", AUSGABE / "bilder")

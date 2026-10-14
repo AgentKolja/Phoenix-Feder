@@ -121,6 +121,39 @@ function server() {
   } else {
     pruefe("Kein Seminartermin geplant: Anfrageformular statt Anmeldung", (await p.inputValue("#anmelden select[name=Anliegen]")) === "Achtsamkeitsseminar");
   }
+  // Quiz: sofortige Auflösung mit Quelle; Antworten nur nach ausdrücklichem Ja (Web3Forms simuliert)
+  const gesendet = [];
+  await p.route("https://api.web3forms.com/**", async (route) => {
+    gesendet.push(route.request().postData() || "");
+    await route.fulfill({ contentType: "application/json", body: '{"success":true}' });
+  });
+  await p.goto(`${B}/`, { waitUntil: "load" });
+  pruefe("Startseite verlinkt das Quiz", Boolean(await p.$('.quiz-teaser a[href*="quiz/"]')));
+  await p.goto(`${B}/quiz/`, { waitUntil: "load" });
+  const quizRunde = async (beitragen) => {
+    await p.click('[data-quiz-aktion="weltbild"][data-wert="2"]');
+    let mitQuelle = true;
+    for (let i = 0; i < 13; i++) {
+      await p.click('[data-quiz-aktion="antwort"][data-wert="0"]');
+      mitQuelle &&= Boolean(await p.$('.quiz-aufloesung a[href^="https://"]')) && (await p.textContent(".quiz-urteil")).length > 0;
+      await p.click('[data-quiz-aktion="weiter"]');
+    }
+    if (beitragen !== null) await p.click(`[data-quiz-aktion="beitragen"][data-wert="${beitragen}"]`);
+    await p.waitForTimeout(300);
+    return mitQuelle;
+  };
+  const mitQuelle = await quizRunde("nein");
+  pruefe("Quiz: 13 Fragen, jede sofort aufgelöst mit Quelle, Ergebnis mit Schimpansen-Vergleich",
+    mitQuelle && (await p.textContent(".quiz-zahl")).includes("von 13") && (await p.textContent(".quiz-ergebnis")).includes("Schimpanse"));
+  pruefe("Quiz: „Nur Ergebnis zeigen“ sendet nichts", gesendet.length === 0);
+  await p.click('[data-quiz-aktion="neu"]');
+  await quizRunde("ja");
+  const daten = gesendet[0] && JSON.parse(gesendet[0].match(/name="Daten"\r\n\r\n(.*)\r\n/)[1]);
+  pruefe("Quiz: „Ja“ sendet anonym Antworten und Bauchgefühl, ohne Name und E-Mail", gesendet.length === 1 && daten.a.length === 13 && daten.w === 2
+    && !/name="(email|Vorname|Name)"/.test(gesendet[0]) && (await p.textContent(".quiz-status")).includes("Danke"));
+  await p.click('[data-quiz-aktion="neu"]');
+  await quizRunde(null);
+  pruefe("Quiz: wer schon beigetragen hat, wird nicht doppelt gezählt", gesendet.length === 1 && Boolean(await p.$(".quiz-ergebnis")));
   await web.close();
 
   // ------------------------------------------------------------ App: Probier's heute
