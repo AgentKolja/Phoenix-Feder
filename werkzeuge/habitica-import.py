@@ -7,8 +7,8 @@ Bereinigt dabei, was auf einer oeffentlichen Website nicht stehen soll:
 - Studienangaben mit Prozentzahlen, die sich nicht belegen lassen
 - persoenliche Angebote an Challenge-Teilnehmende ("wende dich an Kolja", Preise)
 - Tippfehler
-Handbearbeitungen in uebungen.json gehen bei einem erneuten Import verloren - dann lieber
-die Ersetzungen unten ergaenzen.
+Seit Oktober 2026 wird inhalt/uebungen.json von Hand gepflegt (Texte an das Prinzip der Seite angepasst).
+Ein erneuter Import wuerde das ueberschreiben, darum laeuft er nur noch mit --ueberschreiben.
 """
 import csv
 import json
@@ -181,6 +181,8 @@ def main(pfad):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit(__doc__)
-    main(sys.argv[1])
+    argumente = [a for a in sys.argv[1:] if a != "--ueberschreiben"]
+    if "--ueberschreiben" not in sys.argv or len(argumente) != 1:
+        sys.exit("uebungen.json wird von Hand gepflegt. Nur wenn du das wirklich ersetzen willst:\n"
+                 "  python3 -I werkzeuge/habitica-import.py <export.csv> --ueberschreiben")
+    main(argumente[0])

@@ -34,6 +34,13 @@ NAVI = [("/blog/", "Artikel"), ("/gewohnheiten/", "Gewohnheiten"), ("/book-onlin
 THEMEN = json.loads((INHALT / "themen.json").read_text(encoding="utf-8"))
 UEBUNGEN = json.loads((INHALT / "uebungen.json").read_text(encoding="utf-8"))
 UEBUNG = {u["slug"]: u for u in UEBUNGEN}
+# Übungstexte passen zum Prinzip der Seite: keine Habitica-Mechanik („+“ setzen, Punkte sammeln, Questreihe),
+# nichts Esoterisches als Tipp, keine Gedankenstriche. Siehe CLAUDE.md „Übungstexte“.
+_NICHT_IN_UEBUNGEN = ['"+"', "Punkte", "Questreihe", "Drag and Drop", "Sonderchallenge", "Bonusmaterial", "Edelsteinwasser", "Edelstein Wasser", "–", "—"]
+for _u in UEBUNGEN:
+    _treffer = [w for w in _NICHT_IN_UEBUNGEN if w in _u["text"] or w in _u["titel"]]
+    if _treffer:
+        raise SystemExit(f"inhalt/uebungen.json: „{_u['slug']}“ enthält {_treffer} (passt nicht zum Prinzip der Seite)")
 # Klartext-Erklaerung und Bereich je Uebung (Hand gepflegt, uebersteht einen neuen Habitica-Import)
 ERKLAERUNGEN = json.loads((INHALT / "erklaerungen.json").read_text(encoding="utf-8"))
 BEREICHE = ERKLAERUNGEN["bereiche"]

@@ -15,14 +15,14 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/seminar.json` | Nächster Seminartermin: `art` (z. B. „Pilot“, leer = normal), Datum, Zeit, Ort (Name, Straße, PLZ, Stadt), Mitbringen, Plätze, Preis (`kostenlos` → Knopf „Kostenlos anmelden“, sonst „Anmelden“). Ist er vorbei oder leer, zeigt die Seite automatisch „Termin in Planung“ mit Anfrageformular |
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
 | `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke – auch für Quests, damit sie zur Einstiegsfrage passen) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (nicht spontan: Gewohnheit wirkt erst über Wochen, z. B. feste Schlafenszeiten; Quest braucht Planung, z. B. Ausflug). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
-| `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests der Habitica-Challenge (Seite `/gewohnheiten/`, Impuls auf der Startseite) |
+| `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests (Seite `/gewohnheiten/`, Impuls auf der Startseite). Ursprünglich aus Nikolas’ Habitica-Challenge, seit Okt. 2026 von Hand gepflegt, Regeln unter „Übungstexte“ |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
 | `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
 | `seite.js` | Impuls für heute, Teilen-Knopf, Quests abhaken (localStorage), Sprungziele öffnen |
 | `thema.js` | Hell/Dunkel-Knopf (◐, Wahl in localStorage, sonst folgt die Seite dem Gerät) und Handy-Menü („Menü“ unter 860 px). Das Thema setzt schon ein Inline-Skript im `<head>` (bauen.py, app/index.html), damit nichts aufblitzt |
 | `app/` | Web-App „Probier’s heute“ / „Meine Routinen“ unter `/app/` (siehe unten) |
-| `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
+| `werkzeuge/habitica-import.py` | Alter Import Habitica-CSV → `uebungen.json`. Würde die Handpflege überschreiben, läuft darum nur mit `--ueberschreiben` |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |
 | `werkzeuge/werbung/erzeugen.py` | Seminar-Werbung aus `seminar.json`: Instagram-Beitrag, Story/Status, 12-s-Video, A4-Plakat mit QR-Code auf `/seminar/` (Kurzadresse, leitet zur Anmeldung). Nach neuem Termin neu erzeugen; braucht `pip install qrcode imageio-ffmpeg` |
 | `werkzeuge/browsertest.js` | Browser-Test für Website und App (Playwright), siehe Arbeitsweise |
@@ -92,9 +92,26 @@ HTML-Kommentare in Inhaltsdateien werden nicht veröffentlicht.
 - Neue Dienste (Tracking, Einbettungen wie YouTube-Player, Newsletter) nur mit Ergänzung der
   Datenschutzerklärung. Die Seite ist bewusst cookie- und trackingfrei; so braucht sie kein Cookie-Banner.
 - Keine Schriften, Skripte oder Bilder von fremden Servern einbinden (DSGVO), alles lokal.
-- Gesundheitsaussagen ohne Prozentzahlen: Wirkung in Worten („merklich“, „erheblich“, „nachhaltig“). Eine
-  Universität oder Studie nur nennen, wenn es die Forschung nachweislich gibt (Tabelle `STUDIEN` in
-  `werkzeuge/habitica-import.py`; der Import bricht ab, wenn noch „%“ oder „Studie der …“ im Text steht).
+- Gesundheitsaussagen in Übungen ohne Prozentzahlen, Wirkung in Worten und so vorsichtig, wie die Belege es
+  tragen („kann“, „im Schnitt etwas“, „die Belege sind noch dünn“). Eine Studie nur nennen, wenn sie geprüft ist
+  (Autor und Jahr, z. B. „Gross und John 2003“), Zusammenhänge nicht als Beweis darstellen.
+
+### Übungstexte (`inhalt/uebungen.json`, Okt. 2026 an das Prinzip der Seite angepasst)
+
+- Ruhig und ehrlich wie der Rest der Seite: keine Habitica-Mechanik („+“ setzen, Punkte sammeln, Questreihe,
+  Sonderchallenge, Bonusmaterial), keine Werbesätze mit Ausrufezeichen („… und erlebe, wie …!“), keine
+  Gedankenstriche. bauen.py bricht bei diesen Resten ab.
+- Nur Tipps, die nicht schaden und nichts versprechen, was die Forschung nicht trägt: kein Edelsteinwasser, kein
+  „Lachen heilt“, Bienen beobachten statt streicheln, Berührung nur, wenn es für beide stimmt, Kerzen nicht
+  unbeaufsichtigt. Ernährung an den Blue Zones orientiert (viel Pflanzliches, wenig rotes Fleisch, wenig Zucker).
+- Realistischer Optimismus wie im Quiz: Affirmationen glaubwürdig formulieren (Wood, Perunovic und Lee 2009:
+  unglaubwürdige Sätze drücken bei geringem Selbstwert die Stimmung), Ziele mit Hindernis und Plan (WOOP,
+  Oettingen und Mayer 2002).
+- Geprüfte Quellen in den Texten: Ulrich 1984 (Blick ins Grüne), Kardas, Kumar und Epley 2022 (tiefe Gespräche),
+  Armstrong u. a. 2012 (Trinken), Cohen u. a. 2015 (Umarmungen), Gross und John 2003, Lieberman u. a. 2007 (Gefühle),
+  Naska u. a. 2007 (Mittagsschlaf), Khoury u. a. 2015 (MBSR), Tackman u. a. 2019 („ich“ sagen), Seligman u. a. 2005
+  (drei gute Dinge), Wood u. a. 2009 (Affirmationen).
+- Titel, Lieder, Hörbuch- und App-Empfehlungen sind Nikolas’ eigene Auswahl und bleiben.
 
 ## App „Probier’s heute“ → „Meine Routinen“ (`app/`)
 
@@ -125,7 +142,7 @@ App-Dateien oder Daten ändern.
   die Abendreflexion nur nach Ja (`Z.reflexion`: null = noch nicht gefragt). Alte Zustände ohne `reflexion`
   übernehmen genutzte Täglich-Punkte als eigene Gewohnheiten (`bereinigen()`).
 - Keine Punkte, Level oder Belohnungen in der App (ohne Konto wenig sinnvoll). Die Rollenspiel-App Habitica wird
-  nirgends mehr beworben (Nikolas, Okt. 2026); die Übungen stammen trotzdem weiter aus dem Habitica-Export.
+  nirgends mehr beworben (Nikolas, Okt. 2026); die Übungen stammen ursprünglich aus der Habitica-Challenge.
 - Eingaben (Abendreflexion, „Anpassen“) werden sofort gespeichert, nicht erst per Knopf. `laden()` nutzt ebenfalls
   `bereinigen()`. Installiert wird über `beforeinstallprompt` bzw. die Anleitung unter „Mehr“ (iPhone: eigener
   Speicher der Home-Bildschirm-App → Sicherung herunterladen/laden).
