@@ -65,6 +65,14 @@ for _q in QUIZ["fragen"]:
     _r = [a[1] for a in _q["antworten"]]
     if len(_r) != 3 or _r.count("r") != 1 or not set(_r) <= {"r", "p", "o", "n"} or not _q["quelle"][1].startswith("https://"):
         raise SystemExit(f"inhalt/quiz.json: Frage „{_q['frage'][:40]}…“ braucht 3 Antworten, genau eine richtige (r) und eine Quelle")
+    # Bei einer Verbesserung darf die richtige Antwort nie die düsterste Option sein (beide falschen „zu optimistisch“).
+    # Nur bei echten Verschlechterungen (z. B. Klima) mit "verschlechterung": true erlaubt.
+    if _r.count("o") == 2 and not _q.get("verschlechterung"):
+        raise SystemExit(f"inhalt/quiz.json: Bei „{_q['frage'][:40]}…“ wäre die richtige Antwort die schlechteste Entwicklung")
+    # Antworten in derselben Form: „um“ (Veränderung) nicht mit „auf“ (neuer Wert) mischen, das wird leicht verwechselt
+    _texte = " | ".join(a[0] for a in _q["antworten"])
+    if re.search(r"\bum\b", _texte) and re.search(r"\bauf\b", _texte):
+        raise SystemExit(f"inhalt/quiz.json: Bei „{_q['frage'][:40]}…“ mischen die Antworten „um“ und „auf“, lieber konkrete Werte")
     if "studie" in _q and not (len(_q["studie"]) == 2 and all(isinstance(z, int) and 0 <= z <= 100 for z in _q["studie"])):
         raise SystemExit(f"inhalt/quiz.json: „studie“ bei „{_q['frage'][:40]}…“ = [Prozent falsch im Schnitt, Prozent falsch Deutschland]")
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}

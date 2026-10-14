@@ -167,7 +167,10 @@ Nach Hans Roslings Factfulness, Fragen und Zahlen in `inhalt/quiz.json` (je Frag
 = [% falsch im Schnitt, % falsch Deutschland] aus der Gapminder Misconception Study 2017, nur bei vergleichbarer Frage –
 Werte aus der Gapminder-Datei gapm.io/gms17d, Blatt „country percente per question“). Antworten abgestuft: bei Trends mehrere Stärken der Verbesserung (und eine Verschlechterung oder
 ein Überschießen), damit man nicht nur „besser“ erraten kann; die richtige ist nicht immer die größte, und ihre
-Position (A/B/C) wechselt (Browsertest prüft die Verteilung). Neben den Factfulness-Klassikern
+Position (A/B/C) wechselt (Browsertest prüft die Verteilung). **Nie** eine Frage zu einer Verbesserung, bei der die richtige
+Antwort im Vergleich zu den anderen wie die schlechteste Entwicklung wirkt (das ist nicht realistisch): beide falschen
+Antworten „zu optimistisch“ nur bei echten Verschlechterungen (Klima, Feld `"verschlechterung": true`). Antworten eindeutig
+formulieren, am besten als konkrete Werte; „um“ (Veränderung) und „auf“ (neuer Wert) nie mischen. bauen.py prüft beides. Neben den Factfulness-Klassikern
 auch Entwicklungen der letzten 5–10 Jahre (Internet, KI mit Nutzen und Risiko, erneuerbare Energie, Konten,
 Frühwarnsysteme) und eine Migrationsfrage (Destatis plus Wahrnehmungsstudie Alesina u. a. 2023, beide falschen
 Antworten „n“, also neutral gewertet). Einstieg: „Glaubst du an eine bessere Zukunft für die Welt?“. Ergebnis erklärt die Medien als

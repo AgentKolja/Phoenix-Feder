@@ -1,5 +1,5 @@
 {
-  "version": "2026-10d",
+  "version": "2026-10e",
   "stand": "Oktober 2026",
   "weltbild": {
     "frage": "Bevor es losgeht: Glaubst du an eine bessere Zukunft für die Welt?",
@@ -8,9 +8,9 @@
   "fragen": [
     {
       "thema": "Armut",
-      "frage": "Wie hat sich der Anteil der Menschen in extremer Armut weltweit in den letzten 25 Jahren entwickelt?",
-      "antworten": [["Er ist fast verschwunden (unter 2 %)", "o"], ["Er ist um etwa ein Viertel gesunken", "p"], ["Er ist auf weniger als ein Drittel gesunken", "r"]],
-      "erklaerung": "Im Jahr 2000 lebten 36 % der Menschen in extremer Armut, also von weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). 2024 waren es rund 10 %, obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
+      "frage": "Im Jahr 2000 lebten 36 % der Menschen weltweit in extremer Armut. Wie hoch war dieser Anteil 2024?",
+      "antworten": [["Rund 27 %", "p"], ["Rund 10 %", "r"], ["Unter 2 %", "o"]],
+      "erklaerung": "2024 waren es rund 10 %, also weniger als ein Drittel des Werts von 2000. Extreme Armut heißt: weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). Und das, obwohl heute 2 Milliarden Menschen mehr leben. Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
       "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"],
       "studie": [91, 94]
     },
@@ -149,6 +149,7 @@
     },
     {
       "thema": "Klima",
+      "verschlechterung": true,
       "frage": "Was erwartet der Weltklimarat (IPCC) für die Temperatur auf der Erde in den nächsten Jahrzehnten?",
       "antworten": [["Es wird wärmer", "r"], ["Sie bleibt etwa gleich", "o"], ["Es wird kälter", "o"]],
       "erklaerung": "Hier liegt die Sorge richtig: Der Weltklimarat erwartet, dass es weiter wärmer wird. Wie stark, hängt davon ab, wie schnell die Emissionen sinken. Die Welt realistisch zu sehen heißt nicht, alles schönzureden: Vieles wird besser, manches ist ernst. Beides gilt gleichzeitig.",
