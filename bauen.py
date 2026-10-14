@@ -70,9 +70,9 @@ for _q in QUIZ["fragen"]:
 ART = {"gewohnheit": "Gewohnheit", "taeglich": "Tägliche Aufgabe", "quest": "Quest"}
 # Einstiegsfrage „Woran möchtest du arbeiten?“ (Seite /gewohnheiten/ und App)
 RICHTUNGEN = [{"slug": b["slug"], "emoji": b["emoji"], "titel": b["titel"], "text": b["text"]} for b in BEREICHE] + [
-    {"slug": "erlebnis", "emoji": "🗺️", "titel": "Ein kleines Erlebnis", "text": "Etwas Besonderes für heute – draußen, mit anderen oder zu Hause."},
+    {"slug": "erlebnis", "emoji": "🗺️", "titel": "Ein kleines Erlebnis", "text": "Etwas Besonderes für heute, ob draußen oder zu Hause."},
     {"slug": "alle", "emoji": "🎲", "titel": "Überrasch mich", "text": "Eine Idee aus allen Bereichen."}]
-ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Habitica-Challenge", "Kostenloses Erstgespräch",
+ANLIEGEN = ["Frage oder Feedback", "Feedback zu einem Artikel", "Feedback zu den Übungen", "Kostenloses Erstgespräch",
             "Persönliches Coaching", "Achtsamkeitstraining", "Yoga-Training", "Achtsamkeitsseminar", "Etwas anderes"]
 # Beschriftungen rund um einen Artikel, je nach Sprache des Artikels
 TEXTE = {
@@ -267,20 +267,22 @@ def themen_chips(aktiv):
 
 
 def themen_html(artikel):
-    # Auf der Startseite stehen die Themen neben „Neu im Blog“: dort schon gezeigte Titelbilder nicht doppeln,
-    # sondern ein anderes Bild aus dem Thema nehmen
-    belegt = {a.get("bild") for a in artikel[:3]}
-    kacheln = []
-    for t in THEMEN:
-        anzahl = sum(a.get("thema") == t["slug"] for a in artikel)
-        kandidaten = [t["bild"]] + [a["bild"] for a in artikel if a.get("thema") == t["slug"] and a.get("bild")]
-        name = next((b for b in kandidaten if b not in belegt), t["bild"])
-        belegt.add(name)
-        kacheln.append(f"""<a class="thema-kachel" href="/thema/{t['slug']}/">
-  {bild(name, "", groessen="(min-width: 900px) 270px, 100vw")}
-  <span class="thema-text"><strong>{esc(t['titel'])}</strong><span>{esc(t['essenz'])}</span><span class="meta">{anzahl} Artikel →</span></span>
-</a>""")
-    return '<div class="themen">\n' + "\n".join(kacheln) + "\n</div>"
+    """Startseite „Meine Learnings“: je Thema die Essenz und die neuesten Artikel dazu (ohne Bilder,
+    die stehen schon bei „Neu im Blog“)."""
+    karten = []
+    for nr, t in enumerate(THEMEN, 1):
+        liste = [a for a in artikel if a.get("thema") == t["slug"]]
+        punkte = "".join(f'<li><a href="/post/{a["slug"]}/">{esc(a["titel"])}</a>'
+                         + (' <span class="marke" title="Artikel auf Englisch">EN</span>' if a.get("sprache") == "en" else "")
+                         + "</li>" for a in liste[:3])
+        karten.append(f"""<article class="learning">
+  <p class="learning-nr" aria-hidden="true">{nr:02d}</p>
+  <h3><a href="/thema/{t['slug']}/">{esc(t['titel'])}</a></h3>
+  <p>{esc(t['essenz'])}</p>
+  <ul class="learning-artikel">{punkte}</ul>
+  <a class="learning-mehr" href="/thema/{t['slug']}/">Alle {len(liste)} Artikel zum Thema →</a>
+</article>""")
+    return '<div class="learnings">\n' + "\n".join(karten) + "\n</div>"
 
 
 def thema_seite(t, artikel):
@@ -349,16 +351,16 @@ def idee_seite(u, artikel):
         if u["monate"]:
             text += f" Passt am besten von {monate_text(u['monate'])}."
     elif u["art"] == "quest":
-        kopf, text = "Braucht etwas Planung", "Nimm es dir für einen passenden Tag vor – am besten gleich mit Termin im Kalender."
+        kopf, text = "Braucht etwas Planung", "Nimm es dir für einen passenden Tag vor, am besten gleich mit Termin im Kalender."
     else:
-        kopf, text = "Braucht etwas Zeit", "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit täglicher Erinnerung."
+        kopf, text = "Braucht etwas Zeit", "Das wirkt erst, wenn du es ein paar Wochen machst. Eine tägliche Erinnerung hilft dabei."
     statt = "".join(f'<li><a href="/gewohnheiten/{x}/">{UEBUNG[x]["emoji"]} {esc(UEBUNG[x]["titel"])}</a></li>' for x in u["statt"])
     statt = f'<p class="klein">Für heute passt stattdessen:</p><ul class="ideen-links">{statt}</ul>' if statt else ""
     lesen_ = [a for a in artikel if a.get("passend") == u["slug"]]
     lesen_ = f'<h2>Dazu lesen</h2>{raster(lesen_)}' if lesen_ else ""
     verwandt = [x for x in UEBUNGEN if x["slug"] != u["slug"] and x["slug"] != "reflektion" and (
         x["gruppe"] == u["gruppe"] if u["art"] == "quest" else x["art"] != "quest" and x["bereich"] == u["bereich"])][:6]
-    verwandt_html = "".join(f'<li><a href="/gewohnheiten/{x["slug"]}/">{x["emoji"]} {esc(x["titel"])}</a> – {esc(x["erklaerung"])}</li>'
+    verwandt_html = "".join(f'<li><a href="/gewohnheiten/{x["slug"]}/">{x["emoji"]} {esc(x["titel"])}</a>: {esc(x["erklaerung"])}</li>'
                             for x in verwandt)
     titel_verwandt = f"Mehr aus „{u['gruppe']}“" if u["art"] == "quest" else f"Mehr aus „{bereich['titel']}“" if bereich else "Mehr Ideen"
     inhalt = f"""<section class="abschnitt">
@@ -374,7 +376,7 @@ def idee_seite(u, artikel):
       <p><strong>Passt gut:</strong> {esc(u['wann'])}</p>
       {statt}
       <div class="knopf-reihe"><a class="knopf" href="/app/#kalender={u['slug']}">📅 In deinen Kalender</a><a class="knopf zweit" href="/app/#idee={u['slug']}">In der App ausprobieren</a></div>
-      <p class="klein">Dein Kalender erinnert dich – zur passenden Zeit, mit allem, was du wissen musst. Ohne Anmeldung.</p>
+      <p class="klein">Dein Kalender erinnert dich zur passenden Zeit, mit allem, was du wissen musst. Anmelden musst du dich nicht.</p>
     </aside>
     <h2>Ideen und Hintergrund</h2>
     <div class="idee-text">{text_html(u['text'])}</div>
@@ -409,7 +411,7 @@ def uebungen_html():
     quest_html = "".join(f'<h3 class="gruppe">{esc(g)}</h3>' + raster_([u for u in quests if u["gruppe"] == g])
                          for g in gruppen)
     nach_bereich = "".join(
-        f'<h3 class="gruppe">{b["emoji"]} {esc(b["titel"])} <span class="gruppe-text">– {esc(b["text"])}</span></h3>'
+        f'<h3 class="gruppe">{b["emoji"]} {esc(b["titel"])} <span class="gruppe-text">{esc(b["text"])}</span></h3>'
         + raster_([u for u in gewohnheiten if u["bereich"] == b["slug"]])
         for b in BEREICHE if any(u["bereich"] == b["slug"] for u in gewohnheiten))
     return f"""<details class="alle-uebungen" id="alle">
@@ -418,7 +420,7 @@ def uebungen_html():
 <p class="unterzeile">Keine Zusatzaufgaben, sondern ein Fokus darauf, <em>wie</em> du etwas tust. Fang mit einem Bereich an, der dich gerade anspricht. Tippe eine Gewohnheit an für Ideen und Hintergrund.</p>
 {nach_bereich}
 <h2 id="taeglich">{len(taeglich)} tägliche Aufgaben</h2>
-<p class="unterzeile">Kleine tägliche Begleiter, die dir guttun – auch fünf Minuten zählen.</p>
+<p class="unterzeile">Kleine tägliche Begleiter, die dir guttun. Auch fünf Minuten zählen.</p>
 {raster_(taeglich)}
 <h2 id="quests">{len(quests)} Quests</h2>
 <p class="unterzeile">Erlebnisse, die du dir vornehmen kannst, wann immer du magst. Hake ab, was du geschafft hast.</p>
@@ -450,11 +452,13 @@ def impuls_html():
   <div class="impuls-emoji" data-feld="emoji" aria-hidden="true">{d['e']}</div>
   <h3 data-feld="titel">{esc(d['t'])}</h3>
   <p data-feld="kurz">{esc(d['k'])}</p>
-  <p class="impuls-mehr"><a data-feld="info" href="/gewohnheiten/{d['s']}/">Mehr dazu: Ideen und Hintergrund →</a><br>
-    <a data-feld="kalender" href="/app/#kalender={d['s']}">📅 Als Erinnerung in deinen Kalender →</a></p>
   <div class="knopf-reihe">
     <a class="knopf" data-feld="app" href="/app/#idee={d['s']}">Heute ausprobieren</a>
-    <button class="knopf zweit" type="button" data-neu hidden>Anderer Impuls ↻</button>
+    <a class="knopf zweit" data-feld="kalender" href="/app/#kalender={d['s']}">📅 In den Kalender</a>
+  </div>
+  <div class="impuls-fuss">
+    <a data-feld="info" href="/gewohnheiten/{d['s']}/">Mehr über diese Idee</a>
+    <button class="text-knopf" type="button" data-neu hidden>Anderer Impuls ↻</button>
   </div>
 </div>
 <script type="application/json" id="impuls-daten">{json_text}</script>"""
@@ -608,7 +612,7 @@ def seminar_ld(t):
     """Termin als schema.org-Event, damit Suchmaschinen ihn als Veranstaltung erkennen."""
     o = t["ort"]
     ld = {"@context": "https://schema.org", "@type": "Event", "name": t["name"],
-          "description": "Drei Ebenen der Achtsamkeit: wahrnehmen, dich selbst verstehen, bewusst handeln – mit Übungen und Austausch.",
+          "description": "Drei Ebenen der Achtsamkeit, vom Wahrnehmen bis zum bewussten Handeln. Mit Übungen und Austausch.",
           "startDate": t["start_iso"], "endDate": t["ende_iso"],
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled",
           "location": {"@type": "Place", "name": o["name"], "address": {"@type": "PostalAddress", "streetAddress": o["strasse"],
@@ -631,7 +635,7 @@ def seminar_kalender_html(t, versteckt=False):
     <a class="knopf klein-knopf" href="{esc(google)}" target="_blank" rel="noopener">📅 In Google Kalender eintragen</a>
     <a class="knopf klein-knopf" href="/achtsamkeitsseminar/termin.ics" download>📥 In Apple- oder Outlook-Kalender</a>
   </div>
-  <p class="klein">Google öffnet sich mit dem fertigen Termin – dort nur noch „Speichern“. Für Apple und Outlook lädst du eine Kalenderdatei: öffnen, „Hinzufügen“ – sie erinnert dich am Vortag.</p>
+  <p class="klein">Google öffnet sich mit dem fertigen Termin, dort nur noch „Speichern“ tippen. Für Apple und Outlook lädst du eine Kalenderdatei, öffnest sie und tippst auf „Hinzufügen“. Sie erinnert dich am Vortag.</p>
 </div>"""
 
 
@@ -651,7 +655,7 @@ def seminar_anmeldung_html():
       <h2>{esc(t['tag_lang'])}</h2>
       <ul class="termin-daten">
         <li><strong>Zeit:</strong> {esc(t['zeit'])} ({t['minuten']} Minuten)</li>
-        <li><strong>Ort:</strong> {esc(t['ort_text'])}{" – " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
+        <li><strong>Ort:</strong> {esc(t['ort_text'])}{", " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
         {f"<li><strong>Mitbringen:</strong> {esc(t['mitbringen'])}</li>" if t.get('mitbringen') else ""}
         <li><strong>Plätze:</strong> {t['plaetze']}</li>
         <li><strong>Preis:</strong> {esc(t['preis_hinweis'] or t['preis'])}</li>
@@ -727,7 +731,7 @@ def bausteine_einsetzen(text, artikel):
 # ---------------------------------------------------------------- Seitengeruest
 
 def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", indexieren=True):
-    voller_titel = E["name"] + " – " + E["untertitel"] if pfad == "/" else f"{titel} | {E['name']}"
+    voller_titel = E["name"] + " | " + E["untertitel"] if pfad == "/" else f"{titel} | {E['name']}"
     url = E["domain"] + pfad
     # og_bild: Name eines WebP-Paars oder eine eigene Datei mit Endung (JPG wird überall als Vorschau angezeigt)
     og = f"{E['domain']}/bilder/{og_bild}" if og_bild and "." in og_bild else f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"

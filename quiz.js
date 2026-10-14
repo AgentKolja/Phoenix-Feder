@@ -27,7 +27,7 @@
     wurzel.innerHTML = `${fortschritt(null)}
       <h2 class="quiz-frage">${esc(Q.weltbild.frage)}</h2>
       <div class="quiz-antworten">${Q.weltbild.antworten.map((a, i) => knopf("weltbild", i, `<b>${BUCHSTABEN[i]}</b> ${esc(a)}`, "quiz-antwort")).join("")}</div>
-      <p class="klein">Hier gibt es kein Richtig oder Falsch – es geht um deinen Eindruck.</p>`;
+      <p class="klein">Hier gibt es kein Richtig oder Falsch. Es geht um deinen Eindruck.</p>`;
   }
 
   function zeichneFrage(i) {
@@ -55,10 +55,10 @@
   const studie = (f) => (f.studie ? `<p class="quiz-studie">In Roslings Studie 2017 lagen hier <strong>${f.studie[0]} %</strong> falsch (Deutschland: ${f.studie[1]} %).</p>` : "");
 
   const TYPEN = {
-    pessimistisch: ["Eher pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten – und eigentlich ist das eine gute Nachricht."],
+    pessimistisch: ["Eher pessimistisch", "Die Welt ist besser als dein Bild von ihr. So geht es den meisten, und eigentlich ist das eine gute Nachricht."],
     realistisch: ["Realistisch", "Du siehst die Welt ziemlich so, wie sie ist. Das schaffen die wenigsten."],
-    optimistisch: ["Eher optimistisch", "Du schätzt die Welt eher zu rosig ein – das ist selten. Bei manchen Themen lohnt es sich, genauer hinzusehen."],
-    gemischt: ["Mal zu düster, mal zu rosig", "Deine Fehler halten sich die Waage – kein klarer Hang in eine Richtung."]
+    optimistisch: ["Eher optimistisch", "Du schätzt die Welt eher zu rosig ein. Das ist selten. Bei manchen Themen lohnt es sich, genauer hinzusehen."],
+    gemischt: ["Mal zu düster, mal zu rosig", "Deine Fehler halten sich die Waage, ohne klaren Hang in eine Richtung."]
   };
   const typVon = (e) => (e.richtig >= Math.ceil((Q.fragen.length * 2) / 3) ? "realistisch"
     : e.pessimistisch > e.optimistisch ? "pessimistisch" : e.optimistisch > e.pessimistisch ? "optimistisch" : "gemischt");
@@ -67,7 +67,7 @@
     if (gemerkt() === Q.version || !Q.schluessel) { gesendet = "aus"; zeichneErgebnis(); return; }
     wurzel.innerHTML = `${fortschritt(Q.fragen.length)}
       <h2 class="quiz-frage">Geschafft! Magst du mithelfen?</h2>
-      <p>Ich sammle, wie Menschen die Welt heute einschätzen – und veröffentliche die Auswertung hier. Deine Antworten gehen dafür <strong>anonym</strong> an mich: ohne Namen, ohne E-Mail-Adresse, ohne Cookies.</p>
+      <p>Ich sammle, wie Menschen die Welt heute einschätzen, und veröffentliche die Auswertung hier. Deine Antworten gehen dafür <strong>anonym</strong> an mich, ohne Namen oder E-Mail-Adresse und ohne Cookies.</p>
       <label class="quiz-alter"><span>Altersgruppe (freiwillig)</span>
         <select data-quiz-alter><option value="">keine Angabe</option><option>unter 25</option><option>25–39</option><option>40–59</option><option>60 und älter</option></select></label>
       <div class="knopf-reihe">${knopf("beitragen", "ja", "Ja, anonym beisteuern und Ergebnis zeigen", "knopf")}${knopf("beitragen", "nein", "Nur Ergebnis zeigen", "knopf zweit")}</div>
@@ -116,16 +116,16 @@
   }
 
   const statusHtml = () => (gesendet === "ok" ? '<p class="quiz-status ok" data-quiz-status>Danke! Deine Antworten sind anonym angekommen.</p>'
-    : gesendet === "fehler" ? '<p class="quiz-status" data-quiz-status>Deine Antworten konnten gerade nicht übermittelt werden – dein Ergebnis siehst du trotzdem.</p>'
+    : gesendet === "fehler" ? '<p class="quiz-status" data-quiz-status>Deine Antworten konnten gerade nicht übermittelt werden. Dein Ergebnis siehst du trotzdem.</p>'
       : gesendet === "laeuft" ? '<p class="quiz-status" data-quiz-status>Wird anonym übermittelt …</p>' : "");
 
   function zeichneErgebnis() {
     const e = auswertung();
     const n = Q.fragen.length;
     const affe = Math.round(n / 3);
-    const vergleich = e.richtig > affe + 1 ? "Damit liegst du vor dem Schimpansen – das schaffen viele nicht."
-      : e.richtig >= affe - 1 ? "Damit liegst du etwa gleichauf mit dem Schimpansen – so geht es den meisten."
-        : "Damit liegt der Schimpanse vorn – keine Sorge, so geht es vielen. Unser Kopf liebt Dramatik.";
+    const vergleich = e.richtig > affe + 1 ? "Damit liegst du vor dem Schimpansen. Das schaffen viele nicht."
+      : e.richtig >= affe - 1 ? "Damit liegst du etwa gleichauf mit dem Schimpansen. So geht es den meisten."
+        : "Damit liegt der Schimpanse vorn. Keine Sorge, so geht es vielen. Unser Kopf liebt Dramatik.";
     const richtung = e.pessimistisch > e.optimistisch
       ? `Bei <strong>${e.pessimistisch}</strong> ${e.pessimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt schlechter eingeschätzt, als sie ist${e.optimistisch ? `, bei ${e.optimistisch} besser` : ""}.`
       : e.optimistisch > e.pessimistisch ? `Bei <strong>${e.optimistisch}</strong> ${e.optimistisch === 1 ? "Frage" : "Fragen"} hast du die Welt besser eingeschätzt, als sie ist${e.pessimistisch ? `, bei ${e.pessimistisch} schlechter` : ""}.`
@@ -145,16 +145,16 @@
     </div>
     <div class="quiz-warum">
       <h3>Warum wir die Welt düsterer sehen, als sie ist</h3>
-      <p>Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig – wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller, erinnern es länger und reagieren stärker. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
+      <p>Unser Gehirn ist für ein Leben in der Natur gemacht. Dort war es überlebenswichtig, Gefahren sofort zu bemerken: Wer ein Rascheln im Gras einmal zu oft für eine Schlange hielt, verlor wenig. Wer es einmal übersah, vielleicht sein Leben. Darum wiegt Schlechtes für uns schwerer als Gutes: Wir bemerken es schneller und reagieren stärker darauf. Die Psychologie nennt das den Negativitätseffekt („Bad is stronger than good“, Baumeister u. a. 2001).</p>
       <p>Hans Rosling nennt es den Negativitäts-Instinkt und sieht drei Verstärker: Wir erinnern die Vergangenheit schöner, als sie war. Nachrichten zeigen Katastrophen, aber kaum langsame Verbesserungen. Und es fühlt sich herzlos an zu sagen, dass etwas besser wird, solange es noch schlecht ist.</p>
-      <p>Was uns früher geschützt hat, verzerrt heute unser Bild: Über die Medien erreichen uns die Gefahren der ganzen Welt, rund um die Uhr. Das ist menschlich – und genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
+      <p>Was uns früher geschützt hat, verzerrt heute unser Bild: Über die Medien erreichen uns die Gefahren der ganzen Welt, rund um die Uhr. Das ist menschlich. Genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
       <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/die-realitaet-sehen/", location.href).pathname)}">Artikel: Die Realität sehen</a></div>
     </div>
     <details class="quiz-uebersicht"><summary>Alle Fragen und Antworten</summary><ol>${Q.fragen.map((f, i) => {
       const optionen = f.antworten.map(([text, art], j) => {
         const du = antworten[i] === j;
         const klasse = art === "r" ? "ok" : du ? "du" : "";
-        return `<li${klasse ? ` class="${klasse}"` : ""}><b>${BUCHSTABEN[j]}</b> ${esc(text)}${art === "r" ? " ✓" : ""}${du ? " <em>– deine Antwort</em>" : ""}</li>`;
+        return `<li${klasse ? ` class="${klasse}"` : ""}><b>${BUCHSTABEN[j]}</b> ${esc(text)}${art === "r" ? " ✓" : ""}${du ? " <em>(deine Antwort)</em>" : ""}</li>`;
       }).join("");
       const studieText = f.studie ? `Studie 2017: ${f.studie[0]} % falsch (Deutschland ${f.studie[1]} %) · ` : "";
       return `<li><strong>${esc(f.frage)}</strong><ul class="quiz-optionen">${optionen}</ul>
@@ -209,7 +209,7 @@
         const url = location.href.split("#")[0];
         const e = auswertung();
         if (navigator.share) {
-          try { await navigator.share({ title: document.title, text: `Mein Weltbild: ${TYPEN[typVon(e)][0].toLowerCase()} – ${e.richtig} von ${Q.fragen.length} richtig. Wie realistisch ist deins?`, url }); } catch { /* abgebrochen */ }
+          try { await navigator.share({ title: document.title, text: `Mein Weltbild: ${TYPEN[typVon(e)][0].toLowerCase()}, ${e.richtig} von ${Q.fragen.length} richtig. Wie realistisch ist deins?`, url }); } catch { /* abgebrochen */ }
         } else {
           try { await navigator.clipboard.writeText(url); el.textContent = "Link kopiert ✓"; } catch { /* Zwischenablage gesperrt */ }
         }

@@ -86,9 +86,24 @@ function server() {
   await p.goto(`${B}/`, { waitUntil: "load" });
   const impulse = JSON.parse(roh.match(/id="impuls-daten">([^<]*)</)[1]).map((x) => x.s);
   pruefe("Impuls schlägt nur Ideen für heute vor", !impulse.some((s) => NICHT_HEUTE.includes(s)));
-  pruefe("Startseite ohne Rollenspiel-Kasten, mit „Über mich“", !(await p.$(".habitica")) && Boolean(await p.$("#ueber-mich")));
+  pruefe("Startseite ohne Rollenspiel-App, mit „Über mich“", !(await p.textContent("main")).includes("Habitica") && Boolean(await p.$("#ueber-mich")));
+  pruefe("Startseite: Wege im Kopfbereich und „Meine Learnings“ mit Artikeln je Thema",
+    (await p.$$(".held .weg")).length >= 2 && (await p.$$(".learning")).length === 4 && (await p.$$(".learning-artikel a[href*='post/']")).length >= 4);
+  pruefe("Impuls: Aktionen als Knöpfe, „Mehr über diese Idee“ getrennt darunter",
+    Boolean(await p.$('.impuls .knopf-reihe [data-feld="kalender"]')) && Boolean(await p.$('.impuls-fuss [data-feld="info"]')));
   const bilder = await p.$$eval("main img", (l) => l.map((i) => i.getAttribute("src")));
   pruefe("Kein Bild doppelt auf der Startseite", new Set(bilder).size === bilder.length);
+  // Schreibstil: keine Gedankenstriche im sichtbaren Text (Zahlenbereiche wie 2015–2024 sind erlaubt)
+  const mitStrich = [];
+  const alleSeiten = (ordner) => fs.readdirSync(ordner, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? alleSeiten(path.join(ordner, e.name)) : e.name.endsWith(".html") ? [path.join(ordner, e.name)] : []);
+  for (const datei of alleSeiten(DOCS)) {
+    const text = fs.readFileSync(datei, "utf8").replace(/<script[\s\S]*?<\/script>/g, "").replace(/<!--[\s\S]*?-->/g, "")
+      .replace(/<title>[\s\S]*?<\/title>/g, "").replace(/<[^>]+>/g, " ");
+    const fund = text.match(/.{0,30}(?<!\d\s?)[–—](?!\s?\d).{0,30}/);
+    if (fund) mitStrich.push(`${path.relative(DOCS, datei)}: ${fund[0].trim()}`);
+  }
+  pruefe("Kein Gedankenstrich im sichtbaren Text", mitStrich.length === 0, mitStrich.slice(0, 3).join(" | "));
 
   await p.goto(`${B}/post/mindful-listening/`, { waitUntil: "load" });
   pruefe("Artikel verlinkt die Gewohnheit direkt in die App", (await p.getAttribute(".gewohnheit-link a", "href")).includes("app/#idee="));
@@ -128,8 +143,8 @@ function server() {
     await route.fulfill({ contentType: "application/json", body: '{"success":true}' });
   });
   await p.goto(`${B}/`, { waitUntil: "load" });
-  pruefe("Startseite: Realitätscheck im Kopfbereich und über dem Impuls, ohne vorab zu verraten, wohin man sich verschätzt",
-    Boolean(await p.$('.held a[href*="quiz/"]')) && Boolean(await p.$('#realitaetscheck + #impuls .impuls, #realitaetscheck ~ #impuls'))
+  pruefe("Startseite: Realitätscheck-Quiz über dem Impuls, ohne vorab zu verraten, wohin man sich verschätzt",
+    !(await p.$('.held a[href*="quiz/"]')) && Boolean(await p.$('#realitaetscheck ~ #impuls'))
     && Boolean(await p.$('#realitaetscheck .quiz-teaser a[href*="quiz/"]')) && !/düster|pessimistisch eing|zu pessimistisch/i.test(await p.textContent("#realitaetscheck")));
   const umleitung = await (await p.context().request.get(`${B}/post/sehen-was-ist/`)).text();
   pruefe("Umbenannter Artikel: alte Adresse leitet weiter", umleitung.includes("die-realitaet-sehen/"));
@@ -264,8 +279,8 @@ function server() {
   const questVorschlaege = await p.evaluate(() => { Z.quest = null; const s = new Set(); for (let i = 0; i < 300; i++) { questVorschlag = null; questKarte(); s.add(questVorschlag); } return [...s]; });
   pruefe("Wochen-Quest schlägt im Oktober keine Bienen vor", questVorschlaege.length > 10 && !questVorschlaege.includes("bee-love"), `${questVorschlaege.length} verschiedene`);
   await p.goto(`${B}/app/#fortschritt`, { waitUntil: "networkidle" });
-  pruefe("Fortschritt ohne Punkte und Belohnungen, Hinweis auf Habitica",
-    !(await p.$('[data-aktion="einloesen"], .stufe, [data-federn]')) && (await p.textContent("#app")).includes("Habitica"));
+  pruefe("Fortschritt ohne Punkte und Belohnungen, ohne Werbung für Habitica",
+    !(await p.$('[data-aktion="einloesen"], .stufe, [data-federn]')) && !(await p.textContent("#app")).includes("Habitica"));
   await app.close();
 
   const sommer = await mobil();

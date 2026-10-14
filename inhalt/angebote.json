@@ -12,7 +12,7 @@
     "titel": "Persönliches Coaching",
     "dauer": "60 Min.",
     "preis": "40 €",
-    "text": "Wo stehst du, wo willst du hin – und was hält dich? Gemeinsam finden wir deine nächsten Schritte. Mit Methoden aus Achtsamkeit, Business-Coaching und kognitiver Verhaltenstherapie.",
+    "text": "Wo stehst du, wo willst du hin und was hält dich noch? Gemeinsam finden wir deine nächsten Schritte, mit Methoden aus Achtsamkeit, Business-Coaching und kognitiver Verhaltenstherapie.",
     "bild": "coaching-gespraech",
     "buchung": ""
   },
@@ -29,7 +29,7 @@
     "titel": "Yoga-Training",
     "dauer": "60 Min.",
     "preis": "40 €",
-    "text": "Entwickle deinen individuellen Yogaflow – perfekt für die Bedürfnisse deines Körpers.",
+    "text": "Entwickle deinen individuellen Yogaflow, abgestimmt auf die Bedürfnisse deines Körpers.",
     "bild": "yoga",
     "buchung": ""
   },
@@ -37,7 +37,7 @@
     "titel": "Achtsamkeitsseminar",
     "dauer": "2,5 Std.",
     "preis": "auf Anfrage",
-    "text": "Wahrnehmen, dich selbst verstehen, bewusst handeln: drei Ebenen der Achtsamkeit in 150 Minuten – mit Übungen und Austausch in der Gruppe.",
+    "text": "Drei Ebenen der Achtsamkeit in 150 Minuten, vom Wahrnehmen bis zum bewussten Handeln. Mit Übungen und Austausch in der Gruppe.",
     "bild": "seminar-meditation",
     "seite": "/achtsamkeitsseminar/",
     "breit": true,

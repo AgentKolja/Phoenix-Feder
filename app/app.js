@@ -4,7 +4,7 @@
 // passenden Ideen für heute zur Auswahl. Gefällt eine, kann man sie als Kalender-Erinnerung mitnehmen oder
 // "länger ausprobieren" – erst dann erscheinen Heute, Fortschritt & Co.
 // Kein Konto, kein Server: Alles liegt im localStorage dieses Geräts. Nichts wird ungefragt angelegt;
-// Punkte, Level und Belohnungen überlässt die App bewusst Habitica.
+// Punkte, Level und Belohnungen gibt es bewusst nicht.
 // Die Ideen dahinter, kurz:
 // - Tiny Habits (BJ Fogg): klein anfangen, an einen festen Anker im Alltag koppeln, sofort feiern
 // - Wenn-dann-Pläne (Gollwitzer) bzw. WOOP (Oettingen): Hindernis vorher benennen, Plan B festlegen
@@ -20,8 +20,8 @@ const QUESTS = "phoenix-feder-quests"; // gemeinsam mit der Seite /gewohnheiten/
 // Früher fest unter „Täglich“, ohne zu fragen; alte Zustände übernehmen sie als normale Gewohnheiten
 const FRUEHER_TAEGLICH = ["bewegung", "meditation-und-atmung"];
 const ZEIT = {
-  kurz: ["⏱️", "Wenig – es soll nebenbei gehen", "Kleine Ideen für deinen Alltag, meist ein paar Minuten."],
-  lang: ["🗺️", "Gern etwas mehr", "Ein kleines Erlebnis – eine Stunde, ein Nachmittag oder ein Abend."],
+  kurz: ["⏱️", "Wenig, es soll nebenbei gehen", "Kleine Ideen für deinen Alltag, meist ein paar Minuten."],
+  lang: ["🗺️", "Gern etwas mehr", "Ein kleines Erlebnis für eine Stunde oder einen ganzen Nachmittag."],
   egal: ["✨", "Zeig mir beides", ""],
 };
 const ANKER = ["Nach dem Aufstehen", "Nach dem ersten Kaffee oder Tee", "In der Mittagspause", "Unterwegs",
@@ -29,7 +29,7 @@ const ANKER = ["Nach dem Aufstehen", "Nach dem ersten Kaffee oder Tee", "In der 
 const WOERTER = ["Ruhe", "Fokus", "Freude", "Geduld", "Klarheit", "Mut", "Leichtigkeit", "Dankbarkeit"];
 const STIMMUNGEN = [["😣", "schwer"], ["😕", "durchwachsen"], ["😐", "okay"], ["🙂", "gut"], ["😄", "richtig gut"]];
 const AUTOMATIK = ["gar nicht", "kaum", "teils", "meistens", "ganz von allein"];
-const LOB = ["Schön! 🪶", "Das tat dir gut.", "Genau so.", "Ein Funke mehr.", "Yes – weiter so!",
+const LOB = ["Schön! 🪶", "Das tat dir gut.", "Genau so.", "Ein Funke mehr.", "Yes, weiter so!",
   "Dein zukünftiges Ich dankt dir.", "Stark. Spür kurz nach, wie sich das anfühlt."];
 
 let D = { uebungen: [] }; // daten.json
@@ -231,7 +231,7 @@ const heuteMoeglich = (u) => Boolean(u.heute) && passtZurJahreszeit(u);
 const richtungen = () => D.richtungen;
 const passtZurZeit = (u) => !ideeZeit || ideeZeit === "egal" || (ideeZeit === "lang") === (u.art === "quest");
 const passtZumBereich = (u) => !ideeFilter || ideeFilter === "alle" || u.bereich === ideeFilter;
-const fussZeile = `<p class="klein fuss-app">Kein Konto, keine Anmeldung – alles bleibt auf diesem Gerät.<br>
+const fussZeile = `<p class="klein fuss-app">Kein Konto, keine Anmeldung. Alles bleibt auf diesem Gerät.<br>
   <a href="#entdecken">Alle Ideen nach Bereichen</a> · <a href="#mehr">📅 Mein Kalender &amp; App</a> · <a href="../">Zur Website</a></p>`;
 
 // Alle Ideen für heute, die zu den beiden Antworten passen (passt nichts, dann wenigstens der Bereich)
@@ -268,7 +268,7 @@ function ideeTermin(slug, zeit = kalZeit, dauer = kalDauer) {
   const text = [
     u.heute || u.kurz,
     [u.warum && `Warum es guttut: ${u.warum}`, u.wann && `Passt gut: ${u.wann}`,
-      dauer !== "1" && "Dranbleiben: Ein verpasster Tag ist kein Problem – nur nicht zweimal hintereinander."].filter(Boolean).join("\n"),
+      dauer !== "1" && "Dranbleiben: Ein verpasster Tag ist kein Problem. Nur nicht zweimal hintereinander."].filter(Boolean).join("\n"),
     `Mehr dazu: ${location.origin}/gewohnheiten/${slug}/\nAbhaken in der App: ${link}`,
   ].filter(Boolean).join("\n\n");
   return { id: slug, titel: `${u.emoji} ${u.titel}`, text, url: link,
@@ -312,7 +312,7 @@ function kalenderAuslaufend() {
   if (!slug) return "";
   const u = info(slug);
   return `<div class="karte-app hinweis-karte"><p><strong>📅 Deine Erinnerung „${esc(u.titel)}“ ist ausgelaufen.</strong> ${k.dauer === "14"
-    ? "Hat es dir gutgetan? Dann trag sie für zwei Monate ein – so lange dauert es oft, bis etwas von allein läuft."
+    ? "Hat es dir gutgetan? Dann trag sie für zwei Monate ein. So lange dauert es oft, bis etwas von allein läuft."
     : "Läuft es schon von allein? Wenn nicht, trag sie dauerhaft ein."}</p>
   <div class="knopf-reihe"><button class="knopf klein-knopf" data-aktion="verlaengern" data-slug="${slug}">Verlängern</button><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="verlaengern-${slug}">Nein, danke</button></div></div>`;
 }
@@ -331,8 +331,8 @@ function kalenderAktion(googleLink, icsAktion, slug = "") {
   const datei = `<button class="knopf kalender-knopf${appleGeraet() ? "" : " zweit"}" data-aktion="${icsAktion}"${s}>📥 In Apple- oder Outlook-Kalender</button>`;
   return `<div class="kalender-aktion">
     <div class="knopf-reihe">${appleGeraet() ? datei + google : google + datei}</div>
-    <p class="klein"><strong>Google</strong> öffnet sich mit dem fertigen Termin – dort nur noch „Speichern“ tippen.
-    <strong>Apple und Outlook</strong> bekommen eine Kalenderdatei: öffnen, „Hinzufügen“ – fertig. Die Erinnerung kommt dann von deinem Kalender.</p>
+    <p class="klein"><strong>Google</strong> öffnet sich mit dem fertigen Termin, dort nur noch „Speichern“ tippen.
+    <strong>Apple und Outlook</strong> bekommen eine Kalenderdatei. Öffnen, „Hinzufügen“ tippen, fertig. Die Erinnerung kommt dann von deinem Kalender.</p>
   </div>`;
 }
 
@@ -342,7 +342,7 @@ function ansichtFrage() {
   return `<section class="willkommen">
   <p class="oberzeile">Probier’s heute · Frage 1 von 2</p>
   <h1>Woran möchtest du arbeiten?</h1>
-  <p>Zwei kurze Fragen – dann siehst du alle Ideen, die zu dir passen und die du heute ausprobieren kannst.</p>
+  <p>Zwei kurze Fragen, dann siehst du alle Ideen, die zu dir passen und die du heute ausprobieren kannst.</p>
 </section>
 ${kalenderAuslaufend()}
 <div class="wahl-liste">${antworten.map((r) => wahlZeile("frage", r.slug, r.emoji, r.titel, r.text, false, true)).join("")}</div>
@@ -367,7 +367,7 @@ function ansichtVorschlaege() {
   return `<section class="willkommen">
   <p class="oberzeile">${[richtung && ideeFilter !== "alle" ? `${richtung.emoji} ${esc(richtung.titel)}` : "Alle Bereiche", zeit ? esc(zeit[1]) : ""].filter(Boolean).join(" · ")}</p>
   <h1>Ideen für dich</h1>
-  <p>${pool.length === 1 ? "Eine Idee" : `${pool.length} Ideen`}, die du heute ausprobieren kannst. Such dir eine aus, die dich anlacht – tipp sie an für alle Details.</p>
+  <p>${pool.length === 1 ? "Eine Idee" : `${pool.length} Ideen`}, die du heute ausprobieren kannst. Such dir eine aus, die dich anlacht. Tipp sie an, dann siehst du alle Details.</p>
   <div class="knopf-reihe"><button class="knopf zweit klein-knopf" data-aktion="ueberrasch">🎲 Überrasch mich</button><button class="link-knopf" data-aktion="neu-fragen">Fragen neu beantworten</button></div>
 </section>
 ${kalenderAuslaufend()}
@@ -383,7 +383,7 @@ function kalenderBlock(u) {
   const k = Z.kalender[u.slug];
   return `<section class="kalender-karte" id="kalender">
   <h2>📅 In deinen Kalender</h2>
-  <p class="klein">Dein Kalender erinnert dich zur passenden Zeit. Im Termin steht, was zu tun ist und warum es guttut – ganz ohne App und Konto.</p>
+  <p class="klein">Dein Kalender erinnert dich zur passenden Zeit. Im Termin steht, was zu tun ist und warum es guttut. Dafür brauchst du weder App noch Konto.</p>
   <p class="schritt">1 · Wann?</p>
   <div class="chips-app">${zeiten.map(([z, t]) => `<button data-aktion="kal-zeit" data-wert="${z}" aria-pressed="${kalZeit === z}">${t === "★ Passt gut" && vorschlag ? `★ ${vorschlag[1]}` : t} · ${uhrzeit(z)}</button>`).join("")}</div>
   <label class="eigene-zeit">oder eigene Zeit <input type="time" data-feld="kal-eigen" value="${kalZeit}"></label>
@@ -396,9 +396,9 @@ function kalenderBlock(u) {
   ${k ? `<div class="kalender-folge">
     <p><strong>✓ Im Kalender:</strong> ${DAUER_TEXT[k.dauer]} um ${uhrzeit(k.zeit)} Uhr.</p>
     ${kalenderVorschlaege(u.slug).length ? `<h3>Passt noch etwas dazu?</h3>
-    <p class="klein">Kleine Routinen für andere Tageszeiten – tipp an und trag sie genauso ein.</p>
+    <p class="klein">Kleine Routinen für andere Tageszeiten. Tipp an und trag sie genauso ein.</p>
     <div class="wahl-liste">${kalenderVorschlaege(u.slug).map((x) => wahlZeile("kalender-zeigen", x.slug, x.emoji, x.titel,
-      `${tageszeit(x.zeit)} · ${uhrzeit(x.zeit)} – ${x.wann}`, false, true)).join("")}</div>` : ""}
+      `${tageszeit(x.zeit)} · ${uhrzeit(x.zeit)} · ${x.wann}`, false, true)).join("")}</div>` : ""}
   </div>` : ""}
 </section>`;
 }
@@ -416,8 +416,8 @@ function ansichtProbieren() {
   const saison = passtZurJahreszeit(u);
   // Nicht für heute (Gewohnheit braucht Wochen, Quest braucht Planung, falsche Jahreszeit): erklären und Ideen für heute anbieten
   const grund = !saison ? "Gerade nicht die Jahreszeit dafür."
-    : u.art === "quest" ? "Dafür brauchst du etwas Zeit oder Planung – nimm es dir für einen passenden Tag vor."
-      : "Das wirkt erst, wenn du es ein paar Wochen machst – am besten mit Erinnerung (unten).";
+    : u.art === "quest" ? "Dafür brauchst du etwas Zeit oder Planung. Nimm es dir für einen passenden Tag vor."
+      : "Das wirkt erst, wenn du es ein paar Wochen machst. Eine Erinnerung (unten) hilft dabei.";
   const stattdessen = heute ? "" : `<p class="klein">${grund}${u.statt.length ? " Für heute passt:" : ""}</p>
     ${u.statt.map((s) => info(s)).map((s) => wahlZeile("idee-zeigen", s.slug, s.emoji, s.titel, s.heute, false, true)).join("")}`;
   const abhaken = heute || (saison && u.art === "quest");
@@ -441,9 +441,9 @@ ${!saison ? "" : `${kalenderBlock(u)}
 <section class="optionen">
   <h2>Lieber mit der App?</h2>
   <div class="option">
-    <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Mit der App: täglich abhaken</strong><span class="klein">Abhaken, abends kurz zurückschauen und sehen, was dir wirklich hilft – persönlich für dich.</span></span></div>
+    <div class="option-kopf"><span class="option-emoji" aria-hidden="true">🌱</span><span><strong>Mit der App: täglich abhaken</strong><span class="klein">Abhaken und mit der Zeit sehen, was dir persönlich wirklich hilft.</span></span></div>
     ${speicherFehlt ? '<p class="klein">In diesem Fenster kann die App nichts speichern (privates Fenster?). Öffne sie in einem normalen Browserfenster, um dranzubleiben.</p>'
-      : `<p class="klein">Ohne Konto: Deine Einträge bleiben nur auf diesem Gerät. Am besten legst du die App danach auf deinen Startbildschirm – dann ist sie mit einem Tipp da${alsAppGestartet() ? "" : " und deine Einträge sind sicher"}.</p>
+      : `<p class="klein">Ohne Konto: Deine Einträge bleiben nur auf diesem Gerät. Am besten legst du die App danach auf deinen Startbildschirm. Dann ist sie mit einem Tipp da${alsAppGestartet() ? "" : " und deine Einträge sind sicher"}.</p>
     <div class="knopf-reihe"><button class="knopf zweit" data-aktion="laenger">${dabei ? "Zu meinen Routinen" : u.art === "quest" ? "Als Quest starten" : "In meine Routinen"}</button>
     ${routineModus() ? "" : '<a class="link-knopf" href="#start">eigene Auswahl zusammenstellen</a>'}</div>`}
   </div>
@@ -474,7 +474,7 @@ function ansichtStart() {
     return `<section class="willkommen">
   <p class="oberzeile">Schritt 2 von 3</p>
   <h1>Wähle bis zu drei Gewohnheiten</h1>
-  <p>Es sind keine Zusatzaufgaben – eher ein Fokus darauf, <em>wie</em> du deinen Tag lebst.</p>
+  <p>Es sind keine Zusatzaufgaben, eher ein Fokus darauf, <em>wie</em> du deinen Tag lebst.</p>
 </section>
 <div class="wahl-liste">${passend.map((u) => wahlZeile("start-wahl", u.slug, u.emoji, u.titel, u.kurz, startAuswahl.includes(u.slug))).join("")}</div>
 ${startAuswahl.length > 3 ? '<p class="klein">Tipp: Mit drei startet es sich leichter. Mehr kannst du jederzeit dazunehmen.</p>' : ""}
@@ -505,7 +505,7 @@ function punktZeile(slug, d, anker = "") {
   const fertig = erledigt(d, slug);
   const k = kette(slug);
   const zusatz = [anker, k > 1 ? `🔥 ${k} Tage` : ""].filter(Boolean).join(" · ");
-  const sanft = tagVersatz === 0 && !fertig && gesternVerpasst(slug) ? '<span class="sanft">Gestern ausgelassen – kein Problem. Heute zählt.</span>' : "";
+  const sanft = tagVersatz === 0 && !fertig && gesternVerpasst(slug) ? '<span class="sanft">Gestern ausgelassen? Kein Problem. Heute zählt.</span>' : "";
   return `<li class="punkt${fertig ? " fertig" : ""}">
   <button class="haken" data-aktion="abhaken" data-slug="${slug}" aria-pressed="${fertig}" aria-label="${esc(u.titel)} ${fertig ? "erledigt" : "abhaken"}">✓</button>
   <button class="punkt-text" data-aktion="details" data-slug="${slug}">
@@ -524,7 +524,7 @@ function hinweisKarten() {
   // Wer dranbleiben will, braucht die App griffbereit – und auf dem iPhone ist sie dort auch vor dem Löschen sicher
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if (!alsAppGestartet() && (!Z.hinweise.app || tageZwischen(Z.hinweise.app, heute) >= 7)) {
-    return `<div class="karte-app hinweis-karte"><p><strong>Damit du dranbleibst:</strong> Leg die App auf deinen Startbildschirm. Dann ist sie mit einem Tipp da${ios ? " – und Safari kann deine Einträge nicht mehr löschen, wenn du die Seite eine Woche nicht öffnest" : ""}.</p>
+    return `<div class="karte-app hinweis-karte"><p><strong>Damit du dranbleibst:</strong> Leg die App auf deinen Startbildschirm. Dann ist sie mit einem Tipp da${ios ? ", und Safari kann deine Einträge nicht mehr löschen, wenn du die Seite eine Woche nicht öffnest" : ""}.</p>
       <div class="knopf-reihe">${installEreignis ? '<button class="knopf klein-knopf" data-aktion="installieren">📲 Jetzt installieren</button>' : '<a class="knopf klein-knopf" href="#mehr">So geht’s</a>'}<button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="app">Später</button></div></div>`;
   }
   const faellig = automatikFaellig();
@@ -543,7 +543,7 @@ function hinweisKarten() {
       <div class="knopf-reihe"><a class="knopf klein-knopf" href="#fortschritt">Rückschau ansehen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Später</button></div></div>`;
   }
   if (new Date().getDay() === 1) {
-    return `<div class="karte-app hinweis-karte"><p><strong>Neue Woche, frischer Start 🌱</strong> Passt deine Auswahl noch? Zu viel oder zu wenig – nimm etwas dazu oder weg.</p>
+    return `<div class="karte-app hinweis-karte"><p><strong>Neue Woche, frischer Start 🌱</strong> Passt deine Auswahl noch? Zu viel oder zu wenig? Nimm etwas dazu oder weg.</p>
       <div class="knopf-reihe"><a class="knopf klein-knopf" href="#entdecken">Anpassen</a><button class="knopf zweit klein-knopf" data-aktion="hinweis-weg" data-wert="neustart-${heute}">Passt so</button></div></div>`;
   }
   return "";
@@ -569,10 +569,10 @@ function questKarte() {
   const alleOffen = D.uebungen.filter((u) => u.art === "quest" && !fertig.has(u.slug) && passtZurJahreszeit(u));
   // Abschluss-Quests (Reflexion der Reise, Community) erst, wenn alle anderen geschafft sind
   const offen = alleOffen.some((u) => u.gruppe !== "Abschluss") ? alleOffen.filter((u) => u.gruppe !== "Abschluss") : alleOffen;
-  if (!offen.length) return '<div class="karte-app"><p>Du hast alle Quests geschafft. Großartig! 🏆 Lust auf mehr? Die Challenge auf Habitica bekommt neue Ideen.</p></div>';
+  if (!offen.length) return '<div class="karte-app"><p>Du hast alle Quests geschafft. Großartig! 🏆</p></div>';
   if (!questVorschlag || fertig.has(questVorschlag)) questVorschlag = zufall(offen).slug;
   const u = info(questVorschlag);
-  return `<div class="karte-app quest"><p class="oberzeile">Vorschlag – nur wenn du magst</p>
+  return `<div class="karte-app quest"><p class="oberzeile">Vorschlag, nur wenn du magst</p>
     <h3>${u.emoji} ${esc(u.titel)}</h3><p>${esc(u.kurz)}</p>
     <div class="knopf-reihe"><button class="knopf" data-aktion="quest-annehmen" data-slug="${questVorschlag}">Annehmen</button><button class="knopf zweit" data-aktion="quest-andere">Andere Quest ↻</button></div></div>`;
 }
@@ -590,7 +590,7 @@ function ansichtHeute() {
 </li></ul>`
     // nur ein Angebot – angelegt wird erst, wenn man Ja sagt
     : Z.reflexion === null ? `<div class="karte-app hinweis-karte"><p><strong>🙏 Abendreflexion dazunehmen?</strong> Abends eine Minute: Wie war dein Tag, und was war schön?
-  Nach ein paar Abenden zeigt dir die App, an welchen Tagen es dir besser ging – und was dir wirklich hilft.</p>
+  Nach ein paar Abenden zeigt dir die App, an welchen Tagen es dir besser ging und was dir wirklich hilft.</p>
   <div class="knopf-reihe"><button class="knopf klein-knopf" data-aktion="reflexion-wahl" data-wert="ja">Ja, gern</button><button class="knopf zweit klein-knopf" data-aktion="reflexion-wahl" data-wert="nein">Nein, danke</button></div></div>` : "";
   return `<section class="tag-kopf">
   <p class="oberzeile">${tagVersatz === 0 ? gruss() : "Nachtragen"}</p>
@@ -600,7 +600,7 @@ function ansichtHeute() {
 ${tagVersatz === 0 ? hinweisKarten() + wortKarte(d) : ""}
 <h2>Deine Gewohnheiten</h2>
 ${Z.gewohnheiten.length ? `<p class="klein">Hake ab, worauf du ${tagVersatz === 0 ? "heute" : "gestern"} geachtet hast. Tippe auf den Namen für Ideen.</p>
-<ul class="liste">${Z.gewohnheiten.map((g) => punktZeile(g.slug, d, g.anker)).join("")}</ul>` : '<p class="klein">Noch keine – such dir eine aus, die dich anspricht.</p>'}
+<ul class="liste">${Z.gewohnheiten.map((g) => punktZeile(g.slug, d, g.anker)).join("")}</ul>` : '<p class="klein">Noch keine. Such dir eine aus, die dich anspricht.</p>'}
 <a class="link-knopf" href="#entdecken">+ Gewohnheit hinzufügen</a>
 ${reflexion}
 ${tagVersatz === 0 ? `<h2>${Z.quest ? "Deine Quest" : "Lust auf eine Quest?"}</h2>${questKarte()}` : ""}`;
@@ -662,11 +662,11 @@ function ansichtFortschritt() {
 ${Z.reflexion !== true && !e.tage ? '<p class="klein">Das zeigt dir die Abendreflexion: Wer abends kurz notiert, wie der Tag war, sieht hier nach ein paar Tagen, an welchen Tagen es besser lief. Einschalten kannst du sie unter „Mehr“.</p>'
     : !e.genug ? `<p class="klein">Mach an ein paar Abenden die Abendreflexion. Ab 7 Tagen zeige ich dir hier, an welchen Tagen es dir besser ging (bisher: ${e.tage}).</p>`
     : hilft.length ? `<ul class="erkenntnisse">${hilft.map((x) => { const u = info(x.slug); return `<li><strong>${u.emoji} ${esc(u.titel)}</strong>: An diesen Tagen lag deine Stimmung bei Ø ${zahl(x.mit)} statt ${zahl(x.ohne)} <span class="klein">(${x.n} Tage)</span></li>`; }).join("")}</ul>
-      <p class="klein">Ein Zusammenhang, kein Beweis – aber ein guter Hinweis, was du beibehalten solltest. Je mehr Tage, desto aussagekräftiger.</p>`
-      : '<p class="klein">Noch zeigt sich kein deutlicher Unterschied. Bleib dran – nach ein paar Wochen wird das Bild klarer.</p>'}
+      <p class="klein">Ein Zusammenhang, kein Beweis. Aber ein guter Hinweis, was du beibehalten solltest. Je mehr Tage, desto aussagekräftiger.</p>`
+      : '<p class="klein">Noch zeigt sich kein deutlicher Unterschied. Bleib dran, nach ein paar Wochen wird das Bild klarer.</p>'}
 
 <h2>Deine Ketten</h2>
-${alle.length ? `<p class="klein">Ein verpasster Tag bricht keine Kette – nur zwei hintereinander.</p>
+${alle.length ? `<p class="klein">Ein verpasster Tag bricht keine Kette. Erst zwei hintereinander.</p>
 <ul class="ketten">${alle.map((slug) => { const u = info(slug); const a = (Z.automatik[slug] || []).at(-1); return `<li class="karte-app">
   <p class="eintrag-titel"><span aria-hidden="true">${u.emoji}</span> ${esc(u.titel)} <span class="punkt-meta">🔥 ${kette(slug)} · ${anzahlImMonat(slug, monat)}× diesen Monat${a ? ` · läuft ${AUTOMATIK[a.wert - 1]}` : ""}</span></p>
   ${punkteReihe(slug)}</li>`; }).join("")}</ul>` : '<p class="klein">Sobald du eine Gewohnheit aufnimmst, siehst du hier, wie sie wächst.</p>'}
@@ -682,11 +682,7 @@ ${stimmungen.length ? `<p class="klein">Ø Stimmung diesen Monat: ${zahl(stimmun
 ${gutes.length ? `<details class="aufklapp"><summary>Deine guten Dinge</summary><ul class="gutes">${gutes.map(([d, x]) => `<li><span class="klein">${datumLang(d)}</span>${x.gutes.filter(Boolean).map((g) => `<span>✨ ${esc(g)}</span>`).join("")}</li>`).join("")}</ul></details>` : ""}
 
 <h2>Quests</h2>
-<p>${fertig.size} von ${D.uebungen.filter((u) => u.art === "quest").length} geschafft. <a href="#entdecken" data-aktion="filter" data-wert="quest">Alle ansehen</a></p>
-
-<h2>Lieber mit Punkten und Belohnungen?</h2>
-<p class="klein">Punkte, Level und selbst gewählte Belohnungen kann Habitica besser – mit Konto, auf allen Geräten und gemeinsam mit anderen.
-Alle Ideen gibt es dort als kostenlose Challenge: <a href="${esc(D.habitica)}" rel="noopener" target="_blank">„Stressfrei“ in Habitica</a>.</p>`;
+<p>${fertig.size} von ${D.uebungen.filter((u) => u.art === "quest").length} geschafft. <a href="#entdecken" data-aktion="filter" data-wert="quest">Alle ansehen</a></p>`;
 }
 
 function kalenderLink(titel, zeit, text) {
@@ -700,7 +696,7 @@ function kalenderLink(titel, zeit, text) {
 
 function installierenHtml() {
   if (alsAppGestartet()) return '<p>✓ Läuft bereits als App. Deine Einträge liegen auf diesem Gerät.</p>';
-  return `<p class="klein">Geht auf Handy und Computer – kostenlos, ohne App-Store und ohne Konto. Danach startet sie wie jede andere App, auch offline.</p>
+  return `<p class="klein">Geht auf Handy und Computer, kostenlos und ohne App-Store oder Konto. Danach startet sie wie jede andere App, auch offline.</p>
 ${installEreignis ? `<button class="knopf" data-aktion="installieren">📲 Jetzt installieren</button>
 <p class="klein">Am Computer öffnet sich die App danach in einem eigenen Fenster; dein Browser-Tab wandert dorthin mit. Deine Einträge sind dort weiter da.</p>` : ""}
 <ul class="install-liste">
@@ -723,7 +719,7 @@ ${kalender.length ? `<p class="klein">Diese Ideen hast du in deinen Kalender ein
   <button class="link-knopf klein" data-aktion="kalender-weg" data-slug="${s}" aria-label="${esc(u.titel)} aus der Liste nehmen">✕</button></li>`; }).join("")}</ul>
 <div class="knopf-reihe"><button class="knopf zweit klein-knopf" data-aktion="ics-alle">📥 Alle als eine Kalenderdatei</button><a class="knopf zweit klein-knopf" href="#probieren">＋ Weitere Idee eintragen</a></div>
 <p class="klein">Die Datei hilft bei einem neuen Gerät oder Kalender. Ändern und löschen geht direkt in deinem Kalender; ✕ nimmt eine Idee nur aus dieser Liste.</p>`
-    : '<p class="klein">Noch nichts eingetragen. Such dir eine Idee aus – mit einem Tipp steht sie zur passenden Zeit in deinem Kalender.</p><a class="knopf zweit klein-knopf" href="#probieren">Ideen ansehen</a>'}
+    : '<p class="klein">Noch nichts eingetragen. Such dir eine Idee aus. Mit einem Tipp steht sie zur passenden Zeit in deinem Kalender.</p><a class="knopf zweit klein-knopf" href="#probieren">Ideen ansehen</a>'}
 
 <h2>Als App installieren</h2>
 ${installierenHtml()}
@@ -733,13 +729,13 @@ ${routineModus() ? `<h2>Abendreflexion</h2>
 <div class="umschalter"><button data-aktion="reflexion-wahl" data-wert="ja" aria-pressed="${Z.reflexion === true}">An</button><button data-aktion="reflexion-wahl" data-wert="nein" aria-pressed="${Z.reflexion !== true}">Aus</button></div>
 
 <h2>Erinnerungen</h2>
-<p class="klein">Ohne Konto und ohne Server: Die Erinnerungen kommen über deinen Kalender – täglich, bis du sie dort löschst.</p>
+<p class="klein">Ohne Konto und ohne Server: Die Erinnerungen kommen über deinen Kalender, bis du sie dort löschst.</p>
 <div class="zeiten"><label>Morgens <input type="time" data-feld="morgen" value="${r.morgen}"></label>${Z.reflexion === true ? `<label>Abends <input type="time" data-feld="abend" value="${r.abend}"></label>` : ""}</div>
 ${kalenderAktion(kalenderLink("🪶 Dein Wort für heute", r.morgen, "Kurz innehalten: Was zählt heute?"), "ics")}
 ${Z.reflexion === true ? `<p class="klein">Google trägt so die Morgen-Erinnerung ein; für den Abend: <a target="_blank" rel="noopener" href="${esc(kalenderLink("🪶 Abendreflexion", r.abend, "Wie war dein Tag? Drei gute Dinge."))}" data-aktion="google-geoeffnet">Abendreflexion in Google Kalender eintragen</a>. Die Kalenderdatei enthält beide.</p>` : ""}` : ""}
 
 <h2>Deine Daten</h2>
-<p class="klein">Deine Einträge – auch die von gestern und den Wochen davor – speichert die App nur hier im Browser auf diesem Gerät. Kein Konto, kein Server: Nichts wird an mich oder Dritte übertragen. Sie bleiben, bis du die Browserdaten löschst. Für ein anderes Gerät oder als Sicherung:</p>
+<p class="klein">Deine Einträge, auch die von gestern und den Wochen davor, speichert die App nur hier im Browser auf diesem Gerät. Kein Konto, kein Server: Nichts wird an mich oder Dritte übertragen. Sie bleiben, bis du die Browserdaten löschst. Für ein anderes Gerät oder als Sicherung:</p>
 <div class="knopf-reihe"><button class="knopf zweit klein-knopf" data-aktion="link-teilen">Auf anderes Gerät übertragen</button>
 <button class="knopf zweit klein-knopf" data-aktion="export">Sicherung herunterladen</button>
 <label class="knopf zweit klein-knopf datei">Sicherung laden<input type="file" accept="application/json,.json" data-aktion-datei="import" hidden></label></div>
@@ -749,7 +745,6 @@ ${Z.reflexion === true ? `<p class="klein">Google trägt so die Morgen-Erinnerun
 <h2>Mitmachen</h2>
 <ul class="mehr-links">
   <li><a href="${esc(feedbackLink())}">💬 Erfahrung oder Idee an Nikolas schicken</a></li>
-  <li><a href="${esc(D.habitica)}" rel="noopener" target="_blank">🎮 Die Challenge als Rollenspiel in Habitica – mit Punkten und Belohnungen</a></li>
   <li><a href="../gewohnheiten/">📖 Alle Übungen zum Nachlesen</a></li>
   <li><a href="../">🪶 Zur Website</a> · <a href="../datenschutz/">Datenschutz</a></li>
 </ul>`;
@@ -791,7 +786,7 @@ function details(slug) {
   const anpassen = g ? `<details class="aufklapp" data-gewohnheit="${slug}"><summary>Anpassen: Zeitpunkt, Mini-Version, Plan B</summary>
 <label>Wann? <select data-feld="anker"><option value="">Wann es passt</option>${ANKER.map((a) => `<option ${g.anker === a ? "selected" : ""}>${esc(a)}</option>`).join("")}${g.anker && !ANKER.includes(g.anker) ? `<option selected>${esc(g.anker)}</option>` : ""}</select></label>
 <label>Mini-Version für schwere Tage <input data-feld="mini" value="${esc(g.mini || "")}" placeholder="z. B. nur 1 Minute, nur 1 Glas Wasser" maxlength="80"></label>
-<p class="klein">Plan B: Was könnte dich hindern – und was tust du dann?</p>
+<p class="klein">Plan B: Was könnte dich hindern, und was tust du dann?</p>
 <label>Wenn … <input data-feld="wenn" value="${esc(g.wenn || "")}" placeholder="z. B. ich abends zu müde bin" maxlength="80"></label>
 <label>… dann <input data-feld="dann" value="${esc(g.dann || "")}" placeholder="z. B. mache ich die Mini-Version" maxlength="80"></label>
 <div class="knopf-reihe"><button class="knopf" data-aktion="speichern-gewohnheit" data-slug="${slug}">Speichern</button><button class="link-knopf gefahr" data-aktion="entfernen" data-slug="${slug}">Entfernen</button></div>
@@ -815,7 +810,7 @@ function reflexionOeffnen(neu = true) {
   blattOeffnen(`<p class="oberzeile">${tagVersatz === 0 ? "Heute" : "Gestern"}</p><h2>🙏 Abendreflexion</h2>
 <p>Wie war dein Tag?</p>
 <div class="stimmung">${STIMMUNGEN.map(([emoji, wort], i) => `<button data-aktion="stimmung" data-wert="${i + 1}" aria-pressed="${e.stimmung === i + 1}" aria-label="${wort}"><span aria-hidden="true">${emoji}</span><span class="klein">${wort}</span></button>`).join("")}</div>
-<p>Drei gute Dinge – was war heute schön?</p>
+<p>Drei gute Dinge: Was war heute schön?</p>
 ${[0, 1, 2].map((i) => `<input data-gut="${i}" value="${esc(gutes[i] || "")}" placeholder="${["z. B. die warme Dusche", "z. B. ein Lachen mit jemandem", "z. B. der Himmel am Abend"][i]}" maxlength="120">`).join("")}
 ${Z.gewohnheiten.length ? `<p>Worauf hast du ${tagVersatz === 0 ? "heute" : "gestern"} geachtet?</p>
 <ul class="liste">${Z.gewohnheiten.map((g) => g.slug).map((slug) => { const u = info(slug); const f = erledigt(d, slug); return `<li class="punkt${f ? " fertig" : ""}"><button class="haken" data-aktion="abhaken" data-slug="${slug}" data-im-blatt="1" aria-pressed="${f}" aria-label="${esc(u.titel)}">✓</button><span class="punkt-titel">${u.emoji} ${esc(u.titel)}</span></li>`; }).join("")}</ul>` : ""}
@@ -828,7 +823,7 @@ function feedbackLink() {
   const monat = tag().slice(0, 7);
   const zeilen = Z.gewohnheiten.map((g) => { const u = info(g.slug); return `- ${u.titel}: ${anzahlImMonat(g.slug, monat)}× diesen Monat`; });
   const text = `Meine Erfahrung mit der Routinen-App (seit ${tageZwischen(Z.start, tag()) + 1} Tagen):\n${zeilen.join("\n")}\n\nDas hilft mir am meisten: \nDas fällt mir schwer: \nMeine Idee: `;
-  return `../?${new URLSearchParams({ anliegen: "Habitica-Challenge", nachricht: text })}#kontakt`;
+  return `../?${new URLSearchParams({ anliegen: "Feedback zu den Übungen", nachricht: text })}#kontakt`;
 }
 
 function abhaken(slug, imBlatt) {
@@ -905,7 +900,7 @@ function icsDatei(termine, name) {
   }
   zeilen.push("END:VCALENDAR");
   herunterladen(zeilen.map(icsFalten).join("\r\n"), name, "text/calendar");
-  toast("📥 Kalenderdatei geladen – öffne sie, dann landet die Erinnerung in deinem Kalender.");
+  toast("📥 Kalenderdatei geladen. Öffne sie, dann landet die Erinnerung in deinem Kalender.");
 }
 
 function ics() {
@@ -1034,7 +1029,7 @@ async function linkTeilen() {
   }
   try {
     await navigator.clipboard.writeText(link);
-    toast("Link kopiert – öffne ihn auf dem anderen Gerät.");
+    toast("Link kopiert. Öffne ihn auf dem anderen Gerät.");
   } catch {
     prompt("Kopiere diesen Link und öffne ihn auf dem anderen Gerät:", link);
   }
@@ -1100,7 +1095,7 @@ const AKTIONEN = {
     Z.reflexion = wert === "ja";
     speichern();
     render();
-    toast(Z.reflexion ? "Schön! Die Abendreflexion steht ab jetzt unter „Heute“. 🙏" : "Alles klar – du kannst sie unter „Mehr“ jederzeit einschalten.");
+    toast(Z.reflexion ? "Schön! Die Abendreflexion steht ab jetzt unter „Heute“. 🙏" : "Alles klar. Du kannst sie unter „Mehr“ jederzeit einschalten.");
   },
   wort: (el, slug, wert) => { eintrag(tag()).wort = wert; speichern(); render(); if (wert) feiern(`Heute: ${wert}`); },
   "hinweis-weg": (el, slug, wert) => { Z.hinweise[wert] = tag(); speichern(); if (el.tagName !== "A") render(); },
@@ -1108,7 +1103,7 @@ const AKTIONEN = {
     (Z.automatik[slug] ||= []).push({ datum: tag(), wert: Number(wert) });
     speichern();
     render();
-    toast(Number(wert) >= 4 ? "Wunderbar – das sitzt! Vielleicht ist Platz für eine neue Gewohnheit." : "Danke. Dranbleiben lohnt sich – oft dauert es rund zwei Monate.");
+    toast(Number(wert) >= 4 ? "Wunderbar, das sitzt! Vielleicht ist Platz für eine neue Gewohnheit." : "Danke. Dranbleiben lohnt sich, oft dauert es rund zwei Monate.");
   },
   "quest-annehmen": (el, slug) => { questAnnehmen(slug); blattSchliessen(); render(); },
   "quest-andere": () => { questVorschlag = null; render(); },
@@ -1140,7 +1135,7 @@ const AKTIONEN = {
     render();
   },
   "google-geoeffnet": (el, slug) => {
-    toast("Google Kalender öffnet sich – dort noch auf „Speichern“ tippen.");
+    toast("Google Kalender öffnet sich. Dort noch auf „Speichern“ tippen.");
     if (slug) { kalenderMerken(slug); setTimeout(render, 0); } // erst nach dem Öffnen des Links neu zeichnen
   },
   ics: () => ics(),

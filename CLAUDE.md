@@ -36,11 +36,17 @@ und nah am Text – nichts hinzuerfinden. Der Build bricht ab, wenn `thema` oder
 Seiten: `titel`, `beschreibung`, optional `bild`, `indexieren: nein`.
 
 Bausteine in Seiten: `{{angebote}}`, `{{neueste_artikel}}`, `{{alle_artikel}}`, `{{kontakt}}` bzw.
-`{{kontakt Habitica-Challenge}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`
+`{{kontakt Feedback zu den Übungen}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`
 (eingeklappte Liste aller Übungen), `{{richtungen}}` (Einstiegsfrage „Woran möchtest du arbeiten?“, Antworten
 führen nach `/app/#bereich=<slug>`; Liste `RICHTUNGEN` in bauen.py),
 `{{habitica_url}}`, `{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`
 (`{{bild …}}` geht auch in Artikeln).
+
+Schreibstil (Nikolas’ Wunsch, Okt. 2026, gilt für Seiten, App, Quiz und Artikel): Keine Gedankenstriche (– oder —) im
+sichtbaren Text, vor allem kein angehängter Satzteil am Satzende („… – zum Lesen, Ausprobieren und Dranbleiben“), weil
+das nach KI klingt. Stattdessen Punkt, Komma, Doppelpunkt oder Klammer. Dreieraufzählungen sparsam: lieber zwei Dinge,
+ein konkretes Beispiel, eine Frage oder ein persönlicher Satz. Auch Muster wie „nicht nur X, sondern Y“ meiden.
+Erlaubt: Zahlenbereiche (2015–2024). Der Browsertest prüft alle Seiten auf Gedankenstriche.
 
 Ausrichtung: Die Seite stellt Achtsamkeit und die Essenz der Texte in den Vordergrund. Nikolas kommt kurz vor:
 ein Abschnitt „Über mich“ auf der Startseite direkt vor der Begleitung (sein Wunsch, Okt. 2026; Text ist die
@@ -116,7 +122,8 @@ App-Dateien oder Daten ändern.
 - Nichts ungefragt anlegen: keine festen „Täglich“-Punkte (Bewegung ist eine normale Gewohnheit im Bereich Körper),
   die Abendreflexion nur nach Ja (`Z.reflexion`: null = noch nicht gefragt). Alte Zustände ohne `reflexion`
   übernehmen genutzte Täglich-Punkte als eigene Gewohnheiten (`bereinigen()`).
-- Keine Punkte, Level oder Belohnungen in der App (ohne Konto wenig sinnvoll) – dafür verweist sie auf Habitica.
+- Keine Punkte, Level oder Belohnungen in der App (ohne Konto wenig sinnvoll). Die Rollenspiel-App Habitica wird
+  nirgends mehr beworben (Nikolas, Okt. 2026); die Übungen stammen trotzdem weiter aus dem Habitica-Export.
 - Eingaben (Abendreflexion, „Anpassen“) werden sofort gespeichert, nicht erst per Knopf. `laden()` nutzt ebenfalls
   `bereinigen()`. Installiert wird über `beforeinstallprompt` bzw. die Anleitung unter „Mehr“ (iPhone: eigener
   Speicher der Home-Bildschirm-App → Sicherung herunterladen/laden).
