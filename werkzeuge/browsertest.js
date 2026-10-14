@@ -93,6 +93,34 @@ function server() {
     Boolean(await p.$('.impuls .knopf-reihe [data-feld="kalender"]')) && Boolean(await p.$('.impuls-fuss [data-feld="info"]')));
   const bilder = await p.$$eval("main img", (l) => l.map((i) => i.getAttribute("src")));
   pruefe("Kein Bild doppelt auf der Startseite", new Set(bilder).size === bilder.length);
+  // Handy: Navigation hinter „Menü“, klappt mit Kontakt und „Probier’s heute“ auf, Escape schließt
+  const navZu = !(await p.isVisible("#hauptmenue"));
+  await p.click("[data-menue-knopf]");
+  const navOffen = await p.isVisible('#hauptmenue a[href$="#kontakt"]') && await p.isVisible("#hauptmenue .navi-app");
+  await p.keyboard.press("Escape");
+  pruefe("Handy-Menü: zu, klappt mit Kontakt und App auf, Escape schließt", navZu && navOffen && !(await p.isVisible("#hauptmenue"))
+    && (await p.getAttribute("[data-menue-knopf]", "aria-expanded")) === "false");
+  // Hell/Dunkel: Knopf schaltet um, die Wahl bleibt nach dem Neuladen
+  const grund = () => p.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const hell = await grund();
+  await p.click("[data-thema-knopf]");
+  const dunkel = await grund();
+  await p.reload({ waitUntil: "load" });
+  pruefe("Hell/Dunkel-Knopf schaltet um und merkt sich die Wahl", hell !== dunkel && (await grund()) === dunkel
+    && (await p.getAttribute("html", "data-thema")) === "dunkel");
+  await p.evaluate(() => localStorage.removeItem("phoenix-feder-thema"));
+  // Angebote: Handy eine Spalte, Desktop alle normalen Karten in einer Reihe (keine Karte allein in einer Zeile)
+  const spalten = (s) => s.$$eval(".angebot:not(.breit)", (l) => new Set(l.map((a) => Math.round(a.getBoundingClientRect().top))).size);
+  const desk = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const pd = await seite(desk);
+  await pd.goto(`${B}/`, { waitUntil: "load" });
+  const reihenDesktop = await spalten(pd);
+  await pd.setViewportSize({ width: 768, height: 1000 });
+  const reihenTablet = await spalten(pd);
+  const anzahl = (await p.$$(".angebot:not(.breit)")).length;
+  pruefe("Angebote: Handy untereinander, Tablet je zwei, Desktop eine Reihe", (await spalten(p)) === anzahl && reihenTablet === Math.ceil(anzahl / 2)
+    && reihenDesktop === 1, `${anzahl} Karten, Tablet ${reihenTablet} Reihen, Desktop ${reihenDesktop}`);
+  await desk.close();
   // Schreibstil: keine Gedankenstriche im sichtbaren Text (Zahlenbereiche wie 2015–2024 sind erlaubt)
   const mitStrich = [];
   const alleSeiten = (ordner) => fs.readdirSync(ordner, { withFileTypes: true }).flatMap((e) =>

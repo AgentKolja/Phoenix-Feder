@@ -7,7 +7,8 @@
 <meta name="description" content="Eine kleine Idee für heute zum Ausprobieren. Nimm sie als Kalender-Erinnerung mit oder bleib länger dran. Ohne Anmeldung, alles bleibt auf deinem Gerät.">
 <link rel="canonical" href="https://www.phoenix-feder.de/app/">
 <meta name="theme-color" content="#fbf7f1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1b1613" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#201a16" media="(prefers-color-scheme: dark)">
+<script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("phoenix-feder-thema");if(t==="hell"||t==="dunkel")d.dataset.thema=t}catch(e){}})();</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -17,6 +18,7 @@
 <link rel="stylesheet" href="../stil.css">
 <link rel="stylesheet" href="app.css">
 <script src="app.js" defer></script>
+<script src="../thema.js" defer></script>
 </head>
 <body class="app">
 <header class="app-kopf">
@@ -24,6 +26,7 @@
     <svg viewBox="0 0 32 32" aria-hidden="true"><use href="../favicon.svg#feder"/></svg>
     <span>Probier’s heute</span>
   </a>
+  <button class="rund-knopf" type="button" data-thema-knopf hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
 </header>
 <main id="app" class="app-inhalt" aria-live="polite">
   <noscript><p>Die App braucht JavaScript. Die Übungen findest du auch auf der Seite <a href="../gewohnheiten/">Gewohnheiten</a>.</p></noscript>

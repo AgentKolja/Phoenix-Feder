@@ -38,22 +38,39 @@
   --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light dark;
 }
+/* Dunkel: folgt dem Gerät, außer man hat oben rechts selbst gewählt (data-thema, siehe thema.js) */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --grund: #1b1613;
-    --flaeche: #241d18;
-    --karte: #2a221c;
-    --text: #f1e8dd;
-    --leise: #bfae9d;
-    --akzent: #e3a55e;
-    --akzent-hell: #e3a55e;
-    --auf-akzent: #1b1613;
+  :root:not([data-thema="hell"]) {
+    --grund: #201a16;
+    --flaeche: #29221d;
+    --karte: #30271f;
+    --text: #f3eadf;
+    --leise: #c9b8a6;
+    --akzent: #e6a964;
+    --akzent-hell: #e6a964;
+    --auf-akzent: #201a16;
     --gut: #8cbcf2;
     --schlecht: #f2a463;
-    --linie: #3b3028;
-    --schatten: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 25%);
+    --linie: #463a31;
+    --schatten: 0 1px 2px rgb(0 0 0 / 28%), 0 8px 24px rgb(0 0 0 / 22%);
   }
 }
+:root[data-thema="dunkel"] {
+    --grund: #201a16;
+    --flaeche: #29221d;
+    --karte: #30271f;
+    --text: #f3eadf;
+    --leise: #c9b8a6;
+    --akzent: #e6a964;
+    --akzent-hell: #e6a964;
+    --auf-akzent: #201a16;
+    --gut: #8cbcf2;
+    --schlecht: #f2a463;
+    --linie: #463a31;
+    --schatten: 0 1px 2px rgb(0 0 0 / 28%), 0 8px 24px rgb(0 0 0 / 22%);
+  color-scheme: dark;
+}
+:root[data-thema="hell"] { color-scheme: light; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
@@ -102,6 +119,11 @@ p { margin: 0 0 1em; }
 .navi { display: flex; gap: 1.4rem; margin-left: auto; }
 .navi a { color: var(--text); text-decoration: none; font-weight: 500; padding-block: 0.4rem; border-bottom: 2px solid transparent; }
 .navi a:hover, .navi a[aria-current] { border-bottom-color: var(--akzent-hell); }
+.navi .navi-app { display: none; }
+.rund-knopf { flex: none; display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid var(--linie); background: var(--karte); color: var(--text); cursor: pointer; padding: 0; }
+.rund-knopf:hover { border-color: var(--akzent-hell); }
+.rund-knopf svg { width: 1.2rem; height: 1.2rem; }
+.rund-knopf[hidden], .menue-knopf { display: none; }
 
 /* Knoepfe */
 .knopf {
@@ -124,7 +146,13 @@ p { margin: 0 0 1em; }
 .held-bild img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Angebote */
-.angebote { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+.angebote { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+@media (min-width: 600px) { .angebote { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) {
+  .angebote { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* Platz für zweizeilige Titel, damit Preise und Text in der Reihe auf einer Höhe stehen */
+  .angebot:not(.breit) h3 { min-height: 2.4em; display: flex; align-items: flex-end; }
+}
 .angebote-hinweis { margin-top: 1.25rem; }
 .angebot { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--schatten); }
 .angebot-bild { aspect-ratio: 4 / 3; object-fit: cover; width: 100%; }
@@ -164,7 +192,7 @@ p { margin: 0 0 1em; }
 .karte p:last-child { color: var(--leise); margin: 0; font-size: 0.98rem; }
 .meta { font-size: 0.88rem; color: var(--leise); margin-bottom: 0.5rem; }
 .meta a { color: inherit; }
-.marke { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; border: 1px solid var(--linie); border-radius: 4px; padding: 0 0.35rem; margin-left: 0.25rem; vertical-align: 1px; }
+.marke { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; border: 1px solid var(--linie); border-radius: 4px; padding: 0 0.35rem; margin-left: 0.25rem; vertical-align: 1px; }
 .mehr { margin-top: 2rem; }
 
 /* Artikel */
@@ -225,8 +253,8 @@ p { margin: 0 0 1em; }
 /* Fuss */
 .fuss { border-top: 1px solid var(--linie); padding-block: 3rem 1.5rem; margin-top: 0; background: var(--flaeche); }
 .fuss-innen { display: flex; flex-wrap: wrap; gap: 2rem 4rem; justify-content: space-between; margin-bottom: 1.5rem; }
-.fuss nav { display: flex; flex-direction: column; gap: 0.35rem; }
-.fuss nav a { color: var(--text); text-decoration: none; }
+.fuss nav { display: flex; flex-direction: column; gap: 0; }
+.fuss nav a { color: var(--text); text-decoration: none; padding-block: 0.4rem; }
 .fuss nav a:hover { color: var(--akzent); }
 .logo-text { font: 500 1.3rem/1.2 var(--serif); margin-bottom: 0.25rem; }
 .fuss p { color: var(--leise); }
@@ -255,6 +283,7 @@ p { margin: 0 0 1em; }
 .impuls-emoji { font-size: 2.6rem; line-height: 1; margin: 0.4rem 0 0.8rem; }
 .impuls h3 { font-size: 1.7rem; }
 .impuls .knopf-reihe { margin-top: 1.2rem; }
+.impuls-fuss a, .impuls-fuss .text-knopf { padding-block: 0.5rem; }
 .impuls-fuss { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem 1rem; margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--linie); font-size: 0.95rem; }
 .text-knopf { font: inherit; font-weight: 600; color: var(--akzent); background: none; border: 0; padding: 0.2rem 0; cursor: pointer; }
 .text-knopf:hover { text-decoration: underline; }
@@ -278,8 +307,9 @@ p { margin: 0 0 1em; }
 .learning h3 a:hover { color: var(--akzent); }
 .learning > p:not(.learning-nr) { color: var(--leise); font-size: 0.98rem; }
 .learning-artikel { list-style: none; padding: 0; margin: 0.4rem 0 1rem; border-top: 1px solid var(--linie); }
-.learning-artikel li { padding: 0.45rem 0; border-bottom: 1px solid var(--linie); font-size: 0.95rem; line-height: 1.4; }
-.learning-mehr { margin-top: auto; font-size: 0.92rem; font-weight: 600; }
+.learning-artikel li { border-bottom: 1px solid var(--linie); font-size: 0.95rem; line-height: 1.4; }
+.learning-artikel a { display: inline-block; padding-block: 0.6rem; }
+.learning-mehr { margin-top: auto; align-self: flex-start; padding-block: 0.5rem; font-size: 0.92rem; font-weight: 600; }
 /* Eigene Seite je Idee (/gewohnheiten/<slug>/) */
 .idee-seite h1 { margin-bottom: 0.4em; }
 .idee-seite p.gross { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--leise); }
@@ -333,7 +363,7 @@ p { margin: 0 0 1em; }
 .uebung-text { padding: 0 1rem 1rem; font-size: 0.97rem; overflow-wrap: anywhere; }
 .uebung-text ul { padding-left: 1.2rem; }
 .erledigt { display: flex; align-items: center; gap: 0.5rem; padding: 0 1rem 0.9rem; font-size: 0.92rem; color: var(--leise); cursor: pointer; }
-.erledigt input { width: 1.1rem; height: 1.1rem; accent-color: var(--akzent); }
+.erledigt input { width: 1.4rem; height: 1.4rem; accent-color: var(--akzent); }
 .uebung.geschafft { background: color-mix(in srgb, var(--akzent-hell) 12%, var(--karte)); }
 .uebung.geschafft .uebung-titel { text-decoration: line-through; text-decoration-color: var(--akzent-hell); }
 .fortschritt { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.25rem; margin: 1rem 0 0.5rem; }
@@ -363,7 +393,7 @@ p { margin: 0 0 1em; }
 .termin-daten li { padding: 0.35rem 0; border-bottom: 1px solid var(--linie); }
 .kalender-block { margin-top: 1.2rem; padding: 1rem 1.2rem; background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); }
 .anleitung { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); padding: 1rem 1.3rem; }
-.anleitung > summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
+.anleitung > summary { cursor: pointer; font-weight: 600; color: var(--akzent); padding-block: 0.5rem; }
 .anleitung[open] > summary { margin-bottom: 0.8rem; }
 .anleitung li { margin-bottom: 0.6rem; }
 
@@ -378,10 +408,37 @@ p { margin: 0 0 1em; }
   .ueber-bild { max-width: 360px; }
   .kopf-knopf { display: none; }
 }
+@media (max-width: 860px) {
+  /* mit JavaScript: Menü-Knopf, Navigation klappt darunter auf */
+  .js .kopf-innen { flex-wrap: nowrap; gap: 0.6rem; padding-block: 0; min-height: 3.75rem; }
+  .js .kopf-innen .logo { margin-right: auto; }
+  .js .menue-knopf { display: inline-flex; align-items: center; gap: 0.5rem; height: 2.6rem; padding: 0 1rem; border-radius: 999px; border: 1px solid var(--linie); background: var(--karte); color: var(--text); font: 600 0.95rem/1 var(--sans); cursor: pointer; }
+  .menue-striche, .menue-striche::before, .menue-striche::after { display: block; width: 1rem; height: 2px; background: currentColor; border-radius: 2px; position: relative; }
+  .menue-striche::before, .menue-striche::after { content: ""; position: absolute; left: 0; }
+  .menue-striche::before { top: -5px; }
+  .menue-striche::after { top: 5px; }
+  .kopf.offen .menue-striche { background: transparent; }
+  .kopf.offen .menue-striche::before { top: 0; transform: rotate(45deg); }
+  .kopf.offen .menue-striche::after { top: 0; transform: rotate(-45deg); }
+  .js .navi { display: none; }
+  .js .kopf.offen .navi { display: flex; flex-direction: column; gap: 0; position: absolute; top: 100%; left: 0; right: 0; width: auto; overflow: visible;
+    padding: 0.4rem 1.25rem 1.25rem; background: var(--grund); border-bottom: 1px solid var(--linie); box-shadow: var(--schatten); }
+  .js .kopf.offen .navi a { padding: 0.85rem 0; border-bottom: 1px solid var(--linie); font-size: 1.1rem; }
+  .js .kopf.offen .navi a[aria-current] { color: var(--akzent); border-bottom-color: var(--linie); }
+  .js .kopf.offen .navi .navi-app { display: inline-flex; align-self: flex-start; margin-top: 1rem; border-bottom: 2px solid var(--akzent); padding: 0.7rem 1.2rem; font-size: 1rem; color: var(--auf-akzent); }
+}
 @media (max-width: 640px) {
+  /* ohne JavaScript: Menü als scrollbare Zeile */
   .kopf-innen { flex-wrap: wrap; gap: 0 1rem; padding-block: 0.6rem 0; }
   .navi { width: 100%; margin: 0; gap: 1.2rem; overflow-x: auto; padding-bottom: 0.2rem; }
   .navi a { white-space: nowrap; }
+  /* große Bilder auf dem Handy kleiner */
+  .held { padding-block: 1.75rem 2.5rem; }
+  .held-bild { max-width: 15rem; margin-inline: auto; }
+  .ueber-bild { max-width: 15rem; }
+  /* Angebote: Bilder flacher, damit die Liste nicht endlos wird */
+  .angebot-bild, .angebot.breit .angebot-bild { aspect-ratio: 16 / 9; }
+  .angebot-text { padding: 1.1rem 1.2rem 1.3rem; }
   .felder { grid-template-columns: 1fr; }
   .ueber-kurz { grid-template-columns: 1fr; }
   .angebot.breit { grid-template-columns: 1fr; }

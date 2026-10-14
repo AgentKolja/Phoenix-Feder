@@ -20,6 +20,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften |
 | `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
 | `seite.js` | Impuls für heute, Teilen-Knopf, Quests abhaken (localStorage), Sprungziele öffnen |
+| `thema.js` | Hell/Dunkel-Knopf (◐, Wahl in localStorage, sonst folgt die Seite dem Gerät) und Handy-Menü („Menü“ unter 860 px). Das Thema setzt schon ein Inline-Skript im `<head>` (bauen.py, app/index.html), damit nichts aufblitzt |
 | `app/` | Web-App „Probier’s heute“ / „Meine Routinen“ unter `/app/` (siehe unten) |
 | `werkzeuge/habitica-import.py` | Habitica-CSV → `uebungen.json`, entfernt unbelegte Studienzahlen und persönliche Angebote |
 | `werkzeuge/bild.py` | Bild vorbereiten (braucht `pip install pillow`) |

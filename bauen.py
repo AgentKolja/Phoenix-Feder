@@ -761,12 +761,14 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
 <meta property="og:locale" content="de_DE">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#fbf7f1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1b1613" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#201a16" media="(prefers-color-scheme: dark)">
+<script>(function(){{var d=document.documentElement;d.classList.add("js");try{{var t=localStorage.getItem("phoenix-feder-thema");if(t==="hell"||t==="dunkel")d.dataset.thema=t}}catch(e){{}}}})();</script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="{esc(E['name'])} – Artikel" href="/feed.xml">
 <link rel="preload" href="/schriften/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/stil.css">
 <script src="/seite.js" defer></script>
+<script src="/thema.js" defer></script>
 </head>
 <body>
 <a class="sprung" href="#inhalt">Zum Inhalt springen</a>
@@ -776,8 +778,10 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
       <svg viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg>
       <span>{esc(E['name'])}</span>
     </a>
-    <nav class="navi" aria-label="Hauptmenü">{navi}</nav>
+    <nav class="navi" id="hauptmenue" aria-label="Hauptmenü">{navi}<a class="knopf klein-knopf navi-app" href="/app/">Probier’s heute</a></nav>
     <a class="knopf klein-knopf kopf-knopf" href="/app/">Probier’s heute</a>
+    <button class="rund-knopf" type="button" data-thema-knopf hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
+    <button class="menue-knopf" type="button" data-menue-knopf aria-expanded="false" aria-controls="hauptmenue"><span class="menue-striche" aria-hidden="true"></span>Menü</button>
   </div>
 </header>
 <main id="inhalt">
@@ -981,7 +985,7 @@ def main():
     (AUSGABE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {E['domain']}/sitemap.xml\n", encoding="utf-8")
     (AUSGABE / "CNAME").write_text(E["domain"].split("://")[1] + "\n", encoding="utf-8")
     (AUSGABE / ".nojekyll").write_text("", encoding="utf-8")
-    for datei in ("stil.css", "kontakt.js", "seite.js", "quiz.js", "favicon.svg"):
+    for datei in ("stil.css", "kontakt.js", "seite.js", "quiz.js", "thema.js", "favicon.svg"):
         shutil.copy(WURZEL / datei, AUSGABE / datei)
     shutil.copytree(WURZEL / "schriften", AUSGABE / "schriften")
     shutil.copytree(WURZEL / "bilder", AUSGABE / "bilder")
