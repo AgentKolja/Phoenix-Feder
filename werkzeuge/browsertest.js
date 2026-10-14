@@ -146,6 +146,8 @@ function server() {
   pruefe("Quiz: 13 Fragen, jede sofort aufgelöst mit Quelle, Ergebnis mit Schimpansen-Vergleich",
     mitQuelle && (await p.textContent(".quiz-zahl")).includes("von 13") && (await p.textContent(".quiz-ergebnis")).includes("Schimpanse"));
   pruefe("Quiz: „Nur Ergebnis zeigen“ sendet nichts", gesendet.length === 0);
+  const artikelLink = await p.getAttribute('.quiz-warum a[href*="/post/"]', "href");
+  pruefe("Quiz: Ergebnis verlinkt einen vorhandenen Artikel", Boolean(artikelLink) && (await (await p.context().request.get(`${B}${artikelLink}`)).ok()));
   await p.click('[data-quiz-aktion="neu"]');
   await quizRunde("ja");
   const daten = gesendet[0] && JSON.parse(gesendet[0].match(/name="Daten"\r\n\r\n(.*)\r\n/)[1]);

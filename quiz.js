@@ -126,7 +126,7 @@
     <div class="quiz-warum">
       <h3>Warum wir die Welt düsterer sehen, als sie ist</h3>
       <p>Hans Rosling nennt es den Negativitäts-Instinkt: Schlechte Nachrichten fallen auf, langsame Verbesserungen nicht. Dazu kommt, dass wir uns an ein altes Bild der Welt erinnern. Das ist menschlich – und genau hier hilft Achtsamkeit: Wer bemerkt, wie der eigene Kopf bewertet, sieht klarer und lebt gelassener.</p>
-      <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../thema/glueck-und-sinn/", location.href).pathname)}">Artikel zu Glück &amp; Sinn</a></div>
+      <div class="knopf-reihe">${knopf("teilen", "", "Quiz teilen", "knopf")}${knopf("neu", "", "Noch einmal", "knopf zweit")}<a class="knopf zweit" href="${esc(new URL("../post/sehen-was-ist/", location.href).pathname)}">Artikel: Sehen, was ist</a></div>
     </div>
     <details class="quiz-uebersicht"><summary>Alle Fragen und Antworten</summary><ol>${Q.fragen.map((f, i) => {
       const r = f.antworten.findIndex((a) => a[1] === "r");
