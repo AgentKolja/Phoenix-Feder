@@ -495,7 +495,9 @@ def angebote_html():
         klasse = "angebot" + (" hervorgehoben" if an.get("hervorheben") else "") + (" breit" if an.get("breit") else "")
         # bild_fokus: welcher Teil eines Hochformats im Querformat-Ausschnitt sichtbar bleibt (z. B. "oben" fürs Gesicht)
         fokus = f" fokus-{an['bild_fokus']}" if an.get("bild_fokus") else ""
-        bild_html = bild(an["bild"], an["titel"], "angebot-bild" + fokus, "(min-width: 900px) 260px, 100vw") if an.get("bild") else ""
+        # Ohne Foto eine gleich große Fläche mit der Feder, damit Titel, Preis und Text in allen Karten auf einer Höhe stehen
+        bild_html = (bild(an["bild"], an["titel"], "angebot-bild" + fokus, "(min-width: 900px) 260px, 100vw") if an.get("bild")
+                     else '<div class="angebot-bild angebot-symbol" aria-hidden="true"><svg viewBox="0 0 32 32"><use href="/favicon.svg#feder"/></svg></div>')
         knopf = "Mehr erfahren" if an.get("seite") else "Termin buchen" if an.get("buchung") or E["buchung_url"] else "Anfragen"
         ziel = an.get("seite") or buchung(an.get("buchung"))
         if an.get("seminar") and seminar_termin():
@@ -808,7 +810,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
 <script>(function(){{var d=document.documentElement;d.classList.add("js");try{{var t=localStorage.getItem("phoenix-feder-thema");if(t==="hell"||t==="dunkel")d.dataset.thema=t}}catch(e){{}}}})();</script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="{esc(E['name'])} – Artikel" href="/feed.xml">
-<link rel="preload" href="/schriften/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/schriften/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/stil.css">
 <script src="/seite.js" defer></script>
 <script src="/thema.js" defer></script>
@@ -819,7 +821,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
   <div class="huelle kopf-innen">
     <a class="logo" href="/" aria-label="{esc(E['name'])} – Startseite">
       <svg viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg>
-      <span>{esc(E['name'])}</span>
+      <span translate="no">{esc(E['name'])}</span>
     </a>
     <nav class="navi" id="hauptmenue" aria-label="Hauptmenü">{navi}<a class="knopf klein-knopf navi-app" href="/app/">Probier’s heute</a></nav>
     <a class="knopf klein-knopf kopf-knopf" href="/app/">Probier’s heute</a>
@@ -834,7 +836,7 @@ def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", ind
   <svg class="fuss-feder" viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg>
   <div class="huelle fuss-raster">
     <div class="fuss-marke">
-      <a class="logo" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg><span>{esc(E['name'])}</span></a>
+      <a class="logo" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="/favicon.svg#feder"/></svg><span translate="no">{esc(E['name'])}</span></a>
       <p class="fuss-motto">{esc(E['untertitel'])}</p>
       <p>{esc(kurz_beschreibung)}</p>
       <div class="sozial">{sozial}</div>

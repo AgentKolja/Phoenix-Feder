@@ -3,7 +3,7 @@
     "titel": "Kostenloses Erstgespräch",
     "dauer": "30 Min.",
     "preis": "kostenlos",
-    "text": "Persönliches Coaching und Achtsamkeit, ganz auf dich zugeschnitten: für ein erfüllteres Leben oder für die Themen, die dich gerade bewegen. Wir lernen uns kennen und klären, wie ich dich begleiten kann.",
+    "text": "Wir lernen uns kennen, klären, was dich gerade bewegt, und schauen gemeinsam, wie ich dich am besten begleiten kann.",
     "bild": "",
     "buchung": "",
     "hervorheben": true
@@ -12,7 +12,7 @@
     "titel": "Persönliches Coaching",
     "dauer": "60 Min.",
     "preis": "40 €",
-    "text": "Wo stehst du, wo willst du hin und was hält dich noch? Gemeinsam finden wir deine nächsten Schritte, mit Methoden aus Achtsamkeit, Business-Coaching und kognitiver Verhaltenstherapie.",
+    "text": "Wo stehst du, wo willst du hin? Gemeinsam finden wir deine nächsten Schritte, mit Methoden aus Achtsamkeit, Coaching und Verhaltenstherapie.",
     "bild": "coaching-gespraech",
     "buchung": ""
   },
@@ -20,7 +20,7 @@
     "titel": "Achtsamkeitstraining",
     "dauer": "30 Min.",
     "preis": "15 €",
-    "text": "Finde durch Meditation und Atemübungen zu einem bewussteren Leben.",
+    "text": "Finde durch Meditation und Atemübungen zu mehr Ruhe und einem bewussteren Leben, mit Übungen für deinen Alltag.",
     "bild": "achtsamkeit",
     "bild_fokus": "oben",
     "buchung": ""
@@ -29,7 +29,7 @@
     "titel": "Yoga-Training",
     "dauer": "60 Min.",
     "preis": "40 €",
-    "text": "Entwickle deinen individuellen Yogaflow, abgestimmt auf die Bedürfnisse deines Körpers.",
+    "text": "Entwickle deinen eigenen Yogaflow, abgestimmt auf die Bedürfnisse deines Körpers, damit du dich beweglicher und ruhiger fühlst.",
     "bild": "yoga",
     "buchung": ""
   },

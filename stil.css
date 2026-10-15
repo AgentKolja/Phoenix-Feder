@@ -1,9 +1,16 @@
 /* Phoenix Feder – ein Stylesheet fuer alles. Farben stehen oben als Variablen. */
 
 @font-face {
-  font-family: "Fraunces";
-  src: url("schriften/fraunces.woff2") format("woff2");
-  font-weight: 300 600;
+  font-family: "Source Serif 4";
+  src: url("schriften/source-serif-4.woff2") format("woff2");
+  font-weight: 200 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("schriften/source-serif-4-italic.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: italic;
   font-display: swap;
 }
 @font-face {
@@ -34,7 +41,7 @@
   --linie: #e5d8c7;
   --schatten: 0 1px 2px rgb(60 40 20 / 6%), 0 8px 24px rgb(60 40 20 / 8%);
   --rund: 14px;
-  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light dark;
 }
@@ -85,7 +92,7 @@ img { max-width: 100%; height: auto; display: block; }
 a { color: var(--akzent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--akzent-hell); outline-offset: 3px; border-radius: 4px; }
-h1, h2, h3, h4 { font-family: var(--serif); font-weight: 450; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 0.6em; text-wrap: balance; }
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 0.6em; text-wrap: balance; }
 h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 400; }
 h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); }
 h3 { font-size: 1.3rem; }
@@ -157,6 +164,8 @@ p { margin: 0 0 1em; }
 .angebot { background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--schatten); }
 .angebot-bild { aspect-ratio: 4 / 3; object-fit: cover; width: 100%; }
 .angebot-bild.fokus-oben { object-position: 50% 25%; }
+.angebot-symbol { display: grid; place-items: center; background: color-mix(in srgb, var(--auf-akzent) 14%, transparent); }
+.angebot-symbol svg { width: 38%; height: auto; filter: drop-shadow(0 6px 14px rgb(0 0 0 / 18%)); }
 .angebot-text { padding: 1.4rem 1.4rem 1.6rem; display: flex; flex-direction: column; flex: 1; }
 .angebot-text .knopf { margin-top: auto; align-self: flex-start; }
 .angebot.hervorgehoben { background: var(--akzent); color: var(--auf-akzent); border-color: var(--akzent); justify-content: center; }
@@ -468,6 +477,8 @@ p { margin: 0 0 1em; }
   .ueber-bild { max-width: 15rem; }
   /* Angebote: Bilder flacher, damit die Liste nicht endlos wird */
   .angebot-bild, .angebot.breit .angebot-bild { aspect-ratio: 16 / 9; }
+  .angebot-symbol { aspect-ratio: 3 / 1; }
+  .angebot-symbol svg { width: 4.5rem; height: 4.5rem; }
   .angebot-text { padding: 1.1rem 1.2rem 1.3rem; }
   .felder { grid-template-columns: 1fr; }
   .ueber-kurz { grid-template-columns: 1fr; }
@@ -503,7 +514,7 @@ p { margin: 0 0 1em; }
 .quiz-probe { background: var(--karte); color: var(--text); border-radius: var(--rund); padding: 1.3rem 1.3rem 0.9rem; box-shadow: 0 18px 40px rgb(40 25 10 / 22%); }
 .quiz-probe .quiz-kopf { margin-bottom: 0.9rem; font-size: 0.85rem; }
 .quiz-probe .quiz-balken span { width: 5%; }
-.quiz-probe-frage { font: 450 clamp(1.2rem, 2.6vw, 1.4rem)/1.3 var(--serif); margin-bottom: 0.9rem; text-wrap: balance; }
+.quiz-probe-frage { font: 500 clamp(1.2rem, 2.6vw, 1.4rem)/1.3 var(--serif); margin-bottom: 0.9rem; text-wrap: balance; }
 .quiz-probe .quiz-antworten { margin-bottom: 0.7rem; }
 .quiz-probe .quiz-antwort { text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
 .quiz-probe .quiz-antwort:focus-visible { border-color: var(--akzent-hell); }

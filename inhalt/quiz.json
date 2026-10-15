@@ -1,5 +1,5 @@
 {
-  "version": "2026-10g",
+  "version": "2026-10h",
   "stand": "Oktober 2026",
   "weltbild": {
     "frage": "Bevor es losgeht: Glaubst du an eine bessere Zukunft für die Welt?",
@@ -9,7 +9,7 @@
     {
       "thema": "Armut",
       "frage": "Im Jahr 2000 lebte gut jeder dritte Mensch weltweit in extremer Armut. Und 2024?",
-      "antworten": [["Immer noch etwa jeder Dritte", "p"], ["Etwa jeder Fünfte", "p"], ["Etwa jeder Zehnte", "r"], ["Fast niemand mehr", "o"]],
+      "antworten": [["Immer noch etwa jeder Dritte, kaum weniger", "p"], ["Etwa jeder Fünfte, rund 45 % weniger", "p"], ["Etwa jeder Zehnte, rund 70 % weniger", "r"], ["Fast niemand mehr, über 95 % weniger", "o"]],
       "erklaerung": "Etwa jeder Zehnte (rund 10 %). Der Anteil ist damit auf weniger als ein Drittel gesunken, obwohl heute 2 Milliarden Menschen mehr leben. Extreme Armut heißt: weniger als 3 US-Dollar am Tag (kaufkraftbereinigt). Gut 800 Millionen Menschen sind es noch immer: zu viele, aber weit weniger, als die meisten denken.",
       "quelle": ["Weltbank, Poverty and Inequality Platform (Stand 2024)", "https://data.worldbank.org/indicator/SI.POV.DDAY"],
       "studie": [91, 94]
@@ -17,7 +17,7 @@
     {
       "thema": "Lebenserwartung",
       "frage": "In Deutschland werden Menschen im Schnitt rund 81 Jahre alt. Und weltweit?",
-      "antworten": [["Etwa 60 Jahre", "p"], ["Etwa 73 Jahre", "r"], ["Etwa 80 Jahre, fast wie bei uns", "o"], ["Etwa 85 Jahre, länger als bei uns", "o"]],
+      "antworten": [["Etwa 60 Jahre, rund 20 Jahre weniger als bei uns", "p"], ["Etwa 73 Jahre, rund 7 Jahre weniger als bei uns", "r"], ["Etwa 80 Jahre, fast wie bei uns", "o"], ["Etwa 85 Jahre, länger als bei uns", "o"]],
       "erklaerung": "Weltweit sind es gut 73 Jahre (2024), nur gut sieben Jahre weniger als in Deutschland. 1990 waren es weltweit 65 Jahre. Nach dem Einbruch durch die Corona-Pandemie steigt die Lebenserwartung wieder.",
       "quelle": ["Weltbank / UN World Population Prospects (Stand 2024)", "https://data.worldbank.org/indicator/SP.DYN.LE00.IN"],
       "studie": [63, 57]
@@ -40,8 +40,8 @@
     },
     {
       "thema": "Digitales",
-      "frage": "Wie viele Menschen auf der Welt nutzen heute das Internet?",
-      "antworten": [["Etwa die Hälfte", "p"], ["Etwa 3 von 4", "r"], ["Etwa 9 von 10", "o"], ["Fast alle", "o"]],
+      "frage": "2015 nutzten 4 von 10 Menschen weltweit das Internet. Wie viele sind es heute?",
+      "antworten": [["Etwa die Hälfte, ein Viertel mehr", "p"], ["Etwa 3 von 4, fast doppelt so viele", "r"], ["Etwa 9 von 10, mehr als doppelt so viele", "o"], ["Fast alle, zweieinhalbmal so viele", "o"]],
       "erklaerung": "2025 sind rund 6 Milliarden Menschen online, knapp drei Viertel der Menschheit (74 %). 2015 waren es erst 40 %: In zehn Jahren sind rund 3 Milliarden Menschen dazugekommen. 2,2 Milliarden sind noch offline.",
       "quelle": ["ITU, Facts and Figures 2025; Weltbank (Stand 2025)", "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"]
     },
@@ -71,35 +71,35 @@
     {
       "thema": "Kindergesundheit",
       "frage": "1990 starben weltweit 9 von 100 Kindern vor ihrem fünften Geburtstag. Wie viele sind es heute?",
-      "antworten": [["Immer noch etwa 9 von 100", "p"], ["Etwa 4 von 100", "r"], ["Etwa 1 von 100", "o"], ["Praktisch keins mehr", "o"]],
+      "antworten": [["Immer noch etwa 9 von 100, kaum weniger", "p"], ["Etwa 4 von 100, rund 60 % weniger", "r"], ["Etwa 1 von 100, rund 90 % weniger", "o"], ["Praktisch keins mehr", "o"]],
       "erklaerung": "Etwa 4 von 100: 1990 starben rund 93 von 1.000 Kindern vor ihrem fünften Geburtstag, 2024 waren es 37. Das sind sechzig Prozent weniger. Jedes verlorene Kind ist eins zu viel, und doch ist das einer der größten Fortschritte unserer Zeit.",
       "quelle": ["Weltbank / UN Inter-agency Group for Child Mortality Estimation (Stand 2024)", "https://data.worldbank.org/indicator/SH.DYN.MORT"]
     },
     {
       "thema": "Kinderarbeit",
       "frage": "Im Jahr 2000 mussten weltweit 246 Millionen Kinder arbeiten. Wie viele waren es 2024?",
-      "antworten": [["Mehr als damals", "p"], ["Etwa gleich viele", "p"], ["Fast nur noch halb so viele", "r"], ["Kaum noch ein Kind", "o"]],
+      "antworten": [["Rund 300 Millionen, mehr als damals", "p"], ["Rund 240 Millionen, etwa gleich viele", "p"], ["Rund 140 Millionen, fast halb so viele", "r"], ["Kaum noch ein Kind", "o"]],
       "erklaerung": "2024 waren es knapp 138 Millionen, also fast halb so viele wie im Jahr 2000. Rund 54 Millionen davon arbeiten unter gefährlichen Bedingungen. Das Ziel der UN, Kinderarbeit bis 2025 ganz zu beenden, wurde verfehlt. Der Fortschritt ist echt, und es bleibt viel zu tun.",
       "quelle": ["ILO und UNICEF, Child Labour: Global estimates 2024 (Juni 2025)", "https://www.unicef.org/press-releases/despite-progress-child-labour-still-affects-138-million-children-globally-ilo-unicef"]
     },
     {
       "thema": "Finanzen",
-      "frage": "Wie viele Erwachsene weltweit haben ein Konto, ob bei einer Bank oder per Handy (Mobile Money)?",
-      "antworten": [["Etwa jeder Vierte", "p"], ["Etwa die Hälfte", "p"], ["Etwa 8 von 10", "r"], ["Praktisch alle", "o"]],
+      "frage": "2011 hatte gut die Hälfte der Erwachsenen weltweit ein Konto. Wie viele sind es heute, ob bei einer Bank oder per Handy (Mobile Money)?",
+      "antworten": [["Immer noch etwa die Hälfte, kaum mehr", "p"], ["Etwa 6 von 10, knapp 20 % mehr", "p"], ["Etwa 8 von 10, gut 50 % mehr", "r"], ["Praktisch alle, fast doppelt so viele", "o"]],
       "erklaerung": "79 % der Erwachsenen haben ein Konto (2024), 2011 war es erst gut die Hälfte. Vor allem das Handy hat das möglich gemacht: In Afrika südlich der Sahara haben 40 % der Erwachsenen ein Mobile-Money-Konto. 1,3 Milliarden Erwachsene haben noch keins.",
       "quelle": ["Weltbank, Global Findex 2025 (Daten 2024)", "https://blogs.worldbank.org/en/allaboutfinance/digital-technology-is-unlocking-financial-inclusion"]
     },
     {
       "thema": "Atomwaffen",
       "frage": "1986 gab es weltweit rund 70.000 Atomsprengköpfe. Wie viele sind es heute?",
-      "antworten": [["Mehr als damals", "p"], ["Etwa halb so viele", "p"], ["Etwa ein Sechstel davon", "r"], ["Fast keine mehr", "o"]],
+      "antworten": [["Rund 80.000, mehr als damals", "p"], ["Rund 35.000, halb so viele", "p"], ["Rund 12.000, gut 80 % weniger", "r"], ["Fast keine mehr", "o"]],
       "erklaerung": "Anfang 2026 waren es rund 12.000, gut 80 % weniger als auf dem Höhepunkt des Kalten Kriegs. Etwa 86 % davon besitzen Russland und die USA. Eine Entwarnung ist das nicht: Ein einziger Sprengkopf kann eine Stadt zerstören, der Abbau ist seit den 1990er Jahren deutlich langsamer geworden, und einige Länder wie China bauen ihre Arsenale wieder aus.",
       "quelle": ["Federation of American Scientists, Status of World Nuclear Forces (Stand Anfang 2026)", "https://fas.org/initiative/status-world-nuclear-forces/"]
     },
     {
       "thema": "Naturkatastrophen",
       "frage": "Vor 100 Jahren starben pro Jahr im Schnitt rund 220.000 Menschen durch Naturkatastrophen. Wie viele sind es heute?",
-      "antworten": [["Etwa gleich viele", "p"], ["Rund 40.000", "r"], ["Rund 5.000", "o"], ["Fast niemand mehr", "o"]],
+      "antworten": [["Rund 220.000, etwa gleich viele", "p"], ["Rund 40.000, gut 80 % weniger", "r"], ["Rund 5.000, fast 98 % weniger", "o"], ["Fast niemand mehr", "o"]],
       "erklaerung": "Vor 100 Jahren (1915–1924) starben im Schnitt rund 220.000 Menschen pro Jahr durch Naturkatastrophen, in den letzten zehn Jahren (2015–2024) rund 38.000, obwohl heute viermal so viele Menschen leben. Frühwarnsysteme und stabilere Häuser retten Leben. Die Daten aus frühen Jahren sind lückenhaft; der Trend ist trotzdem deutlich.",
       "quelle": ["EM-DAT Katastrophendatenbank, über Our World in Data", "https://ourworldindata.org/natural-disasters"],
       "studie": [90, 94]
@@ -135,14 +135,14 @@
     {
       "thema": "Deutschland",
       "frage": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. Wie viele sind es heute in ganz Deutschland?",
-      "antworten": [["Rund 10.000", "p"], ["Rund 2.800", "r"], ["Rund 1.000", "o"], ["Unter 100", "o"]],
+      "antworten": [["Rund 10.000, knapp halb so viele", "p"], ["Rund 2.800, rund 85 % weniger", "r"], ["Rund 1.000, 95 % weniger", "o"], ["Unter 100, fast niemand mehr", "o"]],
       "erklaerung": "1970 starben allein in Westdeutschland über 19.000 Menschen im Straßenverkehr. 2024 waren es in ganz Deutschland 2.770, obwohl heute viel mehr Autos fahren. Viel bewirkt haben die Gurtpflicht und sicherere Autos, dazu eine bessere Notfallmedizin.",
       "quelle": ["Statistisches Bundesamt (Destatis), Verkehrsunfälle im Zeitvergleich", "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Verkehrsunfaelle/Tabellen/liste-strassenverkehrsunfaelle.html"]
     },
     {
       "thema": "Migration",
       "frage": "Von allen 25- bis 34-Jährigen in Deutschland hat etwa jeder Dritte einen Hochschulabschluss. Und von denen, die selbst eingewandert sind?",
-      "antworten": [["Etwa jeder Zehnte", "p"], ["Auch etwa jeder Dritte", "r"], ["Etwa jeder Zweite", "o"], ["Etwa zwei von drei", "o"]],
+      "antworten": [["Etwa jeder Zehnte, nur ein Drittel so viele", "p"], ["Auch etwa jeder Dritte, fast gleich viele", "r"], ["Etwa jeder Zweite, deutlich mehr", "o"], ["Etwa zwei von drei, doppelt so viele", "o"]],
       "erklaerung": "33 %, fast so viele wie in der Gesamtbevölkerung dieser Altersgruppe (34 %). Gleichzeitig hat gut ein Drittel der jungen Eingewanderten keinen Berufsabschluss und ist auch nicht in Ausbildung, bei allen 25- bis 34-Jährigen sind es 17 %. Das Bild ist gemischt, aber besser als sein Ruf. Auch die Zahl wird überschätzt: 2025 waren 19,8 % der Menschen in Deutschland selbst eingewandert (16,4 Millionen). In einer großen Studie mit rund 24.000 Befragten in sechs Ländern schätzten Menschen in Deutschland den Anteil 2018 im Schnitt auf 30 %, tatsächlich lag er damals bei knapp 15 %. In allen sechs Ländern hielten die Befragten Eingewanderte außerdem für schlechter ausgebildet und häufiger arbeitslos, als sie sind. Interessant: Wer politisch links und wer rechts steht, überschätzte den Anteil gleich stark.",
       "quelle": ["Statistisches Bundesamt, Mikrozensus 2025; Alesina, Miano und Stantcheva, Review of Economic Studies 2023", "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/04/PD26_128_125.html"]
     },

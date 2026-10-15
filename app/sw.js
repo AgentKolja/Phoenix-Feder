@@ -2,7 +2,7 @@
 // so sieht niemand veraltete Inhalte, solange er online ist.
 const VERSION = "routinen-__VERSION__";
 const DATEIEN = ["./", "app.js", "app.css", "daten.json", "manifest.webmanifest", "icon-192.png",
-  "../stil.css", "../thema.js", "../favicon.svg", "../schriften/fraunces.woff2", "../schriften/source-sans-3.woff2",
+  "../stil.css", "../thema.js", "../favicon.svg", "../schriften/source-serif-4.woff2", "../schriften/source-serif-4-italic.woff2", "../schriften/source-sans-3.woff2",
   "../schriften/source-sans-3-italic.woff2"];
 
 self.addEventListener("install", (e) => {
