@@ -70,6 +70,13 @@ def main():
     h2, m2 = map(int, s["ende"].split(":"))
     minuten = (h2 * 60 + m2) - (h * 60 + m)
 
+    # Plakat: wenig Text, große Schrift, kein Foto (Nikolas, Okt. 2026: „weniger Text, größer, nicht so typisch AI“)
+    uhr = lambda t: t[:-3] if t.endswith(":00") else t
+    plakat_tag = f"{TAGE[tag.weekday()]}, {tag.day}. {MONATE[tag.month - 1]}"
+    plakat_zeit = f"{uhr(s['beginn'])} bis {uhr(s['ende'])} Uhr"
+    plakat_ort = esc(o["name"]) + "<br>" + esc(o["strasse"]) + (f" ({esc(o['zusatz'])})" if o.get("zusatz") else "")
+    plakat_preis = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
+    feder = (WURZEL / "favicon.svg").read_text(encoding="utf-8").replace("<svg ", '<svg aria-hidden="true" ', 1)
     bild = (WURZEL / "bilder" / "achtsamkeit-1600.webp").as_uri()
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
@@ -104,10 +111,20 @@ def main():
   {anmelden()}
 </div>""",
         "plakat": f"""<div class="blatt plakat">
-  <div class="bogen"><img src="{bild}" alt=""></div>
-  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>
-  <p class="text">{esc(beschreibung)}</p>
-  <div class="unten"><div>{fakten_kurz}{leiter}</div>{anmelden("Scannen und anmelden")}</div>
+  <div class="sonne" aria-hidden="true"></div>
+  <p class="absender">{feder}Phoenix Feder</p>
+  <h1>Bewusst<br>leben</h1>
+  <p class="unter">Achtsamkeitsseminar</p>
+  <p class="zusatz">{esc(oberzeile)}</p>
+  <div class="infos">
+    <p class="gross">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
+    <p>{plakat_ort}</p>
+    <p>{plakat_preis}</p>
+  </div>
+  <div class="fuss">
+    <div class="qr">{qr}</div>
+    <p>Anmeldung<br><strong>{esc(kurz_url)}</strong><span class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</span></p>
+  </div>
 </div>""",
         "vorschau": f"""<div class="blatt vorschau">
   <div class="bogen"><img src="{bild}" alt=""></div>
