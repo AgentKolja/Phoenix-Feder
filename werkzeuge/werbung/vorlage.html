@@ -43,7 +43,9 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 .post, .story, .reel .ende { display: flex; flex-direction: column; }
 .post > *:not(.kreis), .story > *:not(.kreis) { position: relative; }
 .kreis { position: absolute; border-radius: 50%; overflow: hidden; }
-.kreis img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 72%; display: block; }
+/* Foto so in den Kreis gesetzt, dass im sichtbaren Teil (der Kreis ragt oben und rechts aus dem Bild)
+   Ärmel, Unterarm und Hand ganz zu sehen sind; Werte in % der Kreisgröße, gelten für alle Formate */
+.kreis img { position: absolute; width: 95%; height: auto; left: -5%; top: 38%; display: block; }
 .post h1, .story h1, .reel h1 { font-family: var(--sans); font-weight: 700; line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
 .post .unter, .story .unter, .reel .unter { line-height: 1.1; }
 .post .unten, .story .unten, .reel .unten { margin-top: auto; border-top: solid var(--text); display: grid; }
@@ -95,7 +97,6 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 @page { size: A4; margin: 0; }
 .plakat { width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; display: flex; flex-direction: column; background: #fffdf9; }
 .plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -46mm; top: -74mm; border-radius: 50%; overflow: hidden; }
-.plakat .kreis img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 72%; }
 .plakat > *:not(.kreis) { position: relative; }
 .plakat h1 { margin-top: 84mm; font: 700 66pt/0.95 var(--sans); text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
 .plakat .unter { font-size: 46pt; margin-top: 5mm; line-height: 1.1; }
