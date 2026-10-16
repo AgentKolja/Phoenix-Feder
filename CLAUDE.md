@@ -223,7 +223,12 @@ Okt. 2026): ganz oben nur das Nötigste (Worum in einem Satz, Wann, Wo, Preis/Pl
 über dem Anmeldeformular (`{{seminar_anmeldung}}`, enthält die h1). Erst darunter für Interessierte: drei Schritte
 (je ein Satz, auf dem Handy kompakt), Methoden als Liste mit Links (geprüft Okt. 2026: Wikipedia Shamatha und ACT,
 Body Scan Uni Wuppertal, achtsames Essen Universitätsspital Zürich, MBSR therapie.de, sonst eigene Übungsseiten),
-„Gut zu wissen“ und kurz „Wer dich begleitet“. Keine Agenda, keine Vorgeschmack-Übung (Schokolade ist raus), keine Zitate,
+„Gut zu wissen“ und kurz „Wer dich begleitet“. Kein Sprunglink „Mehr über das Seminar“ oben (die Infos folgen
+direkt), stattdessen „Mehr über das Seminar“ als große h2 über den drei Schritten. Schrift auf der ganzen Seite größer
+(Regeln unter `.seminar-seite` in `stil.css`). „Wer dich begleitet“ übernimmt den Text der Startseite (Consultant,
+Achtsamkeitstrainer und Coach; Berater für Transformation; 2015 Experiment Meditieren statt Rauchen, seit 2020 täglich).
+Das Schweigeretreat nie als Qualifikation nennen, das Kloster im Himalaya höchstens als Geschichte, wie es zum Seminar kam
+(Nikolas, Okt. 2026). Keine Agenda, keine Vorgeschmack-Übung (Schokolade ist raus), keine Zitate,
 kein Abschnitt „Was du mitnimmst“. „Mitbringen“ steht auf der Bestätigungsseite `/angemeldet/`. Den Gefühlston
 (angenehm/unangenehm/neutral) nicht auf der Seite beschreiben, der Teil wird noch überarbeitet. Leitsatz „Bewusst leben“,
 Text „In diesem Pilotseminar schärfst du deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in

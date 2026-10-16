@@ -686,7 +686,6 @@ def seminar_anmeldung_html():
       <h1>Achtsamkeitsseminar</h1>
       {worum.format("In zweieinhalb Stunden in kleiner Runde ")}
       <p>Der nächste Termin ist in Planung. Schreib mir unverbindlich, dann erfährst du ihn als Erste:r. Auch für dein Studio, deine Gruppe oder dein Team kannst du das Seminar anfragen.</p>
-      <a class="mehr-link" href="#mehr">Mehr über das Seminar ↓</a>
     </div>
     {kontakt_html("Achtsamkeitsseminar")}"""
     betreff = f"Anmeldung Achtsamkeitsseminar {t['tag_lang']}"
@@ -699,7 +698,6 @@ def seminar_anmeldung_html():
         <li><strong>Wo:</strong> {esc(t['ort']['name'])}, {esc(t['ort']['strasse'])}{" (" + esc(t['ort']['zusatz']) + ")" if t['ort'].get('zusatz') else ""}</li>
         <li><strong>Preis:</strong> {esc(t['preis'][:1].upper() + t['preis'][1:])}, {t['plaetze']} Plätze</li>
       </ul>
-      <a class="mehr-link" href="#mehr">Mehr über das Seminar ↓</a>
     </div>
     <div>
       <form class="formular" action="https://api.web3forms.com/submit" method="POST" data-kontakt

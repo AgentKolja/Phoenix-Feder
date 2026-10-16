@@ -310,7 +310,23 @@ p { margin: 0 0 1em; }
 .seminar-oben { padding-top: clamp(1.5rem, 4vw, 3rem); }
 .seminar-basis h1 { margin-bottom: 0.4em; }
 .seminar-basis .gross { margin-bottom: 1rem; }
-.mehr-link { display: inline-block; padding-block: 0.5rem; font-weight: 600; }
+/* Seminarseite: größere Schrift (Nikolas, Okt. 2026) */
+.seminar-seite p, .seminar-seite li { font-size: 1.2rem; }
+.seminar-seite .gross { font-size: clamp(1.3rem, 2.4vw, 1.5rem); line-height: 1.55; }
+.seminar-seite .klein { font-size: 1.05rem; }
+.seminar-seite .abschnitt-kopf p:not(.oberzeile) { font-size: 1.25rem; }
+.seminar-seite .methoden-titel { font-size: clamp(1.6rem, 3.5vw, 2rem); margin-bottom: 1rem; }
+.seminar-seite .methoden li { font-size: 1.1rem; }
+.seminar-seite .ebene h3 { font-size: 1.5rem; }
+.seminar-seite .oberzeile { font-size: 0.95rem; }
+.seminar-seite #mehr h2, #mehr .abschnitt-kopf h2 { font-size: clamp(2.1rem, 5vw, 3rem); }
+.seminar-seite .ueber h2 { font-size: clamp(1.9rem, 4vw, 2.5rem); }
+.seminar-seite .formular label, .seminar-seite .formular input, .seminar-seite .formular textarea { font-size: 1.1rem; }
+.seminar-seite .knopf { font-size: 1.1rem; }
+@media (max-width: 640px) {
+  .seminar-seite p, .seminar-seite li { font-size: 1.12rem; }
+  .seminar-seite .ebene p { font-size: 1.05rem; }
+}
 .chips a[aria-current] { background: var(--akzent); border-color: var(--akzent); color: var(--auf-akzent); }
 
 /* Impuls für heute */
