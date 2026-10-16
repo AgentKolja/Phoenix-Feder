@@ -112,11 +112,11 @@ def main():
 </div>""",
         "plakat": f"""<div class="blatt plakat">
   <div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>
-  <h1>Bewusst<br>leben</h1>
-  <p class="unter">Achtsamkeitsseminar</p>
+  <h1>Achtsamkeits-<br>seminar</h1>
+  <p class="unter">Bewusst leben</p>
   <div class="unten">
+    <p class="termin">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
     <div class="infos">
-      <p class="gross">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
       <p>{esc(o["name"])}</p>
       <p>{plakat_preis}</p>
       <p class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</p>
