@@ -113,15 +113,11 @@ def main():
         "plakat": f"""<div class="blatt plakat">
   <div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>
   <h1>Achtsamkeits-<br>seminar</h1>
-  <p class="unter">Bewusst leben</p>
+  <p class="unter">Bewusster leben</p>
   <div class="unten">
     <p class="termin">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
-    <div class="infos">
-      <p>{esc(o["name"])}</p>
-      <p>{plakat_preis}</p>
-      <p class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</p>
-    </div>
-    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong></p></div>
+    <p class="infos">{esc(o["name"])}<br>{plakat_preis}</p>
+    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong><span class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</span></p></div>
   </div>
 </div>""",
         "vorschau": f"""<div class="blatt vorschau">

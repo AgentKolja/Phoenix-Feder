@@ -81,22 +81,22 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 .vorschau .leiter { gap: 16px; margin-top: 40px; font-size: 22px; }
 .vorschau .leiter img { width: 64px; height: 64px; }
 
-/* ---------- Plakat DIN A4: sehr wenig Text, sehr groß, ein Bild im Kreis ---------- */
+/* ---------- Plakat DIN A4: sehr wenig Text, alles groß, ein Bild im Kreis ---------- */
 @page { size: A4; margin: 0; }
-.plakat { width: 210mm; height: 297mm; padding: 15mm 16mm 14mm; display: flex; flex-direction: column; background: #fffdf9; }
-.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -46mm; top: -62mm; border-radius: 50%; overflow: hidden; }
-.plakat .kreis img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 60%; }
+.plakat { width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; display: flex; flex-direction: column; background: #fffdf9; }
+.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -46mm; top: -74mm; border-radius: 50%; overflow: hidden; }
+.plakat .kreis img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 72%; }
 .plakat > *:not(.kreis) { position: relative; }
-.plakat h1 { margin-top: 94mm; font: 700 66pt/0.95 var(--sans); text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
-.plakat .unter { font-size: 46pt; margin-top: 6mm; line-height: 1.1; }
-.plakat .unten { margin-top: auto; padding-top: 6mm; border-top: 0.8mm solid var(--text); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5mm 8mm; align-items: end; }
-.plakat .termin { grid-column: 1 / -1; font: 600 34pt/1.15 var(--sans); color: var(--text); }
-.plakat .infos { display: grid; gap: 4mm; font: 400 27pt/1.2 var(--sans); color: var(--text); }
-.plakat .infos .klein { font-size: 15pt; color: var(--leise); margin-top: 2mm; }
-.plakat .anmelden-qr { display: grid; justify-items: start; gap: 3mm; }
-.plakat .qr { width: 44mm; height: 44mm; }
-.plakat .anmelden-qr p { font: 400 15pt/1.3 var(--sans); color: var(--text); }
-.plakat .anmelden-qr strong { font-size: 15pt; color: var(--akzent); }
+.plakat h1 { margin-top: 84mm; font: 700 66pt/0.95 var(--sans); text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
+.plakat .unter { font-size: 46pt; margin-top: 5mm; line-height: 1.1; }
+.plakat .unten { margin-top: auto; padding-top: 6mm; border-top: 0.8mm solid var(--text); display: grid; gap: 5mm; }
+.plakat .termin { font: 600 36pt/1.12 var(--sans); color: var(--text); }
+.plakat .infos { font: 400 30pt/1.2 var(--sans); color: var(--text); }
+.plakat .anmelden-qr { display: flex; align-items: center; gap: 7mm; margin-top: 2mm; }
+.plakat .qr { width: 42mm; height: 42mm; flex: none; }
+.plakat .anmelden-qr p { font: 400 19pt/1.3 var(--sans); color: var(--text); }
+.plakat .anmelden-qr strong { font-size: 22pt; color: var(--akzent); }
+.plakat .anmelden-qr .klein { display: block; margin-top: 3mm; font-size: 17pt; color: var(--leise); }
 
 /* ---------- Kurzvideo 1080 × 1920 (Reel, Story, Status) ---------- */
 .reel { width: 1080px; height: 1920px; background: #1b1613; }
