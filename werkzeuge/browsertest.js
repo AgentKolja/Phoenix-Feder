@@ -143,6 +143,9 @@ function server() {
   pruefe("Angebot enthält das Seminar", (await p.getAttribute('.angebot a[href*="achtsamkeitsseminar"]', "href")) !== null);
   await p.goto(`${B}/achtsamkeitsseminar/`, { waitUntil: "load" });
   pruefe("Seminar-Seite erreichbar", (await p.textContent("h1")) === "Achtsamkeitsseminar");
+  pruefe("Seminar-Seite schlank: Kurzinfo und Anmeldung ganz oben, Methoden verlinkt, keine Schokoladen-Übung",
+    Boolean(await p.$("#anmelden h1")) && (await p.$$("#anmelden .termin-daten li, #anmelden form")).length >= 1
+    && (await p.$$(".methoden a")).length >= 6 && !(await p.textContent("main")).includes("Schokolade"));
   // Seminar-Anmeldung: Formular mit zwei Pflichtfeldern, danach Kalender-Knöpfe (Web3Forms wird im Test simuliert)
   if (await p.$('form[data-danach="seminar-kalender"]')) {
     const pflicht = await p.$$eval('form[data-danach] [required]', (l) => l.map((x) => x.name));

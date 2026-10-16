@@ -675,27 +675,31 @@ def seminar_kalender_html(t, versteckt=False):
 
 
 def seminar_anmeldung_html():
+    """Oberster Block der Seminarseite: nur das Nötigste (Worum, Wann, Wo, Preis) direkt neben bzw. über dem
+    Anmeldeformular. Alles Weitere steht weiter unten (Nikolas, Okt. 2026: „viel schlanker“)."""
     t = seminar_termin()
+    worum = ('<p class="gross">{}schärfst du deine Wahrnehmung, lernst dich selbst besser kennen und übst, '
+             'auch in schwierigen Situationen bewusst zu handeln.</p>')
     if not t:
-        return f"""<div>
-      <p class="oberzeile">Termine</p>
-      <h2>Beim nächsten Seminar dabei sein</h2>
-      <p>Das Seminar dauert etwa zweieinhalb Stunden, mit Pause, in einer kleinen Gruppe. Der nächste Termin ist in Planung: Schreib mir unverbindlich, dann erfährst du ihn als Erste:r.</p>
-      <p>Du möchtest das Seminar für dein Studio, deine Gruppe oder dein Team anfragen? Auch dann freue ich mich über deine Nachricht.</p>
+        return f"""<div class="seminar-basis">
+      <p class="oberzeile">Grundlagen der Meditation</p>
+      <h1>Achtsamkeitsseminar</h1>
+      {worum.format("In zweieinhalb Stunden in kleiner Runde ")}
+      <p>Der nächste Termin ist in Planung. Schreib mir unverbindlich, dann erfährst du ihn als Erste:r. Auch für dein Studio, deine Gruppe oder dein Team kannst du das Seminar anfragen.</p>
+      <a class="mehr-link" href="#mehr">Mehr über das Seminar ↓</a>
     </div>
     {kontakt_html("Achtsamkeitsseminar")}"""
     betreff = f"Anmeldung Achtsamkeitsseminar {t['tag_lang']}"
-    return f"""<div>
-      <p class="oberzeile">{esc(t['art']) + "-Termin" if t.get('art') else "Nächster Termin"}</p>
-      <h2>{esc(t['tag_lang'])}</h2>
+    return f"""<div class="seminar-basis">
+      <p class="oberzeile">Grundlagen der Meditation</p>
+      <h1>Achtsamkeitsseminar</h1>
+      {worum.format("In diesem Pilotseminar " if t.get("art") == "Pilot" else "In diesem Seminar ")}
       <ul class="termin-daten">
-        <li><strong>Zeit:</strong> {esc(t['zeit'])} ({t['minuten']} Minuten)</li>
-        <li><strong>Ort:</strong> {esc(t['ort_text'])}{", " + esc(t['ort_hinweis']) if t['ort_hinweis'] else ""}</li>
-        {f"<li><strong>Mitbringen:</strong> {esc(t['mitbringen'])}</li>" if t.get('mitbringen') else ""}
-        <li><strong>Plätze:</strong> {t['plaetze']}</li>
-        <li><strong>Preis:</strong> {esc(t['preis_hinweis'] or t['preis'])}</li>
+        <li><strong>Wann:</strong> {esc(t['tag_lang'])}, {esc(t['zeit'])}</li>
+        <li><strong>Wo:</strong> {esc(t['ort']['name'])}, {esc(t['ort']['strasse'])}{" (" + esc(t['ort']['zusatz']) + ")" if t['ort'].get('zusatz') else ""}</li>
+        <li><strong>Preis:</strong> {esc(t['preis'][:1].upper() + t['preis'][1:])}, {t['plaetze']} Plätze</li>
       </ul>
-      <p class="klein">Du kannst nicht? Sag kurz Bescheid, dann rückt jemand nach. Du möchtest das Seminar für dein Studio, deine Gruppe oder dein Team anfragen? Schreib mir über das <a href="/#kontakt">Kontaktformular</a>.</p>
+      <a class="mehr-link" href="#mehr">Mehr über das Seminar ↓</a>
     </div>
     <div>
       <form class="formular" action="https://api.web3forms.com/submit" method="POST" data-kontakt
@@ -729,7 +733,9 @@ def seminar_kalender_seite():
     t = seminar_termin()
     if not t:
         return '<p>Danke für deine Anmeldung! Ich melde mich mit allen Infos bei dir.</p>'
-    return f'<p>Danke, du bist für <strong>{esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> angemeldet. Ich schicke dir am Vortag eine kurze Erinnerung.</p>\n' + seminar_kalender_html(t)
+    mitbringen = f'<p><strong>Mitbringen:</strong> {esc(t["mitbringen"])}</p>\n' if t.get("mitbringen") else ""
+    return (f'<p>Danke, du bist für <strong>{esc(t["tag_lang"])}, {esc(t["zeit"])}</strong> angemeldet. Ich schicke dir am Vortag eine kurze Erinnerung.</p>\n'
+            + mitbringen + seminar_kalender_html(t))
 
 
 def bausteine_einsetzen(text, artikel):

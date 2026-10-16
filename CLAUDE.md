@@ -218,14 +218,18 @@ Quiz mit Kontakt und Seminar-Anmeldung – bei viel Andrang auf einen eigenen Sc
 
 ## Achtsamkeitsseminar (`/achtsamkeitsseminar/`)
 
-Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln). Die Seite soll
-neugierig machen und nicht zu viel vorwegnehmen (Nikolas, Okt. 2026): keine Agenda mit Minuten, nur „Was dich
-erwartet“ (Nachmittag in kleiner Runde, Teepause, Begleitbogen) und eine Liste der Methoden. Den Gefühlston
+Inhalt aus Nikolas’ Konzept-PDF (Drei Ebenen: Wahrnehmen, Dich selbst verstehen, Bewusst handeln). **Schlank** (Nikolas,
+Okt. 2026): ganz oben nur das Nötigste (Worum in einem Satz, Wann, Wo, Preis/Plätze) direkt neben bzw. auf dem Handy
+über dem Anmeldeformular (`{{seminar_anmeldung}}`, enthält die h1). Erst darunter für Interessierte: drei Schritte
+(je ein Satz, auf dem Handy kompakt), Methoden als Liste mit Links (geprüft Okt. 2026: Wikipedia Shamatha und ACT,
+Body Scan Uni Wuppertal, achtsames Essen Universitätsspital Zürich, MBSR therapie.de, sonst eigene Übungsseiten),
+„Gut zu wissen“ und kurz „Wer dich begleitet“. Keine Agenda, keine Vorgeschmack-Übung (Schokolade ist raus), keine Zitate,
+kein Abschnitt „Was du mitnimmst“. „Mitbringen“ steht auf der Bestätigungsseite `/angemeldet/`. Den Gefühlston
 (angenehm/unangenehm/neutral) nicht auf der Seite beschreiben, der Teil wird noch überarbeitet. Leitsatz „Bewusst leben“,
 Text „In diesem Pilotseminar schärfst du deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in
 schwierigen Situationen bewusst zu handeln.“ (nach dem Pilot „Pilotseminar“ herausnehmen, auch in der Werbung).
-Vorgeschmack-Übung nur mit Schokolade (keine Dattel). Hintergrund kurz: Kabat-Zinn, Lazarus, Hayes. Bilder `seminar-*` stammen aus
-dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Hinweis oben, Anmeldung `#anmelden`), Angebotskarte
+Bilder `seminar-*` stammen aus
+dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Kurzinfo und Anmeldung oben, `#anmelden`), Angebotskarte
 (`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
 Anmeldung: nur Vorname + E-Mail über Web3Forms; Nikolas nimmt 2–3 Anmeldungen mehr an als Plätze (Absagen-Puffer)
 und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026), Ort Warung Yoga Aachen. Seminar-Leitfaden mit Kursplan, Materialliste

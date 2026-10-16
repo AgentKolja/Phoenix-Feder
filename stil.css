@@ -302,6 +302,15 @@ p { margin: 0 0 1em; }
 .methoden-titel { font-size: 1.15rem; margin: 0 0 0.8rem; }
 .methoden { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
 .methoden li { padding: 0.45rem 0.95rem; border: 1px solid var(--linie); border-radius: 999px; background: var(--karte); font-size: 0.95rem; }
+.methoden a { display: block; margin: -0.45rem -0.95rem; padding: 0.45rem 0.95rem; color: var(--akzent); text-decoration: none; }
+.methoden a:hover { text-decoration: underline; }
+.methoden li:has(a) { border-color: color-mix(in srgb, var(--akzent-hell) 55%, var(--linie)); }
+.methoden-quelle { margin-top: 1.2rem; }
+/* Seminarseite: Kurzinfo und Anmeldung ganz oben */
+.seminar-oben { padding-top: clamp(1.5rem, 4vw, 3rem); }
+.seminar-basis h1 { margin-bottom: 0.4em; }
+.seminar-basis .gross { margin-bottom: 1rem; }
+.mehr-link { display: inline-block; padding-block: 0.5rem; font-weight: 600; }
 .chips a[aria-current] { background: var(--akzent); border-color: var(--akzent); color: var(--auf-akzent); }
 
 /* Impuls für heute */
@@ -416,6 +425,13 @@ p { margin: 0 0 1em; }
 .ebene img { aspect-ratio: 4 / 3; object-fit: cover; width: 100%; }
 .ebene > div { padding: 1.2rem 1.3rem 1.3rem; }
 .ebene h3 { margin: 0.2rem 0 0.5rem; }
+@media (max-width: 640px) {
+  .ebenen { gap: 0.8rem; }
+  .ebene { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); align-items: stretch; }
+  .ebene img { aspect-ratio: auto; height: 100%; min-height: 6.5rem; }
+  .ebene > div { padding: 0.8rem 1rem; }
+  .ebene p { margin: 0; font-size: 0.95rem; }
+}
 .ablauf { list-style: none; counter-reset: schritt; padding: 0; margin: 0; }
 .ablauf li { counter-increment: schritt; display: grid; grid-template-columns: 2.6rem 1fr; gap: 0.2rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--linie); }
 .ablauf li::before { content: counter(schritt); grid-row: span 3; font: 500 1.8rem/1 var(--serif); color: var(--akzent); }

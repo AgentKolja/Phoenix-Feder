@@ -2,155 +2,77 @@ titel: Achtsamkeitsseminar
 beschreibung: Achtsamkeitsseminar in Aachen: Du schärfst deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.
 bild: og-seminar.jpg
 ---
-<!-- Quelle: Konzept „Achtsamkeits-Seminar – Drei Ebenen der Achtsamkeit“ (PDF von Nikolas, Okt. 2026).
-     150 Minuten. Termin, Ort, Plätze, Preis: inhalt/seminar.json (Baustein {{seminar_anmeldung}}).
-     Zitate: Kabat-Zinn (Wherever You Go, There You Are, 1994) und Epiktet (Handbüchlein der Moral, 5) sind belegt;
-     der Frankl-Satz ist bei Frankl nicht wörtlich belegt, deshalb „inspiriert durch“. -->
-<section class="held">
-  <div class="huelle held-innen">
-    <div>
-      <p class="oberzeile">Bewusst leben · Grundlagen der Meditation</p>
-      <h1>Achtsamkeitsseminar</h1>
-      <!-- „Pilotseminar“ nach dem Pilot-Termin wieder herausnehmen -->
-      <p class="gross">In diesem Pilotseminar schärfst du deine Wahrnehmung, lernst dich selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.</p>
-      {{seminar_hinweis}}
-      <div class="knopf-reihe">
-        <a class="knopf" href="#anmelden">Zur Anmeldung</a>
-        <a class="knopf zweit" href="#ablauf">Was dich erwartet</a>
-      </div>
-    </div>
-    <div class="held-bild">{{bild seminar-meditation "Eine Frau meditiert im Schneidersitz in einem hellen Raum" "" "eager"}}</div>
+<!-- Aufbau (Nikolas, Okt. 2026): oben nur das Nötigste direkt am Anmeldeformular ({{seminar_anmeldung}}, Daten aus
+     inhalt/seminar.json), darunter kurz für alle, die mehr wissen wollen. Keine Agenda, keine Vorgeschmack-Übung.
+     „Pilotseminar“ steuert seminar.json ("art": "Pilot"); nach dem Pilot dort ändern. -->
+<section class="abschnitt seminar-oben" id="anmelden">
+  <div class="huelle kontakt-raster">
+    {{seminar_anmeldung}}
   </div>
 </section>
 
-<section class="abschnitt getoent">
+<section class="abschnitt getoent" id="mehr">
   <div class="huelle">
     <div class="abschnitt-kopf">
-      <p class="oberzeile">Der Kern</p>
-      <h2>Nimm wahr, was jetzt ist. Verstehe es. Handle bewusst.</h2>
-      <p>Achtsamkeit heißt, ganz im Hier und Jetzt zu sein, mit allen Sinnen und ohne zu urteilen. Das lässt sich üben. Im Seminar in drei Ebenen, die aufeinander aufbauen.</p>
+      <p class="oberzeile">Mehr über das Seminar</p>
+      <h2>Drei Schritte, die aufeinander aufbauen</h2>
+      <p>Ein Nachmittag in kleiner Runde mit Übungen, kurzen Impulsen und Austausch. Was genau passiert, erlebst du am besten selbst.</p>
     </div>
     <div class="ebenen">
       <article class="ebene">
         {{bild seminar-wahrnehmung "Eine Hand streift durch ein Weizenfeld"}}
         <div>
-          <p class="oberzeile">Ebene 1</p>
           <h3>Wahrnehmen</h3>
-          <p>Atem, Körper und Sinne: ankommen in dem, was gerade ist. Wahrnehmung ist der Boden, aus dem alles Weitere wächst.</p>
-          <p class="zitat zitat-klein">„Achtsamkeit bedeutet, auf eine bestimmte Weise aufmerksam zu sein: absichtsvoll, im gegenwärtigen Moment und ohne zu urteilen.“ <span>Jon Kabat-Zinn</span></p>
+          <p>Atem, Körper und Sinne: ankommen in dem, was gerade ist.</p>
         </div>
       </article>
       <article class="ebene">
         {{bild seminar-verstehen "Eine Tasse Tee neben einem aufgeschlagenen Buch mit Brille"}}
         <div>
-          <p class="oberzeile">Ebene 2</p>
           <h3>Dich selbst verstehen</h3>
           <p>Erkennen, was in dir passiert, und merken: Du bist mehr als deine Gedanken.</p>
-          <p class="zitat zitat-klein">„Nicht die Dinge selbst beunruhigen die Menschen, sondern ihre Urteile über die Dinge.“ <span>Epiktet</span></p>
         </div>
       </article>
       <article class="ebene">
         {{bild seminar-handeln "Ein Mensch steht im Wald an einer Weggabelung"}}
         <div>
-          <p class="oberzeile">Ebene 3</p>
           <h3>Bewusst handeln</h3>
-          <p>Zwischen Reiz und Reaktion innehalten und aus Klarheit statt aus Gewohnheit handeln, auch wenn es schwierig wird.</p>
-          <p class="zitat zitat-klein">„Zwischen Reiz und Reaktion gibt es einen Moment. Die Macht, in diesem Moment bewusst zu handeln, ist Freiheit.“ <span>inspiriert durch Viktor Frankl</span></p>
+          <p>Innehalten und aus Klarheit statt aus Gewohnheit handeln, auch wenn es schwierig wird.</p>
         </div>
       </article>
     </div>
   </div>
 </section>
 
-<section class="abschnitt" id="ablauf">
+<section class="abschnitt">
   <div class="huelle-schmal">
-    <div class="abschnitt-kopf">
-      <p class="oberzeile">Was dich erwartet</p>
-      <h2>Ein Nachmittag in kleiner Runde</h2>
-      <p>Übungen, kurze Impulse und Austausch, dazwischen eine Teepause. Ein Begleitbogen führt dich durch den Nachmittag, und für deine Fragen ist am Ende Zeit. Was genau passiert, erlebst du am besten selbst.</p>
-    </div>
-    <h3 class="methoden-titel">Methoden, mit denen wir arbeiten</h3>
+    <h2 class="methoden-titel">Methoden, mit denen wir arbeiten</h2>
     <ul class="methoden">
-      <li>Atemmeditation (Shamatha)</li>
-      <li>Body Scan</li>
-      <li>Progressive Muskelentspannung</li>
-      <li>Achtsames Essen</li>
-      <li>Übungen aus der Akzeptanz- und Commitment-Therapie</li>
+      <li><a href="https://de.wikipedia.org/wiki/Shamatha" target="_blank" rel="noopener">Atemmeditation (Shamatha)</a></li>
+      <li><a href="https://rw.uni-wuppertal.de/fileadmin/rw/Textdateien/Taff_BausteinB/AB_4_Achtsamkeits%C3%BCbungen.pdf" target="_blank" rel="noopener">Body Scan</a></li>
+      <li><a href="/gewohnheiten/muskelentspannung/">Progressive Muskelentspannung</a></li>
+      <li><a href="https://www.usz.ch/app/uploads/2022/03/ERN_Achtsames-Essen_CC_20200427.pdf" target="_blank" rel="noopener">Achtsames Essen</a></li>
+      <li><a href="https://de.wikipedia.org/wiki/Akzeptanz-_und_Commitmenttherapie" target="_blank" rel="noopener">Übungen aus der Akzeptanz- und Commitment-Therapie</a></li>
       <li>Wertespiel</li>
-      <li>Innehalten in schwierigen Momenten</li>
-      <li>Dankbarkeit</li>
+      <li><a href="/gewohnheiten/emotionale-intelligenz/">Innehalten in schwierigen Momenten</a></li>
+      <li><a href="/gewohnheiten/reflektion/">Dankbarkeit</a></li>
     </ul>
+    <p class="klein methoden-quelle">Grundlage ist die Achtsamkeitspraxis aus <a href="https://www.therapie.de/psyche/info/therapie/achtsamkeit/mbsr/" target="_blank" rel="noopener">MBSR (Stressbewältigung durch Achtsamkeit)</a> nach Jon Kabat-Zinn.</p>
+    <p class="klein"><strong>Gut zu wissen:</strong> Du kannst doch nicht? Sag kurz Bescheid, dann rückt jemand nach. Für dein Studio, deine Gruppe oder dein Team kannst du das Seminar über das <a href="/#kontakt">Kontaktformular</a> anfragen.</p>
   </div>
 </section>
 
 <section class="abschnitt getoent">
-  <div class="huelle-schmal">
-    <div class="abschnitt-kopf">
-      <p class="oberzeile">Ein Vorgeschmack</p>
-      <h2>Ein Stück Schokolade, ganz bewusst</h2>
-      <p>So kann das Seminar beginnen. Probier es gleich aus, mit einem Stück dunkler Schokolade. Dauer: etwa fünf Minuten.</p>
-    </div>
-    <details class="anleitung">
-      <summary>Anleitung öffnen</summary>
-      <ol>
-        <li>Nimm ein Stück Schokolade in die Hand. Iss es noch nicht. Schau es dir zuerst nur an: die Form, die Farbe, die Oberfläche. Vielleicht siehst du feine Rillen oder einen matten Glanz.</li>
-        <li>Halte kurz inne und denk darüber nach, wo sie herkommt. Sie beginnt mit einer Kakaobohne, die in warmen Regionen der Welt an einem Baum reift. Menschen haben sie geerntet, fermentiert, getrocknet, geröstet und hierhergebracht.</li>
-        <li>Führ das Stück langsam zur Nase und nimm einen Moment den Duft wahr.</li>
-        <li>Leg es auf die Zunge und lass es schmelzen, bevor du beißt. Spür die Textur und wie sich der Geschmack entfaltet. Vielleicht bitter, vielleicht fruchtig.</li>
-        <li>Nimm wahr, wie sich der Geschmack verändert. Und wenn du schluckst, nimm auch diesen Moment bewusst wahr.</li>
-      </ol>
-      <p class="zitat">Ein so kleiner Moment, und doch steckt so viel Leben darin.</p>
-    </details>
-  </div>
-</section>
-
-<section class="abschnitt">
-  <div class="huelle">
-    <div class="abschnitt-kopf">
-      <p class="oberzeile">Was du mitnimmst</p>
-      <h2>Kleine Werkzeuge für jeden Tag</h2>
-    </div>
-    <ul class="tipps">
-      <li><strong>Übungen für unterwegs.</strong> Kurz genug für den Alltag und hilfreich, wenn es schwierig wird.</li>
-      <li><strong>Mehr Klarheit über dich.</strong> Was in dir passiert und was dir wirklich wichtig ist.</li>
-      <li><strong>Einen Moment mehr Raum.</strong> Zwischen dem, was passiert, und dem, wie du reagierst.</li>
-    </ul>
-  </div>
-</section>
-
-<section class="abschnitt getoent">
-  <div class="huelle-schmal">
-    <div class="abschnitt-kopf">
-      <p class="oberzeile">Hintergrund</p>
-      <h2>Worauf das Seminar aufbaut</h2>
-    </div>
-    <ul class="tipps">
-      <li><strong>Wahrnehmen:</strong> Die Übungen bauen auf der Achtsamkeitspraxis auf, wie Jon Kabat-Zinn sie mit dem Programm MBSR (Stressbewältigung durch Achtsamkeit) geprägt hat.</li>
-      <li><strong>Dich selbst verstehen:</strong> Stress entsteht wesentlich durch unsere Bewertung einer Situation, nicht allein durch das Ereignis (Richard Lazarus). Wer Gedanken und Gefühle klarer erkennt, kann diese Bewertung bemerken.</li>
-      <li><strong>Bewusst handeln:</strong> Nach den eigenen Werten handeln, auch wenn innen gerade viel los ist. Die Akzeptanz- und Commitment-Therapie nennt das psychologische Flexibilität (Steven C. Hayes).</li>
-    </ul>
-  </div>
-</section>
-
-<section class="abschnitt">
   <div class="huelle ueber">
     {{bild nikolas-portrait "Porträt von Nikolas Voth" "ueber-bild"}}
     <div>
       <p class="oberzeile">Wer dich begleitet</p>
       <h2>Nikolas Voth</h2>
-      <ul class="tipps">
-        <li><strong>Agile Coach:</strong> Workshops zu Vision, Teamwerten und Mindset</li>
-        <li><strong>Kommunikationstrainer:</strong> Gewaltfreie Kommunikation</li>
-        <li><strong>Meditation und Yoga:</strong> tägliche Praxis seit 2020</li>
-        <li><strong>Buddhistische Praxis:</strong> Begegnungen mit buddhistischen Meistern, Schweigeretreat in einem Kloster im Himalaya</li>
-      </ul>
-      <a class="knopf zweit" href="/about/">Mehr über mich</a>
+      <p>Agile Coach und Kommunikationstrainer für Gewaltfreie Kommunikation, mit täglicher Meditations- und Yogapraxis seit 2020 und einem Schweigeretreat in einem Kloster im Himalaya.</p>
+      <div class="knopf-reihe">
+        <a class="knopf" href="#anmelden">Zur Anmeldung</a>
+        <a class="knopf zweit" href="/about/">Mehr über mich</a>
+      </div>
     </div>
-  </div>
-</section>
-
-<section class="abschnitt getoent" id="anmelden">
-  <div class="huelle kontakt-raster">
-    {{seminar_anmeldung}}
   </div>
 </section>
