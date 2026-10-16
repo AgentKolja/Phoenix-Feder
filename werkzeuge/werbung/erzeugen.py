@@ -76,7 +76,7 @@ def main():
     plakat_zeit = f"{uhr(s['beginn'])} bis {uhr(s['ende'])} Uhr"
     plakat_ort = esc(o["name"]) + "<br>" + esc(o["strasse"]) + (f" ({esc(o['zusatz'])})" if o.get("zusatz") else "")
     plakat_preis = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
-    feder = (WURZEL / "favicon.svg").read_text(encoding="utf-8").replace("<svg ", '<svg aria-hidden="true" ', 1)
+    plakat_bild = (WURZEL / "bilder" / "seminar-wahrnehmung-1600.webp").as_uri()  # Hand im Kornfeld: Wahrnehmen
     bild = (WURZEL / "bilder" / "achtsamkeit-1600.webp").as_uri()
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
@@ -111,19 +111,17 @@ def main():
   {anmelden()}
 </div>""",
         "plakat": f"""<div class="blatt plakat">
-  <div class="sonne" aria-hidden="true"></div>
-  <p class="absender">{feder}Phoenix Feder</p>
+  <div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>
   <h1>Bewusst<br>leben</h1>
   <p class="unter">Achtsamkeitsseminar</p>
-  <p class="zusatz">{esc(oberzeile)}</p>
-  <div class="infos">
-    <p class="gross">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
-    <p>{plakat_ort}</p>
-    <p>{plakat_preis}</p>
-  </div>
-  <div class="fuss">
-    <div class="qr">{qr}</div>
-    <p>Anmeldung<br><strong>{esc(kurz_url)}</strong><span class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</span></p>
+  <div class="unten">
+    <div class="infos">
+      <p class="gross">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
+      <p>{esc(o["name"])}</p>
+      <p>{plakat_preis}</p>
+      <p class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</p>
+    </div>
+    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong></p></div>
   </div>
 </div>""",
         "vorschau": f"""<div class="blatt vorschau">
