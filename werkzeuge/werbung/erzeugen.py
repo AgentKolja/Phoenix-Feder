@@ -97,40 +97,36 @@ def main():
     motto = "Die Grundlagen der Meditation, für jeden Tag"
     beschreibung = (("In diesem Pilotseminar" if pilot else f"In {minuten} Minuten") + " schärfst du deine Wahrnehmung, lernst dich "
                     "selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.")
-    seiten = {
-        "beitrag": f"""<div class="blatt post">
-  <div class="bogen"><img src="{bild}" alt=""></div>
-  <div class="kopf"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p></div>
-  <div class="rechts"><p class="text">{esc(beschreibung)}</p>{leiter}</div>
-  <div class="unten">{fakten_kurz}{anmelden()}</div>
-</div>""",
-        "story": f"""<div class="blatt story">
-  <div class="bogen"><img src="{bild}" alt=""></div>
-  <p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>
-  {fakten}
-  {anmelden()}
-</div>""",
-        "plakat": f"""<div class="blatt plakat">
-  <div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>
-  <h1>Achtsamkeits-<br>seminar</h1>
-  <p class="unter">Bewusster leben</p>
-  <div class="unten">
+    motto_neu = "Bewusster leben"  # Plakat und Social Media (Nikolas, Okt. 2026); Website und Link-Vorschau: „Bewusst leben“
+    kreis = f'<div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>'
+    kopf = f'<h1>Achtsamkeits-<br>seminar</h1>\n  <p class="unter">{motto_neu}</p>'
+    pilot_satz = ("Ein Pilotseminar" if pilot else "Ein Seminar") + " mit Nikolas Voth"
+    unten = f"""<div class="unten">
     <p class="termin">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
     <p class="infos">{esc(o["name"])}<br>{plakat_preis}</p>
-    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong><span class="klein">{"Ein Pilotseminar" if pilot else "Ein Seminar"} mit Nikolas Voth</span></p></div>
-  </div>
-</div>""",
+    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong><span class="klein">{pilot_satz}</span></p></div>
+  </div>"""
+    schriftblatt = lambda klasse: f"""<div class="blatt {klasse}">
+  {kreis}
+  {kopf}
+  {unten}
+</div>"""
+    seiten = {
+        "beitrag": schriftblatt("post"),
+        "story": schriftblatt("story"),
+        "plakat": schriftblatt("plakat"),
         "vorschau": f"""<div class="blatt vorschau">
   <div class="bogen"><img src="{bild}" alt=""></div>
   <div><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar in {esc(o['stadt'])}</p>
   <div class="leiter"><img src="{portrait}" alt=""><span>Mit <strong>Nikolas Voth</strong> · {esc(kurz_url.split('/')[0])}</span></div></div>
 </div>""",
         "video": f"""<div class="blatt reel">
-  <div class="foto"><img src="{bild}" alt=""></div><div class="schleier"></div>
-  <div class="szene s1"><h1>Ständig abgelenkt?</h1><p>Zu viel im Kopf, zu wenig im Moment.</p></div>
-  <div class="szene s2"><h1>{titel}</h1><p>{esc(motto)}.</p></div>
-  <div class="szene s3"><p class="oberzeile">In {esc(o['stadt'])}, {"kostenlos" if kostenlos else esc(s['preis'])}</p><h1>Achtsamkeits&shy;seminar</h1><p>{esc(kurz_tag)} · {esc(s['beginn'])} bis {esc(s['ende'])} Uhr</p></div>
-  <div class="ende"><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar</p>{fakten}{anmelden()}</div>
+  {kreis}
+  <div class="szene s1"><p class="frage">Wann warst du zuletzt ganz im Moment?</p></div>
+  <div class="szene s2">{kopf}</div>
+  <div class="szene s3"><p class="termin">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p><p class="infos">{esc(o["name"])}<br>{plakat_preis}</p></div>
+  <div class="ende">{kopf}
+  {unten}</div>
 </div>""",
     }
     vorlage = (HIER / "vorlage.html").read_text(encoding="utf-8")

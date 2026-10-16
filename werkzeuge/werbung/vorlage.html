@@ -38,39 +38,49 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 .bogen img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
 .marke { position: absolute; color: var(--akzent); font-family: var(--serif); }
 
-/* ---------- Instagram-Beitrag 1080 × 1350 ---------- */
-.post { width: 1080px; height: 1350px; padding: 70px 72px 64px; display: grid; grid-template-columns: 380px minmax(0, 1fr); grid-template-rows: auto 1fr auto; column-gap: 50px; }
-.post .bogen { grid-row: 1 / 3; height: 790px; }
-.post .kopf { align-self: end; padding-bottom: 8px; }
-.post .oberzeile { font-size: 20px; margin-bottom: 20px; }
-.post h1 { font-size: 74px; }
-.post .unter { font-size: 34px; margin-top: 18px; }
-.post .rechts { align-self: start; padding-top: 26px; }
-.post .text { font-size: 28px; }
-.post .unten { grid-column: 1 / 3; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: center; margin-top: 40px; padding-top: 36px; border-top: 2px solid var(--linie); }
-.post .fakten { gap: 18px; }
-.post .fakt { gap: 20px; font-size: 29px; }
-.post .fakt b { font-size: 18px; width: 72px; }
-.post .anmelden { flex-direction: column; gap: 10px; padding: 20px 22px 18px; border-radius: 28px; text-align: center; }
-.post .qr { width: 176px; height: 176px; }
-.post .anmelden strong { font-size: 28px; }
-.post .anmelden .adresse { font-size: 19px; margin-top: 2px; }
-.post .leiter { gap: 18px; margin-top: 30px; font-size: 24px; }
-.post .leiter img { width: 74px; height: 74px; }
+/* ---------- Instagram-Beitrag 1080 × 1350 und Story 1080 × 1920: wie das Plakat ---------- */
+.post, .story, .reel { background: #fffdf9; }
+.post, .story, .reel .ende { display: flex; flex-direction: column; }
+.post > *:not(.kreis), .story > *:not(.kreis) { position: relative; }
+.kreis { position: absolute; border-radius: 50%; overflow: hidden; }
+.kreis img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 72%; display: block; }
+.post h1, .story h1, .reel h1 { font-family: var(--sans); font-weight: 700; line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
+.post .unter, .story .unter, .reel .unter { line-height: 1.1; }
+.post .unten, .story .unten, .reel .unten { margin-top: auto; border-top: solid var(--text); display: grid; }
+.post .termin, .story .termin, .reel .termin { font-family: var(--sans); font-weight: 600; line-height: 1.12; color: var(--text); }
+.post .infos, .story .infos, .reel .infos { font-family: var(--sans); line-height: 1.2; color: var(--text); }
+.post .anmelden-qr, .story .anmelden-qr, .reel .anmelden-qr { display: flex; align-items: center; }
+.post .qr, .story .qr, .reel .qr { flex: none; }
+.post .anmelden-qr p, .story .anmelden-qr p, .reel .anmelden-qr p { font-family: var(--sans); line-height: 1.3; color: var(--text); }
+.post .anmelden-qr strong, .story .anmelden-qr strong, .reel .anmelden-qr strong { color: var(--akzent); }
+.post .klein, .story .klein, .reel .klein { display: block; color: var(--leise); }
 
-/* ---------- Story / WhatsApp-Status 1080 × 1920 ---------- */
-.story { width: 1080px; height: 1920px; padding: 110px 90px 0; display: flex; flex-direction: column; }
-.story .bogen { width: 560px; height: 640px; margin: 0 auto 52px; flex: none; }
-.story .oberzeile { font-size: 26px; text-align: center; margin-bottom: 24px; }
-.story h1 { font-size: 104px; text-align: center; }
-.story .unter { font-size: 44px; text-align: center; margin-top: 26px; }
-.story .fakten { margin: 48px auto 0; gap: 18px; }
-.story .fakt { gap: 24px; font-size: 34px; }
-.story .fakt b { font-size: 22px; width: 84px; }
-.story .anmelden { margin: 52px auto 0; gap: 30px; padding: 24px 40px 24px 24px; border-radius: 34px; }
-.story .qr { width: 220px; height: 220px; }
-.story .anmelden strong { font-size: 46px; }
-.story .anmelden .adresse { font-size: 30px; margin-top: 8px; }
+.post { width: 1080px; height: 1350px; padding: 0 80px 64px; }
+.post .kreis { width: 760px; height: 760px; right: -190px; top: -330px; }
+.post h1 { margin-top: 440px; font-size: 98px; }
+.post .unter { font-size: 64px; margin-top: 14px; }
+.post .unten { padding-top: 26px; border-top-width: 4px; gap: 18px; }
+.post .termin { font-size: 48px; }
+.post .infos { font-size: 38px; }
+.post .anmelden-qr { gap: 28px; }
+.post .qr { width: 170px; height: 170px; }
+.post .anmelden-qr p { font-size: 30px; }
+.post .anmelden-qr strong { font-size: 35px; }
+.post .klein { font-size: 26px; margin-top: 8px; }
+
+.story, .reel { width: 1080px; height: 1920px; }
+.story, .reel .ende { padding: 0 90px 150px; }
+.story .kreis, .reel .kreis { width: 1000px; height: 1000px; right: -270px; top: -400px; }
+.story h1, .reel .ende h1 { margin-top: 660px; font-size: 118px; }
+.story .unter, .reel .ende .unter { font-size: 82px; margin-top: 24px; }
+.story .unten, .reel .unten { padding-top: 40px; border-top-width: 5px; gap: 30px; }
+.story .termin, .reel .ende .termin { font-size: 64px; }
+.story .infos, .reel .ende .infos { font-size: 50px; }
+.story .anmelden-qr, .reel .anmelden-qr { gap: 40px; }
+.story .qr, .reel .qr { width: 250px; height: 250px; }
+.story .anmelden-qr p, .reel .anmelden-qr p { font-size: 40px; }
+.story .anmelden-qr strong, .reel .anmelden-qr strong { font-size: 46px; }
+.story .klein, .reel .klein { font-size: 34px; margin-top: 12px; }
 
 /* ---------- Link-Vorschau 1200 × 630 (WhatsApp, Social Media) ---------- */
 .vorschau { width: 1200px; height: 630px; padding: 50px 80px 50px 70px; display: grid; grid-template-columns: 400px 1fr; column-gap: 64px; align-items: center; }
@@ -98,34 +108,28 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 .plakat .anmelden-qr strong { font-size: 22pt; color: var(--akzent); }
 .plakat .anmelden-qr .klein { display: block; margin-top: 3mm; font-size: 17pt; color: var(--leise); }
 
-/* ---------- Kurzvideo 1080 × 1920 (Reel, Story, Status) ---------- */
-.reel { width: 1080px; height: 1920px; background: #1b1613; }
-.reel .foto { position: absolute; inset: 0; animation: zoom 12s linear both; }
-.reel .foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
-.reel .schleier { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(27 22 19 / 10%) 0%, rgb(27 22 19 / 30%) 35%, rgb(27 22 19 / 85%) 80%); }
-.reel .szene { position: absolute; left: 80px; right: 190px; bottom: 430px; color: #fff; opacity: 0; }
-.reel .szene h1 { font-size: 112px; color: #fff; }
-.reel .szene p { font-size: 44px; line-height: 1.35; margin-top: 26px; color: #f3eadd; }
+/* ---------- Short 1080 × 1920 (Reel, WhatsApp-Status): vier ruhige Szenen im Plakat-Look, 12 s ---------- */
+.reel .kreis img { animation: zoom 12s linear both; }
+/* Szenen mittig im Raum unter dem Kreis; unten bleibt Platz für Instagram-Bildunterschrift und Knöpfe */
+.reel .szene { position: absolute; left: 90px; right: 90px; top: 660px; bottom: 380px; display: flex; flex-direction: column; justify-content: center; opacity: 0; }
+.reel .frage { font-family: var(--serif); font-weight: 500; font-size: 116px; line-height: 1.1; color: var(--text); }
+.reel .s2 h1 { font-size: 124px; }
+.reel .s2 .unter { font-size: 92px; margin-top: 28px; }
+.reel .s3 .termin { font-size: 84px; }
+.reel .s3 .infos { font-size: 66px; margin-top: 48px; }
+.reel .ende { position: absolute; inset: 0; opacity: 0; padding-bottom: 330px; }
+.reel .ende h1 { margin-top: 610px; }
+.reel .ende .unter { margin-bottom: 44px; }
+.post .unter, .story .unter { margin-bottom: 30px; }
 .reel .s1 { animation: s1 12s linear both; }
 .reel .s2 { animation: s2 12s linear both; }
 .reel .s3 { animation: s3 12s linear both; }
-.reel .s3 .oberzeile { color: #e3a55e; font-size: 30px; margin-bottom: 26px; }
-.reel .ende { position: absolute; inset: 0; background: var(--grund); padding: 240px 80px 380px; justify-content: center; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; animation: ende 12s linear both; }
-.reel .ende .oberzeile { font-size: 30px; margin-bottom: 28px; }
-.reel .ende h1 { font-size: 112px; }
-.reel .ende .unter { font-size: 46px; margin-top: 26px; }
-.reel .ende .fakten { margin: 64px auto 0; gap: 22px; text-align: left; }
-.reel .ende .fakt { gap: 26px; font-size: 40px; }
-.reel .ende .fakt b { font-size: 24px; width: 96px; }
-.reel .ende .anmelden { margin-top: 70px; gap: 30px; padding: 24px 40px 24px 24px; border-radius: 34px; text-align: left; }
-.reel .ende .qr { width: 270px; height: 270px; }
-.reel .ende .anmelden strong { font-size: 46px; }
-.reel .ende .anmelden .adresse { font-size: 30px; margin-top: 8px; }
-@keyframes zoom { from { transform: scale(1.0); } to { transform: scale(1.14); } }
-@keyframes s1 { 0% { opacity: 0; transform: translateY(30px); } 4% { opacity: 1; transform: none; } 24% { opacity: 1; } 28% { opacity: 0; } 100% { opacity: 0; } }
-@keyframes s2 { 0%, 27% { opacity: 0; transform: translateY(30px); } 32% { opacity: 1; transform: none; } 50% { opacity: 1; } 54% { opacity: 0; } 100% { opacity: 0; } }
-@keyframes s3 { 0%, 53% { opacity: 0; transform: translateY(30px); } 58% { opacity: 1; transform: none; } 70% { opacity: 1; } 74% { opacity: 0; } 100% { opacity: 0; } }
-@keyframes ende { 0%, 72% { opacity: 0; } 77% { opacity: 1; } 100% { opacity: 1; } }
+.reel .ende { animation: ende 12s linear both; }
+@keyframes zoom { from { transform: scale(1.0); } to { transform: scale(1.15); } }
+@keyframes s1 { 0% { opacity: 0; transform: translateY(24px); } 4% { opacity: 1; transform: none; } 23% { opacity: 1; } 27% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes s2 { 0%, 26% { opacity: 0; transform: translateY(24px); } 30% { opacity: 1; transform: none; } 50% { opacity: 1; } 54% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes s3 { 0%, 53% { opacity: 0; transform: translateY(24px); } 57% { opacity: 1; transform: none; } 76% { opacity: 1; } 80% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes ende { 0%, 79% { opacity: 0; } 84% { opacity: 1; } 100% { opacity: 1; } }
 </style>
 </head>
 <body>
