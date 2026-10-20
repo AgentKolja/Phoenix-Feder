@@ -18,7 +18,7 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 from email.utils import format_datetime
 from pathlib import Path
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, quote_plus, urlencode
 from zoneinfo import ZoneInfo
 
 WURZEL = Path(__file__).resolve().parent
@@ -737,7 +737,7 @@ def seminar_anmeldung_html():
       {worum.format("In diesem Pilotseminar " if t.get("art") == "Pilot" else "In diesem Seminar ")}
       <ul class="termin-daten">
         <li><strong>Wann:</strong> {esc(t['tag_lang'])}, {esc(t['zeit'])}</li>
-        <li><strong>Wo:</strong> {esc(t['ort']['name'])}, {esc(t['ort']['strasse'])}{" (" + esc(t['ort']['zusatz']) + ")" if t['ort'].get('zusatz') else ""}</li>
+        <li><strong>Wo:</strong> {esc(t['ort']['name'])}, <a href="https://www.google.com/maps/search/?api=1&amp;query={quote_plus(f"{t['ort']['strasse']}, {t['ort']['plz']} {t['ort']['stadt']}")}" target="_blank" rel="noopener">{esc(t['ort']['strasse'])}, {esc(t['ort']['plz'])} {esc(t['ort']['stadt'])}</a>{" (" + esc(t['ort']['zusatz']) + ")" if t['ort'].get('zusatz') else ""}</li>
         <li><strong>Preis:</strong> {esc(t['preis'][:1].upper() + t['preis'][1:])}, {t['plaetze']} Plätze</li>
       </ul>
     </div>
