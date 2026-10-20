@@ -815,11 +815,18 @@ def bausteine_einsetzen(text, artikel):
 
 # ---------------------------------------------------------------- Seitengeruest
 
+def vorschau_bild(datei):
+    """Adresse eines eigenen Vorschaubilds mit Fassung (?v=…): WhatsApp & Co. merken sich Vorschaubilder je Adresse,
+    ein neues Bild bekommt so auch eine neue Adresse."""
+    fassung = hashlib.sha256((WURZEL / "bilder" / datei).read_bytes()).hexdigest()[:8]
+    return f"{E['domain']}/bilder/{datei}?v={fassung}"
+
+
 def seite(titel, beschreibung, pfad, inhalt, og_bild=None, og_typ="website", indexieren=True):
     voller_titel = E["name"] + " | " + E["untertitel"] if pfad == "/" else f"{titel} | {E['name']}"
     url = E["domain"] + pfad
     # og_bild: Name eines WebP-Paars oder eine eigene Datei mit Endung (JPG wird überall als Vorschau angezeigt)
-    og = f"{E['domain']}/bilder/{og_bild}" if og_bild and "." in og_bild else f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"
+    og = vorschau_bild(og_bild) if og_bild and "." in og_bild else f"{E['domain']}/bilder/{og_bild or 'feder'}-1600.webp"
     navi = ""
     for ziel, text in NAVI:
         aktiv = pfad.startswith(ziel) or (ziel == "/blog/" and pfad.startswith(("/post/", "/thema/")))
@@ -934,7 +941,7 @@ def umleitung(alt, neu, vorschau=None):
     if vorschau:
         t, b, bild_datei = vorschau
         og = (f'<meta property="og:title" content="{esc(t)}"><meta property="og:description" content="{esc(b)}">'
-              f'<meta property="og:image" content="{E["domain"]}/bilder/{bild_datei}"><meta property="og:url" content="{E["domain"]}{alt}">'
+              f'<meta property="og:image" content="{vorschau_bild(bild_datei)}"><meta property="og:url" content="{E["domain"]}{alt}">'
               '<meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">\n')
     schreiben(alt, f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <title>Weiterleitung</title><link rel="canonical" href="{E['domain']}{neu}">{og}
@@ -1077,8 +1084,12 @@ def main():
     for alt in ("/booking-calendar/", "/service-page/", "/services-4/"):
         umleitung(alt, "/book-online/")
     umleitung("/post/sehen-was-ist/", "/post/die-realitaet-sehen/")  # umbenannt am 14.10.2026
-    umleitung("/seminar/", "/achtsamkeitsseminar/#anmelden",  # Kurzadresse für QR-Code und Werbung
-              ("Achtsamkeitsseminar: Bewusst leben", "Grundlagen der Meditation in Aachen. Jetzt anmelden.", "og-seminar.jpg"))
+    # Kurzadresse für QR-Code und Werbung; Vorschau-Text wie das Plakat („Bewusster leben“, Nikolas Okt. 2026)
+    t = seminar_termin()
+    umleitung("/seminar/", "/achtsamkeitsseminar/#anmelden", (
+        "Achtsamkeitsseminar: Bewusster leben",
+        f"{t['tag_lang']}, {t['zeit']} im {t['ort']['name']}. {'Kostenlos, ' if t['kostenlos'] else ''}{t['plaetze']} Plätze. Jetzt anmelden."
+        if t else "Grundlagen der Meditation in Aachen. Der nächste Termin ist in Planung.", "og-seminar.jpg"))
 
     (AUSGABE / "feed.xml").write_text(feed(artikel), encoding="utf-8")
     shutil.copy(AUSGABE / "feed.xml", AUSGABE / "blog-feed.xml")  # alte Wix-Adresse des Feeds

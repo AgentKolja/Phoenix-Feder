@@ -4,7 +4,7 @@
 Aufruf:  python3 werkzeuge/werbung/erzeugen.py [Ausgabeordner]
 Ergebnis: instagram-beitrag.png (1080 × 1350), story-status.png (1080 × 1920), kurzvideo.mp4 (12 s, ohne Ton),
           plakat-a4.pdf (druckfertig, skaliert auch auf A3), plakat-a4.png (Vorschau) und og-seminar.jpg
-          (Link-Vorschau 1200 × 630, wird auch nach bilder/ kopiert).
+          (Link-Vorschau 1200 × 630 im Plakat-Look, wird auch nach bilder/ kopiert).
 
 Termin, Ort und Plätze kommen aus inhalt/seminar.json, also nach einem neuen Termin einfach neu erzeugen.
 Der QR-Code führt auf <domain>/seminar/ (leitet zur Anmeldung weiter, siehe bauen.py).
@@ -65,7 +65,6 @@ def main():
     # „Dein Feedback hilft mir“; in Story und Video ohne Beschreibung steht „Pilotseminar“ beim Preis.
     kosten_mit_text = kosten + ("<br><i>Dein Feedback hilft mir</i>" if pilot else "")
     kosten_ohne_text = kosten + ("<br><i>Pilotseminar: Dein Feedback hilft mir</i>" if pilot else "")
-    oberzeile = "Grundlagen der Meditation"
     h, m = map(int, s["beginn"].split(":"))
     h2, m2 = map(int, s["ende"].split(":"))
     minuten = (h2 * 60 + m2) - (h * 60 + m)
@@ -77,7 +76,6 @@ def main():
     plakat_ort = esc(o["name"]) + "<br>" + esc(o["strasse"]) + (f" ({esc(o['zusatz'])})" if o.get("zusatz") else "")
     plakat_preis = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
     plakat_bild = (WURZEL / "bilder" / "seminar-wahrnehmung-1600.webp").as_uri()  # Hand im Kornfeld: Wahrnehmen
-    bild = (WURZEL / "bilder" / "achtsamkeit-1600.webp").as_uri()
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
@@ -93,11 +91,10 @@ def main():
     def anmelden(text="Jetzt anmelden"):
         return f"""<div class="anmelden"><div class="qr">{qr}</div><div><strong>{text}</strong><div class="adresse">{esc(kurz_url)}</div></div></div>"""
 
-    titel = "Bewusst leben"
     motto = "Die Grundlagen der Meditation, für jeden Tag"
     beschreibung = (("In diesem Pilotseminar" if pilot else f"In {minuten} Minuten") + " schärfst du deine Wahrnehmung, lernst dich "
                     "selbst besser kennen und übst, auch in schwierigen Situationen bewusst zu handeln.")
-    motto_neu = "Bewusster leben"  # Plakat und Social Media (Nikolas, Okt. 2026); Website und Link-Vorschau: „Bewusst leben“
+    motto_neu = "Bewusster leben"  # Plakat, Social Media und Link-Vorschau (Nikolas, Okt. 2026); Website: „Bewusst leben“
     kreis = f'<div class="kreis" aria-hidden="true"><img src="{plakat_bild}" alt=""></div>'
     kopf = f'<h1>Achtsamkeits-<br>seminar</h1>\n  <p class="unter">{motto_neu}</p>'
     pilot_satz = ("Ein Pilotseminar" if pilot else "Ein Seminar") + " mit Nikolas Voth"
@@ -116,9 +113,12 @@ def main():
         "story": schriftblatt("story"),
         "plakat": schriftblatt("plakat"),
         "vorschau": f"""<div class="blatt vorschau">
-  <div class="bogen"><img src="{bild}" alt=""></div>
-  <div><p class="oberzeile">{esc(oberzeile)}</p><h1>{titel}</h1><p class="unter">Achtsamkeitsseminar in {esc(o['stadt'])}</p>
-  <div class="leiter"><img src="{portrait}" alt=""><span>Mit <strong>Nikolas Voth</strong> · {esc(kurz_url.split('/')[0])}</span></div></div>
+  {kreis}
+  {kopf}
+  <div class="unten">
+    <p class="termin">{esc(plakat_tag)}, {esc(plakat_zeit)}</p>
+    <p class="infos">{esc(o["name"])} · {plakat_preis}</p>
+  </div>
 </div>""",
         "video": f"""<div class="blatt reel">
   {kreis}

@@ -164,7 +164,7 @@ function server() {
     const ld = await p.$$eval('script[type="application/ld+json"]', (l) => l.map((x) => JSON.parse(x.textContent)).find((x) => x["@type"] === "Event"));
     pruefe("Termin als schema.org-Event für Suchmaschinen", Boolean(ld?.startDate && ld.location?.address?.streetAddress), ld?.startDate);
     const og = await p.getAttribute('meta[property="og:image"]', "content");
-    pruefe("Vorschaubild für WhatsApp & Co. als JPG", og.endsWith(".jpg") && fs.existsSync(path.join(DOCS, new URL(og).pathname)));
+    pruefe("Vorschaubild für WhatsApp & Co. als JPG, mit Fassung in der Adresse", new URL(og).pathname.endsWith(".jpg") && /\?v=[0-9a-f]{8}$/.test(og) && fs.existsSync(path.join(DOCS, new URL(og).pathname)));
     await p.route("https://api.web3forms.com/**", (route) => route.fulfill({ contentType: "application/json", body: '{"success":true}' }));
     await p.fill('form[data-danach] [name="Vorname"]', "Test");
     await p.fill('form[data-danach] [name="email"]', "test@example.org");

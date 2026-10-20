@@ -84,14 +84,17 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 .story .anmelden-qr strong, .reel .anmelden-qr strong { font-size: 46px; }
 .story .klein, .reel .klein { font-size: 34px; margin-top: 12px; }
 
-/* ---------- Link-Vorschau 1200 × 630 (WhatsApp, Social Media) ---------- */
-.vorschau { width: 1200px; height: 630px; padding: 50px 80px 50px 70px; display: grid; grid-template-columns: 400px 1fr; column-gap: 64px; align-items: center; }
-.vorschau .bogen { height: 530px; }
-.vorschau .oberzeile { font-size: 20px; margin-bottom: 18px; }
-.vorschau h1 { font-size: 96px; }
-.vorschau .unter { font-size: 38px; margin-top: 16px; }
-.vorschau .leiter { gap: 16px; margin-top: 40px; font-size: 22px; }
-.vorschau .leiter img { width: 64px; height: 64px; }
+/* ---------- Link-Vorschau 1200 × 630 (WhatsApp, Social Media): wie das Plakat, Kreis rechts oben ---------- */
+.vorschau { width: 1200px; height: 630px; padding: 64px 70px 54px; display: flex; flex-direction: column; background: #fffdf9; }
+.vorschau > *:not(.kreis) { position: relative; }
+.vorschau .kreis { width: 720px; height: 720px; right: -210px; top: -250px; }
+/* im Querformat sitzt das Foto etwas höher im Kreis, damit oben keine Kante bleibt */
+.vorschau .kreis img { top: 33%; }
+.vorschau h1 { font-family: var(--sans); font-weight: 700; font-size: 80px; line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
+.vorschau .unter { font-size: 60px; margin-top: 16px; line-height: 1.1; }
+.vorschau .unten { margin-top: auto; padding-top: 20px; border-top: 4px solid var(--text); max-width: 640px; }
+.vorschau .termin { font: 600 36px/1.15 var(--sans); color: var(--text); }
+.vorschau .infos { font: 400 30px/1.25 var(--sans); color: var(--text); margin-top: 6px; }
 
 /* ---------- Plakat DIN A4: sehr wenig Text, alles groß, ein Bild im Kreis ---------- */
 @page { size: A4; margin: 0; }
