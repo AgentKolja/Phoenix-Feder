@@ -53,6 +53,11 @@ let reflexionWarDa = false;
 let kalZeit = "19:00";
 let kalDauer = "14";
 let zumKalender = false; // nach dem Zeichnen zum Kalender-Block scrollen (#kalender=…)
+// „Was möchtest du verändern?“: Freitext und gewählte Routine (nur für diese Sitzung, nichts wird gespeichert)
+let suche = "";
+let routine = null;
+const routineZeiten = {}; // slug -> angepasste Uhrzeiten je Schritt
+let routineDauer = "14";
 const ZEITEN = [["08:00", "Morgens"], ["12:30", "Mittags"], ["19:00", "Abends"]];
 // Wie lange erinnert der Kalender? Schlüssel = Anzahl täglicher Termine (0 = ohne Ende), w8 = 8 Wochen lang wöchentlich
 const DAUER = {
@@ -336,15 +341,148 @@ function kalenderAktion(googleLink, icsAktion, slug = "") {
   </div>`;
 }
 
-// Frage 1: Woran möchtest du arbeiten?
+// ---------------------------------------------------------------- „Was möchtest du verändern?“
+
+// Klein, ohne Umlaute und Satzzeichen: „Schlafe schlecht!“ -> "schlafe schlecht"
+const normal = (text) => String(text ?? "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+  .replace(/<[^>]+>/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+const FUELLWOERTER = new Set(("weniger mehr mich mir mein meine meinen meinem meiner ich will moechte moecht immer besser oefter viel viele "
+  + "etwas einfach wieder gerne dass habe haben hab sein werden kann koennen soll sollte bitte beim fuer ohne und oder mit auch noch "
+  + "nicht keine kein sehr ganz total oft jeden jede jeder tag tage taeglich zeit leben lernen finden schaffen machen").split(" "));
+
+// Freitext -> passende Routinen (über Suchwörter) und einzelne Ideen (über Titel, Klartext und Text)
+function suchen(text) {
+  const satz = ` ${normal(text)} `;
+  const woerter = [...new Set(satz.trim().split(" ").filter((w) => w.length >= 3 && !FUELLWOERTER.has(w)))];
+  const routinen = D.routinen.map((r) => {
+    let punkte = 0;
+    for (const s of [...r.suchwoerter, ...normal(r.titel).split(" ").filter((w) => !FUELLWOERTER.has(w))]) {
+      if (s.length >= 3 && satz.includes(s)) punkte += 3;
+      else if (woerter.some((w) => w.length >= 4 && s.startsWith(w))) punkte += 2;
+    }
+    return [r, punkte];
+  }).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]).map(([r]) => r);
+  const inRoutine = new Set((routinen[0]?.schritte || []).map((s) => s.idee));
+  // Ideen: Wortanfänge zählen („handy“ findet „Handynutzung“, aber „ruhe“ nicht „Unruhe“), Titel und Klartext stärker
+  const trifft = (text, w) => text.some((x) => (w.length >= 4 ? x.startsWith(w) : x === w));
+  const ideen = D.uebungen.filter((u) => istIdee(u) && passtZurJahreszeit(u)).map((u) => {
+    const kopf = normal(`${u.titel} ${u.kurz}`).split(" ");
+    const rest = normal(`${u.heute} ${u.html} ${u.gruppe}`).split(" ");
+    let punkte = 0;
+    for (const w of woerter) punkte += trifft(kopf, w) ? 3 : trifft(rest, w) ? 1 : 0;
+    return [u, punkte + (punkte && inRoutine.has(u.slug) ? 2 : 0)];
+  }).filter(([, p]) => p >= (routinen.length ? 2 : 1)).sort((a, b) => b[1] - a[1]).map(([u]) => u);
+  return { routinen, ideen };
+}
+
+function suchFeld(wert = "") {
+  return `<form class="suche-app" data-form="suche" role="search">
+    <input type="search" name="suche" value="${esc(wert)}" placeholder="z. B. weniger am Handy hängen" aria-label="Was möchtest du verändern?" autocomplete="off" enterkeyhint="search">
+    <button class="knopf">Zusammenstellen</button>
+  </form>`;
+}
+
+const routinenChips = () => `<div class="chips-app routinen-chips">${D.routinen.map((r) =>
+  `<button data-aktion="routine-zeigen" data-slug="${r.slug}">${r.emoji} ${esc(r.titel)}</button>`).join("")}</div>`;
+
+function routineZeile(r) {
+  const taeglich = r.schritte.filter((s) => !s.einmal).length;
+  return wahlZeile("routine-zeigen", r.slug, r.emoji, r.titel, `${r.kurz} ${taeglich} kleine Schritte am Tag.`, false, true);
+}
+
+function ansichtSuche() {
+  const { routinen, ideen } = suchen(suche);
+  const nichts = !routinen.length && !ideen.length;
+  const nachricht = `Ich suche etwas zu: ${suche}`;
+  return `<p><button class="link-knopf" data-aktion="suche-weg">← Zurück</button></p>
+<section class="willkommen">
+  <p class="oberzeile">Was möchtest du verändern?</p>
+  <h1>${nichts ? "Dazu habe ich noch nichts" : "Passend für dich"}</h1>
+  ${suchFeld(suche)}
+</section>
+${nichts ? `<p>Probier es mit anderen Worten oder wähl eine fertige Routine:</p>${routinenChips()}
+  <p class="klein">Fehlt dir etwas? <a href="../?anliegen=${encodeURIComponent("Feedback zu den Übungen")}&amp;nachricht=${encodeURIComponent(nachricht)}#kontakt">Schreib Nikolas, was du suchst.</a> So wächst die Sammlung.</p>` : ""}
+${routinen.length ? `<h2 class="zwischen">${routinen.length === 1 ? "Deine Routine" : "Routinen"}</h2>
+<p class="klein">Ein paar kleine Schritte über den Tag. Jeder wird ein Termin in deinem Kalender.</p>
+<div class="wahl-liste">${routinen.slice(0, 2).map(routineZeile).join("")}</div>` : ""}
+${ideen.length ? `<h2 class="zwischen">${routinen.length ? "Einzelne Ideen dazu" : "Ideen dazu"}</h2>
+<div class="wahl-liste">${ideen.slice(0, 6).map((u) => wahlZeile("idee-zeigen", u.slug, u.emoji, u.titel,
+    `${Z.kalender[u.slug] ? "📅 Im Kalender · " : ""}${u.heute || u.kurz}`, false, true)).join("")}</div>` : ""}
+${fussZeile}`;
+}
+
+const routineZeit = (r, i) => routineZeiten[r.slug]?.[i] || r.schritte[i].zeit;
+
+// Ein Termin je Schritt: was zu tun ist, zu welcher Routine er gehört, warum, und wo es mehr gibt
+function routineTermin(r, i, dauer = routineDauer) {
+  const s = r.schritte[i];
+  const regel = s.einmal ? "1" : dauer;
+  const start = erinnerungStart(routineZeit(r, i));
+  const link = `${location.origin}${location.pathname}#routine=${r.slug}`;
+  const text = [
+    s.text,
+    [`Teil deiner Routine „${r.titel}“${s.einmal ? ", einmal zum Start" : ""}.`, `Warum es guttut: ${r.warum}`,
+      regel !== "1" && "Dranbleiben: Ein verpasster Tag ist kein Problem. Nur nicht zweimal hintereinander."].filter(Boolean).join("\n"),
+    [s.idee && `Mehr dazu: ${location.origin}/gewohnheiten/${s.idee}/`, `Deine Routine: ${link}`].filter(Boolean).join("\n"),
+  ].join("\n\n");
+  return { id: `routine-${r.slug}-${i + 1}`, titel: `${r.emoji} ${s.titel}`, text, url: link,
+    start: kalenderZeit(start), ende: kalenderZeit(new Date(start.getTime() + 15 * 60000)), regel: kalenderRegel(regel) };
+}
+
+function ansichtRoutine() {
+  const r = D.routinen.find((x) => x.slug === routine);
+  const reihenfolge = r.schritte.map((s, i) => i).sort((a, b) => Number(Boolean(r.schritte[b].einmal)) - Number(Boolean(r.schritte[a].einmal))
+    || routineZeit(r, a).localeCompare(routineZeit(r, b)));
+  const ideen = [...new Set(r.schritte.map((s) => s.idee).filter((x) => U[x]))].map((x) => U[x]);
+  const datei = `<button class="knopf kalender-knopf${appleGeraet() ? "" : " zweit"}" data-aktion="ics-routine">📥 Alle ${r.schritte.length} Termine als Kalenderdatei</button>`;
+  const google = reihenfolge.map((i) => `<a class="knopf zweit klein-knopf" target="_blank" rel="noopener" href="${esc(googleKalender(routineTermin(r, i)))}" data-aktion="google-geoeffnet">📅 ${r.schritte[i].einmal ? "Start" : uhrzeit(routineZeit(r, i))} ${esc(r.schritte[i].titel)}</a>`).join("");
+  return `<p><button class="link-knopf" data-aktion="routine-zurueck">← Zurück</button></p>
+<section class="probieren">
+  <p class="oberzeile">Routine · ${r.schritte.filter((s) => !s.einmal).length} kleine Schritte am Tag</p>
+  <div class="karte-app idee">
+    <div class="idee-emoji" aria-hidden="true">${r.emoji}</div>
+    <h1>${esc(r.titel)}</h1>
+    <p class="erklaerung-gross">${esc(r.kurz)}</p>
+    <details class="aufklapp"><summary>Warum es guttut</summary><p>${esc(r.warum)}</p></details>
+  </div>
+</section>
+<section class="kalender-karte" id="kalender">
+  <h2>📅 Deine Routine im Kalender</h2>
+  <p class="klein">Jeder Schritt wird ein eigener Termin mit Erinnerung. Im Termin steht, was zu tun ist und warum es guttut.</p>
+  <p class="schritt">1 · Deine Zeiten</p>
+  <ol class="routine-schritte">${reihenfolge.map((i) => { const s = r.schritte[i]; return `<li>
+    <div class="routine-kopf"><input type="time" data-feld="routine-zeit" data-i="${i}" value="${routineZeit(r, i)}" aria-label="Uhrzeit für ${esc(s.titel)}">
+    <strong>${esc(s.titel)}</strong></div>${s.einmal ? '<span class="marke-app">Einmal zum Start</span>' : ""}<span class="klein">${esc(s.text)}</span></li>`; }).join("")}</ol>
+  <p class="schritt">2 · Wie lange?</p>
+  <div class="chips-app">${DAUER.gewohnheit.filter(([w]) => w !== "1").map(([w, t]) => `<button data-aktion="routine-dauer" data-wert="${w}" aria-pressed="${routineDauer === w}">${t}</button>`).join("")}</div>
+  <p class="klein">Bis etwas von allein läuft, dauert es oft rund zwei Monate. Ändern oder löschen kannst du die Termine jederzeit in deinem Kalender.</p>
+  <p class="schritt">3 · Jetzt eintragen</p>
+  <div class="kalender-aktion">
+    ${appleGeraet() ? `<div class="knopf-reihe">${datei}</div><p class="klein"><strong>Google Kalender:</strong> ein Termin pro Tipp.</p><div class="knopf-reihe">${google}</div>`
+      : `<p class="klein"><strong>Google Kalender</strong> übernimmt einen Termin pro Tipp. Tipp die Schritte nacheinander an und speichere jeweils.</p><div class="knopf-reihe">${google}</div><div class="knopf-reihe">${datei}</div>`}
+    <p class="klein"><strong>Apple und Outlook</strong> bekommen alle Termine in einer Datei: öffnen, „Hinzufügen“ tippen, fertig. Am Computer kannst du die Datei auch in Google importieren (Einstellungen, dann „Importieren“).</p>
+  </div>
+</section>
+<section>
+  <h2 class="zwischen">Die Ideen dahinter</h2>
+  <div class="wahl-liste">${ideen.map((u) => wahlZeile("idee-zeigen", u.slug, u.emoji, u.titel, u.kurz, false, true)).join("")}</div>
+</section>
+${fussZeile}`;
+}
+
+// Frage 1: Was möchtest du verändern? (Freitext oder fertige Routine) – oder: Woran möchtest du arbeiten?
 function ansichtFrage() {
   const antworten = [...D.bereiche, { slug: "alle", emoji: "🎲", titel: "Weiß ich noch nicht", text: "Zeig mir Ideen aus allen Bereichen." }];
   return `<section class="willkommen">
-  <p class="oberzeile">Probier’s heute · Frage 1 von 2</p>
-  <h1>Woran möchtest du arbeiten?</h1>
-  <p>Zwei kurze Fragen, dann siehst du alle Ideen, die zu dir passen und die du heute ausprobieren kannst.</p>
+  <p class="oberzeile">Probier’s heute</p>
+  <h1>Was möchtest du verändern?</h1>
+  <p>Schreib es in deinen Worten. Du bekommst eine passende Routine und Ideen, die du direkt in deinen Kalender legen kannst.</p>
+  ${suchFeld()}
+  ${routinenChips()}
 </section>
 ${kalenderAuslaufend()}
+<h2 class="zwischen">Oder: Woran möchtest du arbeiten?</h2>
+<p class="klein">Zwei kurze Fragen, dann siehst du alle Ideen, die du heute ausprobieren kannst.</p>
 <div class="wahl-liste">${antworten.map((r) => wahlZeile("frage", r.slug, r.emoji, r.titel, r.text, false, true)).join("")}</div>
 ${fussZeile}`;
 }
@@ -405,6 +543,9 @@ function kalenderBlock(u) {
 
 function ansichtProbieren() {
   if (idee && !U[idee]) idee = null;
+  if (routine && !D.routinen.some((r) => r.slug === routine)) routine = null;
+  if (!idee && routine) return ansichtRoutine();
+  if (!idee && suche) return ansichtSuche();
   if (!idee) {
     if (!ideeFilter) return ansichtFrage();
     if (!ideeZeit) return ansichtZeit();
@@ -1175,7 +1316,22 @@ const AKTIONEN = {
   "zur-auswahl": () => { idee = null; merken(); render(); scrollTo(0, 0); },
   frage: (el, slug) => { ideeFilter = slug; ideeZeit = null; idee = null; merken(); render(); scrollTo(0, 0); },
   zeit: (el, slug) => { ideeZeit = slug; idee = null; merken(); render(); scrollTo(0, 0); },
-  "neu-fragen": () => { ideeFilter = null; ideeZeit = null; idee = null; merken(); render(); scrollTo(0, 0); },
+  "neu-fragen": () => { ideeFilter = null; ideeZeit = null; idee = null; suche = ""; routine = null; merken(); render(); scrollTo(0, 0); },
+  "routine-zeigen": (el, slug) => {
+    if (!D.routinen.some((r) => r.slug === slug)) return;
+    routine = slug;
+    idee = null;
+    if (ansicht !== "probieren") { location.hash = "#probieren"; return; }
+    render();
+    scrollTo(0, 0);
+  },
+  "routine-zurueck": () => { routine = null; if (!suche) { ideeFilter = null; ideeZeit = null; } merken(); render(); scrollTo(0, 0); },
+  "suche-weg": () => { suche = ""; ideeFilter = null; ideeZeit = null; merken(); render(); scrollTo(0, 0); },
+  "routine-dauer": (el, slug, wert) => { routineDauer = wert; offenLassen("details", render); },
+  "ics-routine": () => {
+    const r = D.routinen.find((x) => x.slug === routine);
+    if (r) icsDatei(r.schritte.map((s, i) => routineTermin(r, i)), `phoenix-feder-${r.slug}.ics`);
+  },
   ausprobiert: () => {
     const u = info(idee);
     if (u.art === "quest") {
@@ -1241,6 +1397,15 @@ function route() {
     route();
     return;
   }
+  if (h.startsWith("routine=") || h.startsWith("suche=")) {
+    // Von der Website: fertige Routine (Karte auf /gewohnheiten/) oder Freitext „Was möchtest du verändern?“
+    const wert = h.slice(h.indexOf("=") + 1);
+    if (h.startsWith("routine=")) { if (D.routinen.some((r) => r.slug === wert)) { routine = wert; idee = null; } }
+    else if (wert.trim()) { suche = wert.trim().slice(0, 200); routine = null; idee = null; }
+    history.replaceState(null, "", `${location.pathname}#probieren`);
+    route();
+    return;
+  }
   if (h.startsWith("idee=") || h.startsWith("neu=") || h.startsWith("kalender=")) {
     // Links von der Website: erst die Idee zeigen, statt gleich eine Routine anzulegen; #kalender= springt zum Eintragen
     const slug = h.slice(h.indexOf("=") + 1);
@@ -1278,6 +1443,11 @@ document.addEventListener("click", (ereignis) => {
 
 document.addEventListener("change", (ereignis) => {
   const feld = ereignis.target;
+  if (feld.dataset.feld === "routine-zeit" && routine && /^\d\d:\d\d$/.test(feld.value)) {
+    (routineZeiten[routine] ||= [])[Number(feld.dataset.i)] = feld.value;
+    offenLassen("details", render);
+    return;
+  }
   if (feld.dataset.feld === "morgen" || feld.dataset.feld === "abend") {
     Z.erinnerung[feld.dataset.feld] = feld.value;
     speichern();
@@ -1304,6 +1474,20 @@ document.addEventListener("input", (ereignis) => {
   if (!ereignis.target.matches("[data-gut]")) return;
   eintrag(verschieben(tag(), tagVersatz)).gutes = [...document.querySelectorAll("[data-gut]")].map((i) => i.value.trim());
   speichern();
+});
+
+// „Was möchtest du verändern?“ absenden
+document.addEventListener("submit", (ereignis) => {
+  const form = ereignis.target.closest('[data-form="suche"]');
+  if (!form) return;
+  ereignis.preventDefault();
+  const text = form.elements.suche.value.trim();
+  if (!text) return;
+  suche = text;
+  routine = null;
+  idee = null;
+  render();
+  scrollTo(0, 0);
 });
 
 document.addEventListener("keydown", (ereignis) => {
@@ -1335,8 +1519,14 @@ async function starten() {
   // Eine ältere daten.json aus dem Cache kennt neuere Felder nicht: hier einmal ergänzen statt überall abfragen
   D.uebungen.forEach((u) => { u.heute ??= u.kurz; u.statt ??= []; u.monate ??= []; u.bereich ??= ""; u.warum ??= ""; u.zeit ??= "19:00"; u.wann ??= ""; U[u.slug] = u; });
   D.richtungen ??= [...D.bereiche, { slug: "alle", emoji: "🎲", titel: "Überrasch mich", text: "" }];
+  D.routinen ??= [];
   Z.gewohnheiten = Z.gewohnheiten.filter((g) => U[g.slug]); // falls eine Übung umbenannt wurde
   wiederherstellen();
+  const gesucht = new URLSearchParams(location.search).get("suche");
+  if (gesucht?.trim()) {
+    // Formular der Seite /gewohnheiten/ (GET ?suche=…): Text übernehmen, Adresse aufräumen
+    history.replaceState(null, "", `${location.pathname}#suche=${encodeURIComponent(gesucht.trim().slice(0, 200))}`);
+  }
   route();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 }

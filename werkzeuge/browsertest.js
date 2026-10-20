@@ -61,8 +61,17 @@ function server() {
   pruefe(`${pfade.length} Seiten laden, keine ist auf dem Handy zu breit`, zuBreit.length === 0, zuBreit.join(", "));
 
   await p.goto(`${B}/gewohnheiten/`, { waitUntil: "load" });
-  pruefe("Gewohnheiten beginnt mit der Frage", (await p.textContent("h1")).includes("Woran möchtest du arbeiten?"));
-  pruefe("… mit Antworten, die in die App führen", (await p.getAttribute(".richtung", "href")).endsWith("app/#bereich=ruhe"));
+  pruefe("Gewohnheiten beginnt mit „Was möchtest du verändern?“ und einem Suchfeld", (await p.textContent("h1")).includes("Was möchtest du verändern?")
+    && (await p.getAttribute("form.suche", "action")) === "/app/" && Boolean(await p.$('form.suche input[name="suche"]')));
+  pruefe("… fertige Routinen (u. a. Digital Detox) führen in die App zum Kalender", (await p.$$(".routine-karte")).length >= 6
+    && (await p.getAttribute("#routine-digital-detox a", "href")).endsWith("app/#routine=digital-detox"));
+  pruefe("… darunter die Bereiche, deren Antworten in die App führen", (await p.getAttribute(".richtung", "href")).endsWith("app/#bereich=ruhe"));
+  await p.fill("form.suche input", "weniger am Handy");
+  await Promise.all([p.waitForURL(/app\/#probieren/), p.click("form.suche button")]);
+  await p.waitForSelector('[data-aktion="routine-zeigen"]');
+  pruefe("Suchfeld der Website: „weniger am Handy“ zeigt in der App die Routine Digital Detox",
+    (await p.getAttribute('[data-aktion="routine-zeigen"]', "data-slug")) === "digital-detox" && !p.url().includes("?"));
+  await p.goto(`${B}/gewohnheiten/`, { waitUntil: "load" });
   pruefe("… lange Liste eingeklappt, Seite oben", !(await p.evaluate(() => document.querySelector("#alle").open)) && (await p.evaluate(() => scrollY)) === 0);
   await p.goto(`${B}/gewohnheiten/#waldbaden`, { waitUntil: "load" });
   pruefe("Alter Link /gewohnheiten/#waldbaden öffnet Liste und Übung",
@@ -242,7 +251,31 @@ function server() {
   const app = await mobil();
   p = await seite(app, OKTOBER);
   await p.goto(`${B}/app/`, { waitUntil: "networkidle" });
-  pruefe("App beginnt mit der Frage, ohne Menüleiste", (await p.textContent("#app h1")).includes("Woran") && !(await p.isVisible(".app-navi")));
+  pruefe("App beginnt mit „Was möchtest du verändern?“ und den Bereichen, ohne Menüleiste", (await p.textContent("#app h1")).includes("verändern")
+    && Boolean(await p.$('[data-form="suche"]')) && Boolean(await p.$('[data-aktion="frage"][data-slug="ruhe"]')) && !(await p.isVisible(".app-navi")));
+  // Freitext: passende Routine und Ideen; Unbekanntes führt zum Kontaktformular
+  const treffer = await p.evaluate(() => Object.fromEntries(["Digital Detox", "weniger am Handy hängen", "ich schlafe schlecht",
+    "Stress bei der Arbeit", "fühle mich einsam", "mehr Sport"].map((q) => [q, suchen(q).routinen[0]?.slug])));
+  pruefe("Suche findet die passende Routine", treffer["Digital Detox"] === "digital-detox" && treffer["weniger am Handy hängen"] === "digital-detox"
+    && treffer["ich schlafe schlecht"] === "besser-schlafen" && treffer["Stress bei der Arbeit"] === "weniger-stress"
+    && treffer["fühle mich einsam"] === "mehr-naehe" && treffer["mehr Sport"] === "mehr-energie", JSON.stringify(treffer));
+  await p.fill('[data-form="suche"] input', "xyzqq");
+  await p.click('[data-form="suche"] button');
+  pruefe("… ohne Treffer: Hinweis, fertige Routinen und Link „Schreib Nikolas, was du suchst“",
+    (await p.textContent("#app h1")).includes("noch nichts") && Boolean(await p.$('a[href*="nachricht="][href*="xyzqq"]')));
+  await p.click('[data-aktion="routine-zeigen"][data-slug="digital-detox"]');
+  await p.fill('[data-feld="routine-zeit"][data-i="3"]', "22:00");
+  await p.dispatchEvent('[data-feld="routine-zeit"][data-i="3"]', "change");
+  const routineLinks = await p.$$eval('#kalender a[target="_blank"]', (l) => l.map((a) => new URL(a.href).searchParams));
+  const schlafLink = await p.$$eval('#kalender a[target="_blank"]', (l) => new URL(l[l.length - 1].href).searchParams.get("dates"));
+  const [routineDl] = await Promise.all([p.waitForEvent("download"), p.click('[data-aktion="ics-routine"]')]);
+  const routineIcs = fs.readFileSync(await routineDl.path(), "utf8");
+  pruefe("Routine: je Schritt ein Google-Termin, eigene Zeit übernommen, alle als eine Datei (einmaliger Schritt ohne Wiederholung)",
+    routineLinks.length === 5 && schlafLink.includes("T220000") && (routineIcs.match(/BEGIN:VEVENT/g) || []).length === 5
+    && (routineIcs.match(/RRULE:FREQ=DAILY;COUNT=14/g) || []).length === 4 && routineIcs.includes("UID:routine-digital-detox-1@")
+    && routineIcs.split("\r\n").every((z) => Buffer.byteLength(z) <= 75));
+  await p.click('[data-aktion="routine-zurueck"]');
+  await p.click('[data-aktion="suche-weg"]');
   await p.click('[data-aktion="frage"][data-slug="ruhe"]');
   pruefe("Zweite Frage: Wie viel Zeit?", (await p.textContent("#app h1")).includes("Zeit"));
   await p.click('[data-aktion="zeit"][data-slug="kurz"]');
@@ -250,7 +283,7 @@ function server() {
   const ruheOk = await p.evaluate((l) => l.every((s) => U[s].bereich === "ruhe" && heuteMoeglich(U[s]) && U[s].art !== "quest"), ruhe);
   pruefe("Ruhe + wenig Zeit: Liste aller passenden Ideen statt einer Zufallsidee", ruhe.length >= 4 && ruheOk, `${ruhe.length} Ideen`);
   await p.click('[data-aktion="neu-fragen"]');
-  pruefe("„Fragen neu beantworten“ führt zur ersten Frage", (await p.textContent("#app h1")).includes("Woran"));
+  pruefe("„Fragen neu beantworten“ führt zur ersten Frage", Boolean(await p.$('[data-aktion="frage"][data-slug="alle"]')));
   await p.click('[data-aktion="frage"][data-slug="alle"]');
   await p.click('[data-aktion="zeit"][data-slug="egal"]');
   const alle = await p.$$eval('[data-aktion="idee-zeigen"]', (l) => l.map((x) => x.dataset.slug));

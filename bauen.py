@@ -64,6 +64,23 @@ for _u in UEBUNGEN:
     for _s in _u["statt"]:
         if _s not in UEBUNG or not UEBUNG[_s]["heute"] or UEBUNG[_s]["monate"]:
             raise SystemExit(f"inhalt/erklaerungen.json: statt-Idee {_s} bei {_u['slug']} gibt es nicht oder passt nicht immer")
+# Fertige Routinen für „Was möchtest du verändern?“ (Seite /gewohnheiten/ und App): je Schritt ein Kalendertermin
+ROUTINEN = json.loads((INHALT / "routinen.json").read_text(encoding="utf-8"))["routinen"]
+for _r in ROUTINEN:
+    if not all(_r.get(k) for k in ("slug", "emoji", "titel", "kurz", "warum", "suchwoerter", "schritte")):
+        raise SystemExit(f"inhalt/routinen.json: {_r.get('slug')} braucht slug, emoji, titel, kurz, warum, suchwoerter und schritte")
+    if [w for w in _r["suchwoerter"] if w != w.lower() or re.search(r"[äöüß]", w)]:
+        raise SystemExit(f"inhalt/routinen.json: suchwoerter bei {_r['slug']} klein und mit ae/oe/ue/ss schreiben")
+    for _s in _r["schritte"]:
+        if not (re.match(r"^\d\d:\d\d$", _s.get("zeit", "")) and _s.get("titel") and _s.get("text")):
+            raise SystemExit(f"inhalt/routinen.json: Schritt in {_r['slug']} braucht zeit (HH:MM), titel und text")
+        if _s.get("idee") and _s["idee"] not in UEBUNG:
+            raise SystemExit(f"inhalt/routinen.json: Idee {_s['idee']} in {_r['slug']} gibt es nicht")
+    _sichtbar = " ".join([_r["titel"], _r["kurz"], _r["warum"]] + [_s["titel"] + " " + _s["text"] for _s in _r["schritte"]])
+    if "–" in _sichtbar or "—" in _sichtbar:
+        raise SystemExit(f"inhalt/routinen.json: Gedankenstrich in {_r['slug']} (siehe Schreibstil in CLAUDE.md)")
+if len({_r["slug"] for _r in ROUTINEN}) != len(ROUTINEN):
+    raise SystemExit("inhalt/routinen.json: slug doppelt")
 # Nächster Seminartermin (leer oder vorbei -> Seite zeigt automatisch „Termin in Planung“)
 SEMINAR = json.loads((INHALT / "seminar.json").read_text(encoding="utf-8"))
 # Realitätscheck-Quiz (nach Hans Roslings Factfulness, aktuelle Zahlen mit Quelle; „studie“ = Gapminder 2017)
@@ -457,6 +474,31 @@ def richtungen_html():
         f'<span><strong>{esc(r["titel"])}</strong><span>{esc(r["text"])}</span></span></a>' for r in RICHTUNGEN) + "</div>"
 
 
+def suche_html():
+    """„Was möchtest du verändern?“ als Freitext: die App stellt eine passende Routine und Ideen zusammen (auch ohne JS)."""
+    return """<form class="suche" action="/app/" method="get" role="search">
+  <input type="search" name="suche" placeholder="z. B. weniger am Handy hängen" aria-label="Was möchtest du verändern?" autocomplete="off" enterkeyhint="search" required>
+  <button class="knopf" type="submit">Zusammenstellen</button>
+</form>"""
+
+
+def routinen_html():
+    karten = []
+    for r in ROUTINEN:
+        taeglich = [s for s in r["schritte"] if not s.get("einmal")]
+        einmal = [s for s in r["schritte"] if s.get("einmal")]
+        liste = "".join(f'<li><span class="routine-zeit">{s["zeit"].replace(":", ".")}</span> {esc(s["titel"])}</li>'
+                        for s in sorted(taeglich, key=lambda s: s["zeit"]))
+        start = "".join(f'<li><span class="routine-zeit">Start</span> {esc(s["titel"])} (einmal)</li>' for s in einmal)
+        karten.append(f"""<article class="routine-karte" id="routine-{r['slug']}">
+  <h3><span aria-hidden="true">{r['emoji']}</span> {esc(r['titel'])}</h3>
+  <p>{esc(r['kurz'])}</p>
+  <ul class="routine-liste">{start}{liste}</ul>
+  <a class="knopf klein-knopf" href="/app/#routine={r['slug']}">📅 In den Kalender</a>
+</article>""")
+    return '<div class="routinen">' + "\n".join(karten) + "</div>"
+
+
 def impuls_html():
     # nur Ideen, die man heute ausprobieren kann; "m" = passende Monate (filtert seite.js)
     pool = [u for u in UEBUNGEN if u["art"] in ("gewohnheit", "quest") and u["heute"]]
@@ -750,6 +792,8 @@ def bausteine_einsetzen(text, artikel):
         "{{themen_chips}}": lambda: themen_chips(None),
         "{{uebungen}}": uebungen_html,
         "{{richtungen}}": richtungen_html,
+        "{{suche}}": suche_html,
+        "{{routinen}}": routinen_html,
         "{{seminar_anmeldung}}": seminar_anmeldung_html,
         "{{seminar_kalender}}": seminar_kalender_seite,
         "{{seminar_hinweis}}": seminar_hinweis_html,
@@ -913,6 +957,7 @@ def app_bauen():
                       "html": text_html(u["text"])} for u in UEBUNGEN],
         "bereiche": BEREICHE,
         "richtungen": RICHTUNGEN,
+        "routinen": ROUTINEN,
         "habitica": E["habitica_challenge"],
     }
     (ziel / "daten.json").write_text(json.dumps(daten, ensure_ascii=False), encoding="utf-8")

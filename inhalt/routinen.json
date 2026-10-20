@@ -1,0 +1,104 @@
+{
+  "hinweis": "Fertige Routinen für „Was möchtest du verändern?“ (Seite /gewohnheiten/ und App). Je Schritt ein Kalendertermin. suchwoerter: kleingeschrieben, ä/ö/ü/ß als ae/oe/ue/ss, Wortanfänge reichen (\"schlaf\" findet auch „schlafe schlecht“). Regeln in CLAUDE.md unter „Routinen“.",
+  "routinen": [
+    {
+      "slug": "digital-detox",
+      "emoji": "📵",
+      "titel": "Digital Detox",
+      "kurz": "Weniger Handy, mehr Leben: feste Zeiten ohne Bildschirm statt kompletter Verzicht.",
+      "warum": "Die Forschung dazu ist gemischt. Eine Übersicht über 21 Studien fand mal bessere Stimmung, mal keine Wirkung (Radtke u. a. 2022). In einem Experiment fühlten sich Studierende weniger einsam und niedergeschlagen, als sie soziale Medien drei Wochen lang auf etwa 30 Minuten am Tag begrenzten (Hunt u. a. 2018). Bewusste Grenzen sind darum oft sinnvoller als ein radikaler Verzicht.",
+      "suchwoerter": ["handy", "smartphone", "telefon", "bildschirm", "screen", "digital", "detox", "offline", "online", "internet", "social media", "soziale medien", "instagram", "tiktok", "youtube", "facebook", "whatsapp", "netflix", "scroll", "doomscroll", "nachrichten", "news", "medien", "benachrichtigung", "push", "erreichbar", "ablenkung", "abgelenkt", "zocken", "spiele", "laptop", "computer", "fernseh", "serien"],
+      "schritte": [
+        { "zeit": "07:30", "titel": "Die erste halbe Stunde ohne Handy", "text": "Bleib nach dem Aufwachen eine halbe Stunde offline. Erst ankommen und ein Glas Wasser trinken, dann das Handy.", "idee": "digital-health" },
+        { "zeit": "12:30", "titel": "Bildschirmfrei essen", "text": "Leg das Handy beim Essen außer Sichtweite und schmeck bewusst, was du isst.", "idee": "digital-health" },
+        { "zeit": "18:00", "titel": "Feierabend für das Handy", "text": "Stell „Nicht stören“ an und schalte das Arbeitshandy aus. Was jetzt noch kommt, kann bis morgen warten.", "idee": "feierabendritual" },
+        { "zeit": "21:30", "titel": "Handy schlafen legen", "text": "Leg das Handy eine Stunde vor dem Schlafen weg, am besten außerhalb vom Schlafzimmer und im Flugmodus. Lieber ein Buch oder ein Hörbuch.", "idee": "digital-health" },
+        { "zeit": "20:00", "titel": "Handy einmal aufräumen", "text": "Nimm dir einmal 15 Minuten: Benachrichtigungen ausschalten, bis auf Anrufe und Nachrichten von Menschen. Apps, die dich ziehen, vom Startbildschirm nehmen und App-Ordner danach benennen, wofür du sie nutzen willst.", "idee": "affirmative-handynutzung", "einmal": true }
+      ]
+    },
+    {
+      "slug": "besser-schlafen",
+      "emoji": "🌙",
+      "titel": "Besser schlafen",
+      "kurz": "Abends langsam runterfahren, damit der Schlaf leichter kommt.",
+      "warum": "Feste Schlafzeiten helfen deiner inneren Uhr, und weniger Bildschirm am Abend hilft vielen, zur Ruhe zu kommen. Muskeln bewusst anspannen und loslassen kann zusätzlich entspannen.",
+      "suchwoerter": ["schlaf", "einschlaf", "durchschlaf", "ausgeschlafen", "muede", "erschoepft", "nacht", "naechte", "aufwach", "wach liegen", "wachliegen", "bett", "insomnie", "schlaflos", "gruebeln", "erholung", "erholt", "abends", "abend"],
+      "schritte": [
+        { "zeit": "21:00", "titel": "Handy weg", "text": "Leg das Handy eine Stunde vor dem Schlafen weg, am besten außer Reichweite.", "idee": "digital-health" },
+        { "zeit": "21:30", "titel": "Licht dimmen und runterfahren", "text": "Geh etwa zur gleichen Zeit ins Bett wie gestern, auch am Wochenende ungefähr. Mach jetzt das Licht gedämpft und lass den Tag ausklingen.", "idee": "nachtfalter" },
+        { "zeit": "22:00", "titel": "Im Bett loslassen", "text": "Spann nacheinander Fäuste, Schultern und Gesicht fünf Sekunden an. Dann lass bewusst los und spür nach.", "idee": "muskelentspannung" },
+        { "zeit": "18:00", "titel": "Schlafzimmer ruhiger machen", "text": "Mach dein Schlafzimmer einmal ruhiger, dunkler und gemütlicher: weniger Licht, weniger Ablenkung, das Handy bekommt einen Platz außer Reichweite.", "idee": "schlafgemach", "einmal": true }
+      ]
+    },
+    {
+      "slug": "weniger-stress",
+      "emoji": "🍃",
+      "titel": "Weniger Stress",
+      "kurz": "Kurze Pausen über den Tag, in denen du bewusst durchatmest.",
+      "warum": "Schon ein Gefühl in Worte zu fassen, kann ihm die Wucht nehmen (Lieberman u. a. 2007). Ein festes Ende des Arbeitstags hilft dem Kopf abzuschalten, und wer nach Feierabend wirklich abschaltet, erholt sich besser.",
+      "suchwoerter": ["stress", "gestresst", "ruhe", "ruhig", "entspann", "gelassen", "gelassenheit", "druck", "hektik", "hektisch", "ueberfordert", "ueberforderung", "anspannung", "angespannt", "nervoes", "unruhe", "unruhig", "abschalten", "burnout", "pause", "sorgen", "arbeit", "job", "buero", "meditation", "meditier", "atmen", "atmung", "achtsam"],
+      "schritte": [
+        { "zeit": "07:00", "titel": "Drei Minuten atmen", "text": "Atme drei Minuten bewusst: ruhig ein, kurze Pause, lang aus.", "idee": "meditation-und-atmung" },
+        { "zeit": "13:00", "titel": "Kurz innehalten", "text": "Halt einen Moment inne und benenne, was du gerade fühlst, ohne es zu bewerten.", "idee": "emotionale-intelligenz" },
+        { "zeit": "17:30", "titel": "Den Arbeitstag beenden", "text": "Beende deinen Arbeitstag mit einem kleinen Ritual, zum Beispiel einem Tee oder einem kurzen Spaziergang.", "idee": "feierabendritual" },
+        { "zeit": "20:30", "titel": "Gedanken ziehen lassen", "text": "Setz dich zehn Minuten hin und lass Gedanken kommen und wieder gehen, wie Wolken am Himmel.", "idee": "gedankenlos" }
+      ]
+    },
+    {
+      "slug": "mehr-energie",
+      "emoji": "🚶",
+      "titel": "Mehr Energie",
+      "kurz": "Kleine Schritte für deinen Körper, vom Glas Wasser bis zur Runde um den Block.",
+      "warum": "Schon wenig Bewegung zählt, und ein paar Minuten draußen können die Stimmung heben. Auch Trinken spielt mit: Schon leichter Flüssigkeitsmangel kann die Stimmung drücken und die Konzentration erschweren (Armstrong u. a. 2012).",
+      "suchwoerter": ["bewegung", "bewegen", "sport", "fit", "fitness", "energie", "energielos", "schlapp", "antriebslos", "sitzen", "sitze", "buero", "ruecken", "nacken", "haltung", "trinken", "wasser", "draussen", "natur", "frische luft", "spazier", "laufen", "gesund", "koerper"],
+      "schritte": [
+        { "zeit": "08:00", "titel": "Wasser in Sichtweite", "text": "Stell dir ein volles Glas Wasser in Sichtweite und trink über den Tag immer wieder einen Schluck.", "idee": "wasserbaendiger" },
+        { "zeit": "10:00", "titel": "Aufrichten", "text": "Richte dich jedes Mal auf, wenn du durch eine Tür gehst: Schultern locker, Kinn leicht hoch.", "idee": "haltung-bitte" },
+        { "zeit": "12:30", "titel": "Ein paar Minuten raus", "text": "Geh ein paar Minuten raus und genieß ein Stück Natur. Schau in den Himmel, spür den Wind.", "idee": "naturfreund" },
+        { "zeit": "18:00", "titel": "Bewegen, egal wie", "text": "Beweg dich, egal wie: tanzen, dehnen, eine Runde um den Block. Auch fünf Minuten zählen.", "idee": "bewegung" }
+      ]
+    },
+    {
+      "slug": "mehr-naehe",
+      "emoji": "🤝",
+      "titel": "Mehr Nähe",
+      "kurz": "Mehr echte Gespräche und kleine Gesten für die Menschen um dich.",
+      "warum": "Tiefe Gespräche sind meist weniger unangenehm und verbinden mehr, als wir vorher denken (Kardas, Kumar und Epley 2022). Kleine freundliche Gesten tun beiden Seiten gut.",
+      "suchwoerter": ["einsam", "einsamkeit", "allein", "freunde", "freundschaft", "beziehung", "partner", "partnerin", "familie", "eltern", "kinder", "gespraech", "reden", "zuhoer", "naehe", "kontakt", "verbunden", "verbindung", "streit", "liebe", "kollegen", "menschen", "sozial"],
+      "schritte": [
+        { "zeit": "09:00", "titel": "Ganz zuhören", "text": "Hör in einem Gespräch heute ganz zu: Handy weg, nachfragen, nicht gleich antworten.", "idee": "aktives-zuhoeren" },
+        { "zeit": "12:00", "titel": "Eine kleine freundliche Tat", "text": "Verschenk eine kleine freundliche Tat. Oder bemerk bewusst eine, die dir begegnet.", "idee": "empathiker" },
+        { "zeit": "18:30", "titel": "Eine echte Frage", "text": "Stell jemandem eine Frage, die zum Nachdenken anregt, zum Beispiel: „Was ist gerade Thema bei dir?“", "idee": "enjoy-krates" },
+        { "zeit": "19:30", "titel": "Deinen Telefonjoker ausmachen", "text": "Mach einmal mit einem Menschen aus: Ruf an, wenn du jemanden brauchst. Und umgekehrt.", "idee": "telefonjoker", "einmal": true }
+      ]
+    },
+    {
+      "slug": "mehr-freude",
+      "emoji": "☀️",
+      "titel": "Mehr Freude",
+      "kurz": "Den Tag mit etwas Leichtigkeit beginnen und mit drei guten Dingen beenden.",
+      "warum": "Wer abends drei gute Dinge festhält, wird im Schnitt glücklicher; in der Studie von Seligman u. a. (2005) hielt der Effekt ein halbes Jahr. Singen und Lachen bringen zusätzlich Leichtigkeit in den Tag.",
+      "suchwoerter": ["freude", "glueck", "gluecklich", "dankbar", "dankbarkeit", "genuss", "geniess", "lachen", "leichtigkeit", "leicht", "motivation", "motiviert", "traurig", "stimmung", "lustlos", "langweil", "spass", "positiv", "hobby", "zufrieden", "trist", "grau"],
+      "schritte": [
+        { "zeit": "07:30", "titel": "Summen oder singen", "text": "Sing, summ oder tanz bei etwas Alltäglichem, etwa unter der Dusche oder beim Kaffee machen.", "idee": "singvogel" },
+        { "zeit": "18:00", "titel": "Etwas zum Lachen", "text": "Such dir etwas, das dich zum Lachen bringt. Und bring jemand anderen zum Lachen.", "idee": "lachendes-herz" },
+        { "zeit": "19:00", "titel": "Zeit für dein Hobby", "text": "Nimm dir eine halbe Stunde für etwas, das du einfach gerne machst.", "idee": "hobbyist" },
+        { "zeit": "21:00", "titel": "Drei gute Dinge", "text": "Schreib drei Dinge auf, die heute gut waren, und warum.", "idee": "reflektion" }
+      ]
+    },
+    {
+      "slug": "freundlicher-mit-mir",
+      "emoji": "🔥",
+      "titel": "Freundlicher mit dir",
+      "kurz": "Mit dir sprechen wie mit einem guten Freund, statt dich anzutreiben.",
+      "warum": "Wie wir mit uns sprechen, prägt, wie wir uns fühlen. Glaubwürdige, freundliche Sätze helfen mehr als übertriebene Affirmationen; die können bei geringem Selbstwert sogar die Stimmung drücken (Wood, Perunovic und Lee 2009).",
+      "suchwoerter": ["selbstwert", "selbstbewusst", "selbstvertrauen", "selbstzweifel", "selbstliebe", "selbstkritik", "kritisch", "perfektion", "unsicher", "unsicherheit", "zweifel", "innere stimme", "antreiben", "muss", "schuld", "schaem", "scham", "selbstmitgefuehl", "freundlich", "akzeptier", "gefuehle", "gefuehl"],
+      "schritte": [
+        { "zeit": "07:30", "titel": "Ein freundlicher Satz", "text": "Sprich heute bewusst freundlich mit dir, so wie mit einem guten Freund. Ein Satz, den du glauben kannst, reicht.", "idee": "selbstliebe" },
+        { "zeit": "08:30", "titel": "Darf statt muss", "text": "Sag heute „ich darf“ oder „ich möchte“ statt „ich muss“. Spürst du, was sich verändert?", "idee": "sprachgenuss" },
+        { "zeit": "13:00", "titel": "Gefühle benennen", "text": "Halt kurz inne und benenne, was du gerade fühlst, ohne es zu bewerten.", "idee": "emotionale-intelligenz" },
+        { "zeit": "21:00", "titel": "Was ist dir gelungen?", "text": "Schau kurz auf deinen Tag: Was ist dir gelungen, auch wenn es klein war?", "idee": "reflektion" }
+      ]
+    }
+  ]
+}

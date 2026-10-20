@@ -400,6 +400,31 @@ p { margin: 0 0 1em; }
 .richtung-emoji { font-size: 2rem; line-height: 1; flex: none; }
 .richtung strong { display: block; font: 500 1.15rem/1.25 var(--serif); }
 .richtung span span { color: var(--leise); font-size: 0.95rem; }
+/* „Was möchtest du verändern?“: Freitext führt in die App, fertige Routinen als Karten (Nikolas, Okt. 2026) */
+.suche { display: flex; gap: 0.6rem; max-width: 40rem; margin: 0 0 2.2rem; }
+.suche input { flex: 1; min-width: 0; font: inherit; font-size: 1.1rem; padding: 0.8rem 1rem; border: 2px solid var(--akzent-hell);
+  border-radius: 999px; background: var(--karte); color: var(--text); }
+.suche input:focus { outline: none; border-color: var(--akzent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akzent) 20%, transparent); }
+.suche .knopf { flex: none; }
+.routinen-titel { margin-bottom: 0.4rem; }
+.routinen { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+.routine-karte { display: flex; flex-direction: column; background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund);
+  padding: 1.2rem 1.2rem 1.1rem; scroll-margin-top: 5rem; }
+.routine-karte h3 { font-size: 1.25rem; margin-bottom: 0.3rem; }
+.routine-karte > p { color: var(--leise); font-size: 0.95rem; margin-bottom: 0.7rem; }
+.routine-liste { list-style: none; padding: 0; margin: 0 0 1rem; font-size: 0.95rem; }
+.routine-liste li { display: flex; gap: 0.6rem; padding: 0.28rem 0; border-top: 1px solid var(--linie); }
+.routine-zeit { flex: none; width: 2.8rem; color: var(--akzent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.routine-karte .knopf { margin-top: auto; align-self: flex-start; }
+@media (max-width: 640px) {
+  .suche { flex-direction: column; }
+  .suche .knopf { align-self: flex-start; }
+  .routinen { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; gap: 0.8rem; overflow-x: auto;
+    scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: -1.25rem; padding: 0.25rem 1.25rem 0.75rem;
+    scroll-padding-inline: 1.25rem; scrollbar-width: none; }
+  .routinen::-webkit-scrollbar { display: none; }
+  .routine-karte { scroll-snap-align: start; }
+}
 .alle-uebungen > summary { display: flex; flex-direction: column; gap: 0.2rem; cursor: pointer; list-style: none; padding: 1.1rem 1.3rem;
   background: var(--karte); border: 1px solid var(--linie); border-radius: var(--rund); }
 .alle-uebungen > summary::-webkit-details-marker { display: none; }

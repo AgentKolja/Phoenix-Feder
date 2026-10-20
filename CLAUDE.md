@@ -16,6 +16,7 @@ veröffentlicht ihn bei jedem Push auf `main` über GitHub Pages.
 | `inhalt/themen.json` | Die vier Themen (Slug, Titel, Essenz, Bild). Jedes bekommt eine Seite `/thema/<slug>/` |
 | `inhalt/erklaerungen.json` | Je Übung eine Zeile Klartext („Bei Alltäglichem singen …“), der Bereich (Ruhe, Körper, Miteinander, Freude, Stärke – auch für Quests, damit sie zur Einstiegsfrage passen) und `heute`: konkreter Schritt für heute (Text), `true` (Klartext passt schon) oder `false` (nicht spontan: Gewohnheit wirkt erst über Wochen, z. B. feste Schlafenszeiten; Quest braucht Planung, z. B. Ausflug). Optional `statt` (Ideen für heute, wenn diese nicht geht) und `monate` (z. B. Bienen nur April–September). Von Hand gepflegt; der Build bricht ab, wenn `kurz` oder `heute` fehlt |
 | `inhalt/uebungen.json` | 54 Gewohnheiten, tägliche Aufgaben und Quests (Seite `/gewohnheiten/`, Impuls auf der Startseite). Ursprünglich aus Nikolas’ Habitica-Challenge, seit Okt. 2026 von Hand gepflegt, Regeln unter „Übungstexte“ |
+| `inhalt/routinen.json` | Fertige Routinen für „Was möchtest du verändern?“ (Digital Detox, Besser schlafen, Weniger Stress, Mehr Energie, Mehr Nähe, Mehr Freude, Freundlicher mit dir): Kurztext, `warum` (nur geprüfte Studien), `suchwoerter` für die Freitextsuche, je Schritt Uhrzeit, Titel, Text, passende Idee (`idee`) und optional `einmal` (Start-Schritt ohne Wiederholung). bauen.py prüft Pflichtfelder, Ideen und Gedankenstriche |
 | `bilder/` | Nur WebP, immer als Paar `<name>-800.webp` + `<name>-1600.webp` |
 | `stil.css`, `favicon.svg`, `schriften/` | Design, Icon, lokal gehostete Schriften: Source Serif 4 für Überschriften, Source Sans 3 für Text (beide OFL, von Fontsource, nur Latin-Teilmenge). Keine verspielten Schriften: Fraunces wurde im Okt. 2026 ersetzt, weil F und j verzerrt wirkten |
 | `kontakt.js` | Formular-Versand; füllt Anliegen/Nachricht aus `?anliegen=…&nachricht=…` vor |
@@ -41,7 +42,8 @@ Bausteine in Seiten: `{{angebote}}`, `{{neueste_artikel}}`, `{{alle_artikel}}`, 
 `{{kontakt Feedback zu den Übungen}}` (mit Vorauswahl), `{{impuls}}`, `{{themen}}`, `{{themen_chips}}`, `{{uebungen}}`
 (eingeklappte Liste aller Übungen), `{{richtungen}}` (Einstiegsfrage „Woran möchtest du arbeiten?“, Antworten
 führen nach `/app/#bereich=<slug>`; Liste `RICHTUNGEN` in bauen.py),
-`{{habitica_url}}`, `{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`
+`{{suche}}` (Freitextfeld „Was möchtest du verändern?“, GET nach `/app/?suche=…`), `{{routinen}}` (Karten der fertigen Routinen, Knopf nach
+`/app/#routine=<slug>`), `{{habitica_url}}`, `{{buchung_url}}`, `{{name}}`, `{{autor}}`, `{{bild name "Alt-Text" "klasse" "eager"}}`
 (`{{bild …}}` geht auch in Artikeln).
 
 Schreibstil (Nikolas’ Wunsch, Okt. 2026, gilt für Seiten, App, Quiz und Artikel): Keine Gedankenstriche (– oder —) im
@@ -178,6 +180,22 @@ App-Dateien oder Daten ändern.
 - Weniger ist mehr: Verspielte Namen (Singvogel, Superhiero …) nie ohne Erklärzeile zeigen. Lange Texte,
   Einstellungen und Statistiken hinter „Aufklappen“, höchstens ein Hinweis gleichzeitig. Einstieg:
   zwei Fragen, dann die passenden Ideen; eigene Auswahl (`#start`: Bereich → Gewohnheiten → Zeitpunkt) nur auf Wunsch.
+
+### Routinen und Suche „Was möchtest du verändern?“ (Nikolas, Okt. 2026)
+
+Wunsch: konkret suchen können (z. B. „Digital Detox“), eine passende Routine bekommen und sie einfach in den Kalender legen.
+`/gewohnheiten/` beginnt deshalb mit „Was möchtest du verändern?“ (Suchfeld), darunter „Fertige Routinen“ als Karten, dann
+die Bereiche („Woran möchtest du arbeiten?“). Die App beginnt genauso (Suchfeld, Routinen als Chips, darunter die Bereiche).
+Die Suche läuft ganz im Browser, ohne Server und ohne KI-Dienst (bleibt tracking- und cookiefrei): `suchen()` in app.js
+normalisiert den Text (klein, ae/oe/ue/ss), zählt Treffer in den `suchwoerter` der Routinen und Wortanfänge in Titel,
+Klartext und Text der Ideen. Füllwörter („weniger“, „mehr“, „ich“ …) zählen nicht. Ohne Treffer: andere Worte vorschlagen,
+Routinen zeigen und „Schreib Nikolas, was du suchst“ (Kontaktformular vorausgefüllt), damit die Sammlung wächst. Neue
+Suchbegriffe einfach in `suchwoerter` ergänzen; der Browsertest prüft typische Sätze („weniger am Handy hängen“ → Digital Detox).
+Routine-Ansicht (`#routine=<slug>`): Zeiten je Schritt anpassbar, Dauer 2 Wochen / 2 Monate / dauerhaft, je Schritt ein
+Google-Link (Google nimmt nur einen Termin pro Link) und alle Schritte als eine .ics (UID `routine-<slug>-<n>`, erneuter Import
+aktualisiert). Suche und Routine werden nicht gespeichert (nur für die Sitzung). Digital Detox bewusst als Grenzen statt
+Verzicht: Radtke u. a. 2022 (Übersicht, 21 Studien, gemischte Ergebnisse), Hunt u. a. 2018 (Social Media auf etwa 30 Minuten
+am Tag: weniger Einsamkeit und Niedergeschlagenheit), beide Abstracts geprüft.
 
 ## Realitätscheck „Wie realistisch ist dein Weltbild?“ (`/quiz/`)
 
