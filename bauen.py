@@ -749,7 +749,6 @@ def seminar_anmeldung_html():
           <label><span>Vorname <span aria-hidden="true">*</span></span><input name="Vorname" required autocomplete="given-name"></label>
           <label><span>E-Mail <span aria-hidden="true">*</span></span><input type="email" name="email" required autocomplete="email"></label>
         </div>
-        <label><span>Magst du mir vorab etwas mitgeben? (freiwillig)</span><textarea name="message" rows="2"></textarea></label>
         <p class="klein">Deine Angaben nutze ich nur für dieses Seminar (Bestätigung, Erinnerung, Rückfragen). Mehr in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
         <button class="knopf" type="submit">{"Kostenlos anmelden" if t["kostenlos"] else "Anmelden"}</button>
         <p class="status" role="status" aria-live="polite"></p>
