@@ -113,9 +113,11 @@ def main():
     <p class="infos">{ort_plakat}<br>Keine Vorkenntnisse nötig</p>
     <div class="anmelden-qr"><div class="qr">{qr}</div><p>Jetzt Platz sichern:<br><strong>{esc(kurz_url)}</strong><span class="klein">{pilot_satz}</span></p></div>
   </div>"""
+    feder = (WURZEL / "favicon.svg").read_text(encoding="utf-8").split("\n", 1)[1].rsplit("</svg>", 1)[0]
+    absender = f'<div class="absender"><svg viewBox="0 0 32 32" aria-hidden="true">{feder}</svg><span>Phoenix Feder</span></div>'
     schriftblatt = lambda klasse: f"""<div class="blatt {klasse}">
   {kreis}
-  {stoerer if klasse == "plakat" else ""}
+  {absender + stoerer if klasse == "plakat" else ""}
   {kopf}
   {unten_plakat if klasse == "plakat" else unten}
 </div>"""
