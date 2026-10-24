@@ -76,6 +76,15 @@ def main():
     plakat_ort = esc(o["name"]) + "<br>" + esc(o["strasse"]) + (f" ({esc(o['zusatz'])})" if o.get("zusatz") else "")
     plakat_preis = esc(f"Kostenlos, nur {s['plaetze']} Plätze" if kostenlos else f"{s['preis']}, {s['plaetze']} Plätze")
     plakat_bild = (WURZEL / "bilder" / "seminar-wahrnehmung-1600.webp").as_uri()  # Hand im Kornfeld: Wahrnehmen
+    try:
+        # Das Original hat nur 580 px: sauber hochgerechnet und leicht nachgeschärft wirkt es im Druck klarer
+        from PIL import Image, ImageFilter
+        foto = Image.open(WURZEL / "bilder" / "seminar-wahrnehmung-1600.webp").convert("RGB")
+        foto = foto.resize((foto.width * 3, foto.height * 3), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=2.4, percent=70, threshold=3))
+        foto.save(ziel / "_kornfeld.jpg", quality=92)
+        plakat_bild = (ziel / "_kornfeld.jpg").as_uri()
+    except ImportError:
+        pass
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
@@ -156,7 +165,7 @@ def main():
     if "PW" not in umgebung:
         umgebung["PW"] = subprocess.run(["npm", "root", "-g"], capture_output=True, text=True).stdout.strip() + "/playwright"
     subprocess.run(["node", str(HIER / "rendern.js"), str(ziel)], check=True, env=umgebung)
-    for f in ziel.glob("_*.html"):
+    for f in [*ziel.glob("_*.html"), *ziel.glob("_kornfeld.jpg")]:
         f.unlink()
     # Link-Vorschau der Seminarseite (og:image) gleich in die Website übernehmen
     import shutil

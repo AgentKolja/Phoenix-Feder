@@ -98,29 +98,32 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 
 /* ---------- Plakat DIN A4: sehr wenig Text, alles groß, ein Bild im Kreis ---------- */
 @page { size: A4; margin: 0; }
-.plakat { width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; display: flex; flex-direction: column; background: #fffdf9; }
-.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -30mm; top: -80mm; border-radius: 50%; overflow: hidden; }
+/* Warmer Grund mit weißem Rand: hebt sich am Schwarzen Brett von weißen Zetteln ab; der Rand ist gewollt,
+   so schneidet auch ein Drucker ohne Randlosdruck nichts ungleichmäßig ab. Positionen gelten ab der Innenkante. */
+.plakat { width: 210mm; height: 297mm; padding: 9mm 10mm 7mm; display: flex; flex-direction: column; background: #f2e3c6; border: 6mm solid #fff; }
+.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -36mm; top: -86mm; border-radius: 50%; overflow: hidden; }
 .plakat > *:not(.kreis):not(.stoerer):not(.absender) { position: relative; }
 /* Absender oben links: füllt die Ecke neben dem Foto ruhig aus und macht die Marke erkennbar */
-.plakat .absender { position: absolute; left: 16mm; top: 14mm; display: flex; align-items: center; gap: 2.5mm; font: 500 17pt/1 var(--serif); color: var(--text); }
+.plakat .absender { position: absolute; left: 10mm; top: 8mm; display: flex; align-items: center; gap: 2.5mm; font: 500 17pt/1 var(--serif); color: var(--text); }
 .plakat .absender svg { width: 10mm; height: 10mm; }
 /* Störer: runder Aufkleber mit dem Angebot, sitzt auf dem Rand des Fotokreises */
-.plakat .stoerer { position: absolute; z-index: 2; left: 74mm; top: 40mm; width: 48mm; height: 48mm; border-radius: 50%;
+.plakat .stoerer { position: absolute; z-index: 2; left: 68mm; top: 34mm; width: 48mm; height: 48mm; border-radius: 50%;
   background: var(--akzent); color: #fffdf9; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; box-shadow: 0 1.5mm 5mm rgb(60 40 20 / 28%); border: 1.2mm solid #fffdf9; }
 .plakat .stoerer strong { font: 700 19.5pt/1 var(--sans); text-transform: uppercase; letter-spacing: 0.03em; }
 .plakat .stoerer span { font: 400 15pt/1.15 var(--sans); margin-top: 1.8mm; }
 /* Schrift so groß, dass die Zeilen die Breite nutzen (Nikolas, Okt. 2026: „zu viel weiße Fläche“) */
-.plakat h1 { margin-top: 77mm; font: 700 71pt/0.94 var(--sans); text-transform: uppercase; letter-spacing: -0.008em; text-wrap: initial; }
-.plakat .unter { font-size: 56pt; margin: 3.5mm 0 6mm; line-height: 1.05; }
+.plakat h1 { margin-top: 74mm; font: 700 71pt/0.94 var(--sans); text-transform: uppercase; letter-spacing: -0.008em; text-wrap: initial; }
+.plakat .unter { font-size: 56pt; margin: 3.5mm 0 5mm; line-height: 1.05; }
 .plakat .unten { margin-top: auto; padding-top: 5mm; border-top: 0.8mm solid var(--text); display: grid; gap: 4mm; }
 .plakat .termin { font: 600 42pt/1.08 var(--sans); color: var(--text); }
 .plakat .infos { font: 400 31pt/1.18 var(--sans); color: var(--text); }
 .plakat .anmelden-qr { display: flex; align-items: center; gap: 7mm; margin-top: 1mm; }
-.plakat .qr { width: 47mm; height: 47mm; flex: none; }
+/* QR-Code auf weißem Feld: ruhiger Rand ums Muster, scannt auf farbigem Grund zuverlässiger */
+.plakat .qr { width: 48mm; height: 48mm; flex: none; background: #fff; padding: 2.6mm; border-radius: 3mm; }
 .plakat .anmelden-qr p { font: 400 21pt/1.3 var(--sans); color: var(--text); }
 .plakat .anmelden-qr strong { font-size: 25pt; color: var(--akzent); }
-.plakat .anmelden-qr .klein { display: block; margin-top: 3mm; font-size: 17pt; color: var(--leise); }
+.plakat .anmelden-qr .klein { display: block; margin-top: 3mm; font-size: 17pt; color: #5a4a3e; }
 
 /* ---------- Short 1080 × 1920 (Reel, WhatsApp-Status): vier ruhige Szenen im Plakat-Look, 12 s ---------- */
 .reel .kreis img { animation: zoom 12s linear both; }
