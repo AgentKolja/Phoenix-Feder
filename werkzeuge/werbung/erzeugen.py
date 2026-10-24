@@ -103,11 +103,19 @@ def main():
     <p class="infos">{esc(o["name"])}<br>{plakat_preis}</p>
     <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong><span class="klein">{pilot_satz}</span></p></div>
   </div>"""
-    # Plakat hängt in Aachen: Straße statt Stadt, damit man den Ort ohne Suchen findet (Nikolas, Okt. 2026)
+    # Plakat (Okt. 2026, Feinschliff wie im Handel): das Angebot als runder Störer am Foto (Blickfang in zwei Sekunden),
+    # Hürde senken („Keine Vorkenntnisse nötig“), Handlungsaufruf am QR-Code; Straße statt Stadt, das Plakat hängt in Aachen
     ort_plakat = esc(f"{o['name'].replace(' ' + o['stadt'], '')}, {o['strasse']}")
-    unten_plakat = unten.replace(f'<p class="infos">{esc(o["name"])}<br>', f'<p class="infos">{ort_plakat}<br>', 1)
+    stoerer = (f'<div class="stoerer" aria-hidden="true"><strong>{"Kostenlos" if kostenlos else esc(s["preis"])}</strong>'
+               f'<span>nur {s["plaetze"]} Plätze</span></div>')
+    unten_plakat = f"""<div class="unten">
+    <p class="termin">{esc(plakat_tag)}<br>{esc(plakat_zeit)}</p>
+    <p class="infos">{ort_plakat}<br>Keine Vorkenntnisse nötig</p>
+    <div class="anmelden-qr"><div class="qr">{qr}</div><p>Jetzt Platz sichern:<br><strong>{esc(kurz_url)}</strong><span class="klein">{pilot_satz}</span></p></div>
+  </div>"""
     schriftblatt = lambda klasse: f"""<div class="blatt {klasse}">
   {kreis}
+  {stoerer if klasse == "plakat" else ""}
   {kopf}
   {unten_plakat if klasse == "plakat" else unten}
 </div>"""

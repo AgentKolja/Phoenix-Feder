@@ -100,7 +100,13 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 @page { size: A4; margin: 0; }
 .plakat { width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; display: flex; flex-direction: column; background: #fffdf9; }
 .plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -46mm; top: -74mm; border-radius: 50%; overflow: hidden; }
-.plakat > *:not(.kreis) { position: relative; }
+.plakat > *:not(.kreis):not(.stoerer) { position: relative; }
+/* Störer: runder Aufkleber mit dem Angebot, sitzt auf dem Rand des Fotokreises */
+.plakat .stoerer { position: absolute; z-index: 2; left: 89mm; top: 44mm; width: 48mm; height: 48mm; border-radius: 50%;
+  background: var(--akzent); color: #fffdf9; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; box-shadow: 0 1.5mm 5mm rgb(60 40 20 / 28%); border: 1.2mm solid #fffdf9; }
+.plakat .stoerer strong { font: 700 19.5pt/1 var(--sans); text-transform: uppercase; letter-spacing: 0.03em; }
+.plakat .stoerer span { font: 400 15pt/1.15 var(--sans); margin-top: 1.8mm; }
 .plakat h1 { margin-top: 84mm; font: 700 66pt/0.95 var(--sans); text-transform: uppercase; letter-spacing: -0.005em; text-wrap: initial; }
 .plakat .unter { font-size: 46pt; margin-top: 5mm; line-height: 1.1; }
 .plakat .unten { margin-top: auto; padding-top: 6mm; border-top: 0.8mm solid var(--text); display: grid; gap: 5mm; }
