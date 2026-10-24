@@ -85,18 +85,12 @@ def main():
         plakat_bild = (ziel / "_kornfeld.jpg").as_uri()
     except ImportError:
         pass
-    # Foto für das Foto-Plakat: echter Raum des Veranstaltungsorts (seminar.json "plakat_foto", z. B. Warung Yoga
-    # mit Erlaubnis des Studios). Wird beim Erzeugen von der Website des Studios geladen und liegt nicht im Repo.
-    raum_bild = plakat_bild
-    pf = s.get("plakat_foto") or {}
-    if pf.get("url"):
-        try:
-            sys.path.insert(0, str(HIER))
-            import raumbild
-            raumbild.erzeugen(pf, WURZEL / "bilder" / "seminar-meditation-1600.webp", ziel / "_raum.jpg")
-            raum_bild = (ziel / "_raum.jpg").as_uri()
-        except Exception as fehler:  # ohne Netz oder Pillow: Kornfeld statt Raumfoto, damit der Rest trotzdem entsteht
-            print(f"Achtung: Raumfoto nicht erzeugt ({fehler}), Foto-Plakat nimmt das Kornfeld.")
+    # Bild fürs Foto-Plakat: selbst gezeichnete Illustration eines Yogaraums nach dem Vorbild des Warung Yoga mit einer
+    # meditierenden Person auf einer Matte; Raum und Person im selben Stil (Nikolas, Okt. 2026: Montage wirkte „eingefügt“)
+    sys.path.insert(0, str(HIER))
+    import raum_illustration
+    raum_illustration.erzeugen(ziel / "_raum.svg")
+    raum_bild = (ziel / "_raum.svg").as_uri()
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
@@ -208,7 +202,7 @@ def main():
     if "PW" not in umgebung:
         umgebung["PW"] = subprocess.run(["npm", "root", "-g"], capture_output=True, text=True).stdout.strip() + "/playwright"
     subprocess.run(["node", str(HIER / "rendern.js"), str(ziel)], check=True, env=umgebung)
-    for f in [*ziel.glob("_*.html"), *ziel.glob("_*.jpg")]:
+    for f in [*ziel.glob("_*.html"), *ziel.glob("_*.jpg"), *ziel.glob("_*.svg")]:
         f.unlink()
     # Link-Vorschau der Seminarseite (og:image) gleich in die Website übernehmen
     import shutil
