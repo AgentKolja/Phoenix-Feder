@@ -43,14 +43,6 @@ async function bereit(seite) {
   await plakat.close();
   console.log("✓ plakat-a4.pdf");
 
-  const zettel = await browser.newPage({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: 2 });
-  await zettel.goto(datei("plakat-zettel"));
-  await bereit(zettel);
-  await zettel.pdf({ path: path.join(ziel, "plakat-a4-abreisszettel.pdf"), format: "A4", printBackground: true, margin: { top: 0, right: 0, bottom: 0, left: 0 } });
-  await zettel.screenshot({ path: path.join(ziel, "plakat-a4-abreisszettel.png") });
-  await zettel.close();
-  console.log("✓ plakat-a4-abreisszettel.pdf");
-
   if (!process.env.FFMPEG) {
     console.log("Kein ffmpeg gefunden (pip install imageio-ffmpeg) – Kurzvideo übersprungen.");
   } else {
