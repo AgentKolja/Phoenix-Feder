@@ -3,7 +3,7 @@
 
 Aufruf:  python3 werkzeuge/werbung/erzeugen.py [Ausgabeordner]
 Ergebnis: instagram-beitrag.png (1080 × 1350), story-status.png (1080 × 1920), kurzvideo.mp4 (12 s, ohne Ton),
-          plakat-a4.pdf (druckfertig, skaliert auch auf A3), plakat-a4.png (Vorschau) und og-seminar.jpg
+          plakat-a4.pdf (druckfertig), plakat-a4-foto.pdf (zweite Fassung mit Foto und Preisfeld), plakat-a4.png (Vorschau) und og-seminar.jpg
           (Link-Vorschau 1200 × 630 im Plakat-Look, wird auch nach bilder/ kopiert).
 
 Termin, Ort und Plätze kommen aus inhalt/seminar.json, also nach einem neuen Termin einfach neu erzeugen.
@@ -85,6 +85,18 @@ def main():
         plakat_bild = (ziel / "_kornfeld.jpg").as_uri()
     except ImportError:
         pass
+    meditation_bild = (WURZEL / "bilder" / "seminar-meditation-1600.webp").as_uri()
+    try:
+        from PIL import Image, ImageFilter
+        foto = Image.open(WURZEL / "bilder" / "seminar-meditation-1600.webp").convert("RGB")
+        hoehe = round(foto.width / 1.4)  # Seitenverhältnis wie der Bildbereich des Plakats (198 × 141 mm)
+        oben = round((foto.height - hoehe) * 0.9)  # Person ganz im Bild, Kopf nicht zu tief
+        foto = foto.crop((0, oben, foto.width, oben + hoehe))
+        foto = foto.resize((foto.width * 4, foto.height * 4), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=2.6, percent=70, threshold=3))
+        foto.save(ziel / "_meditation.jpg", quality=92)
+        meditation_bild = (ziel / "_meditation.jpg").as_uri()
+    except ImportError:
+        pass
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
@@ -128,7 +140,40 @@ def main():
   {kopf}
   {unten_plakat if klasse == "plakat" else unten}
 </div>"""
+    # Zweite Plakat-Fassung (Nikolas, Okt. 2026, nach einem Entwurf aus Claude Design): Foto oben, Titel,
+    # Preisfeld „0 €“, Termin und QR-Code unten. Preis danach und Anmeldeschluss optional in seminar.json.
+    nach_preis = s.get("preis_danach", "")
+    frist = s.get("anmeldeschluss", "")
+    frist_text = ""
+    if frist:
+        f = date.fromisoformat(frist)
+        frist_text = f" · Anmeldung bis {TAGE[f.weekday()][:2]}, {f.day}.{f.month}."
+    preis_feld = "0 €" if kostenlos else esc(s["preis"])
+    fett = "Kostenloses Pilotseminar." if kostenlos and pilot else "Kostenloses Seminar." if kostenlos else "Seminar in kleiner Runde."
+    foto_plakat = f"""<div class="blatt plakat2">
+  <div class="foto"><img src="{meditation_bild}" alt=""></div>
+  <div class="inhalt">
+    <h1>Achtsamkeitsseminar</h1>
+    <div class="angebot">
+      <div class="preis">{preis_feld}</div>
+      <div class="angebot-text">
+        <p class="fett">{fett}</p>
+        {f'<p>Danach kostet es {esc(nach_preis)}.</p>' if nach_preis else ""}
+        <p class="band">Nur die ersten {s["plaetze"]}{esc(frist_text)}</p>
+      </div>
+    </div>
+    <div class="fuss">
+      <div class="fakten2">
+        <p class="wann">{esc(TAGE[tag.weekday()][:2])}, {tag.day}. {esc(MONATE[tag.month - 1])} · {esc(uhr(s["beginn"]))}–{esc(s["ende"])} Uhr</p>
+        <p>{esc(o["name"].replace(" " + o["stadt"], ""))}, {esc(o["strasse"])}{f" ({esc(o['zusatz'])})" if o.get("zusatz") else ""}</p>
+        <p>Mit Nikolas Voth · keine Vorkenntnisse nötig</p>
+      </div>
+      <div class="qr-feld"><div class="qr">{qr}</div><strong>Platz sichern</strong><span>{esc(kurz_url)}</span></div>
+    </div>
+  </div>
+</div>"""
     seiten = {
+        "plakat-foto": foto_plakat,
         "beitrag": schriftblatt("post"),
         "story": schriftblatt("story"),
         "plakat": schriftblatt("plakat"),
@@ -163,7 +208,7 @@ def main():
     if "PW" not in umgebung:
         umgebung["PW"] = subprocess.run(["npm", "root", "-g"], capture_output=True, text=True).stdout.strip() + "/playwright"
     subprocess.run(["node", str(HIER / "rendern.js"), str(ziel)], check=True, env=umgebung)
-    for f in [*ziel.glob("_*.html"), *ziel.glob("_kornfeld.jpg")]:
+    for f in [*ziel.glob("_*.html"), *ziel.glob("_*.jpg")]:
         f.unlink()
     # Link-Vorschau der Seminarseite (og:image) gleich in die Website übernehmen
     import shutil
