@@ -91,19 +91,12 @@ def main():
     pf = s.get("plakat_foto") or {}
     if pf.get("url"):
         try:
-            import io
-            import urllib.request
-            from PIL import Image, ImageFilter
-            anfrage = urllib.request.Request(pf["url"], headers={"User-Agent": "Mozilla/5.0"})
-            foto = Image.open(io.BytesIO(urllib.request.urlopen(anfrage, timeout=30).read())).convert("RGB")
-            x, y, breite = pf.get("x", 0), pf.get("y", 0), pf.get("breite", foto.width)
-            foto = foto.crop((x, y, x + breite, y + round(breite / 1.4)))  # Bildbereich des Plakats: 198 × 141 mm
-            if foto.width < 2400:
-                foto = foto.resize((2400, round(2400 / 1.4)), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=2, percent=50, threshold=3))
-            foto.save(ziel / "_raum.jpg", quality=92)
+            sys.path.insert(0, str(HIER))
+            import raumbild
+            raumbild.erzeugen(pf, WURZEL / "bilder" / "seminar-meditation-1600.webp", ziel / "_raum.jpg")
             raum_bild = (ziel / "_raum.jpg").as_uri()
-        except Exception as fehler:  # ohne Netz: Kornfeld statt Raumfoto, damit der Rest trotzdem entsteht
-            print(f"Achtung: Raumfoto nicht geladen ({fehler}), Foto-Plakat nimmt das Kornfeld.")
+        except Exception as fehler:  # ohne Netz oder Pillow: Kornfeld statt Raumfoto, damit der Rest trotzdem entsteht
+            print(f"Achtung: Raumfoto nicht erzeugt ({fehler}), Foto-Plakat nimmt das Kornfeld.")
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):

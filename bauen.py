@@ -730,6 +730,10 @@ def seminar_anmeldung_html():
       <p>Der nächste Termin ist in Planung. Schreib mir unverbindlich, dann erfährst du ihn als Erste:r. Auch für dein Studio, deine Gruppe oder dein Team kannst du das Seminar anfragen.</p>
     </div>
     {kontakt_html("Achtsamkeitsseminar")}"""
+    # Anmeldeschluss (seminar.json, optional): steht dabei, solange er nicht vorbei ist
+    schluss = t.get("anmeldeschluss")
+    frist = (f'\n        <li><strong>Anmeldung:</strong> bis {WOCHENTAGE[date.fromisoformat(schluss).weekday()]}, {datum_de(schluss)}</li>'
+             if schluss and date.fromisoformat(schluss) >= date.today() else "")
     betreff = f"Anmeldung Achtsamkeitsseminar {t['tag_lang']}"
     return f"""<div class="seminar-basis">
       <p class="oberzeile">Grundlagen der Meditation</p>
@@ -738,7 +742,7 @@ def seminar_anmeldung_html():
       <ul class="termin-daten">
         <li><strong>Wann:</strong> {esc(t['tag_lang'])}, {esc(t['zeit'])}</li>
         <li><strong>Wo:</strong> {esc(t['ort']['name'])}, <a href="https://www.google.com/maps/search/?api=1&amp;query={quote_plus(f"{t['ort']['strasse']}, {t['ort']['plz']} {t['ort']['stadt']}")}" target="_blank" rel="noopener">{esc(t['ort']['strasse'])}, {esc(t['ort']['plz'])} {esc(t['ort']['stadt'])}</a>{" (" + esc(t['ort']['zusatz']) + ")" if t['ort'].get('zusatz') else ""}</li>
-        <li><strong>Preis:</strong> {esc(t['preis'][:1].upper() + t['preis'][1:])}, {t['plaetze']} Plätze</li>
+        <li><strong>Preis:</strong> {esc(t['preis'][:1].upper() + t['preis'][1:])}, {t['plaetze']} Plätze</li>{frist}
       </ul>
     </div>
     <div>

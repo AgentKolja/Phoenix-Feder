@@ -155,6 +155,10 @@ function server() {
   pruefe("Seminar-Seite schlank: Kurzinfo und Anmeldung (nur Vorname und E-Mail) ganz oben, Methoden verlinkt, keine Schokoladen-Übung",
     Boolean(await p.$("#anmelden h1")) && !(await p.$("#anmelden form textarea")) && (await p.$$("#anmelden .termin-daten li, #anmelden form")).length >= 1
     && (await p.$$(".methoden a")).length >= 6 && !(await p.textContent("main")).includes("Schokolade"));
+  const SEM = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "inhalt", "seminar.json"), "utf8"));
+  if (SEM.anmeldeschluss && SEM.anmeldeschluss >= new Date().toISOString().slice(0, 10) && await p.$("#anmelden .termin-daten")) {
+    pruefe("Anmeldeschluss steht bei den Termindaten", (await p.textContent("#anmelden .termin-daten")).includes("Anmeldung: bis"));
+  }
   // Seminar-Anmeldung: Formular mit zwei Pflichtfeldern, danach Kalender-Knöpfe (Web3Forms wird im Test simuliert)
   if (await p.$('form[data-danach="seminar-kalender"]')) {
     const pflicht = await p.$$eval('form[data-danach] [required]', (l) => l.map((x) => x.name));
