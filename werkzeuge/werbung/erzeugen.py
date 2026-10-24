@@ -3,7 +3,8 @@
 
 Aufruf:  python3 werkzeuge/werbung/erzeugen.py [Ausgabeordner]
 Ergebnis: instagram-beitrag.png (1080 × 1350), story-status.png (1080 × 1920), kurzvideo.mp4 (12 s, ohne Ton),
-          plakat-a4.pdf (druckfertig, skaliert auch auf A3), plakat-a4.png (Vorschau) und og-seminar.jpg
+          plakat-a4.pdf (druckfertig, Yoga-Studio), plakat-a4-abreisszettel.pdf (Supermarkt, mit Abreißzetteln),
+          plakat-a4.png (Vorschau) und og-seminar.jpg
           (Link-Vorschau 1200 × 630 im Plakat-Look, wird auch nach bilder/ kopiert).
 
 Termin, Ort und Plätze kommen aus inhalt/seminar.json, also nach einem neuen Termin einfach neu erzeugen.
@@ -117,11 +118,18 @@ def main():
     absender = f'<div class="absender"><svg viewBox="0 0 32 32" aria-hidden="true">{feder}</svg><span>Phoenix Feder</span></div>'
     schriftblatt = lambda klasse: f"""<div class="blatt {klasse}">
   {kreis}
-  {absender + stoerer if klasse == "plakat" else ""}
+  {absender + stoerer if klasse.startswith("plakat") else ""}
   {kopf}
-  {unten_plakat if klasse == "plakat" else unten}
+  {unten_plakat if klasse.startswith("plakat") else unten}
 </div>"""
+    # Supermarkt-Version: gleiches Plakat, etwas kompakter, unten Abreißzettel mit Termin und Adresse
+    # (am Schwarzen Brett nehmen viele lieber einen Zettel mit, statt sofort zu scannen)
+    kurz_datum = f"{TAGE[tag.weekday()][:2]} {tag.day}.{tag.month}."
+    streifen = "".join(f'<div class="streifen"><div><b>Seminar {esc(kurz_datum)}</b><span>{esc(kurz_url)}</span></div></div>' for _ in range(7))
+    zettel = schriftblatt("plakat zettel").replace(
+        "\n</div>", f'\n  <div class="abreiss"><p class="schere">✂ Zum Mitnehmen</p><div class="streifen-reihe">{streifen}</div></div>\n</div>', 1)
     seiten = {
+        "plakat-zettel": zettel,
         "beitrag": schriftblatt("post"),
         "story": schriftblatt("story"),
         "plakat": schriftblatt("plakat"),
