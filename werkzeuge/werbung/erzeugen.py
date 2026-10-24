@@ -103,10 +103,13 @@ def main():
     <p class="infos">{esc(o["name"])}<br>{plakat_preis}</p>
     <div class="anmelden-qr"><div class="qr">{qr}</div><p>Anmelden:<br><strong>{esc(kurz_url)}</strong><span class="klein">{pilot_satz}</span></p></div>
   </div>"""
+    # Plakat hängt in Aachen: Straße statt Stadt, damit man den Ort ohne Suchen findet (Nikolas, Okt. 2026)
+    ort_plakat = esc(f"{o['name'].replace(' ' + o['stadt'], '')}, {o['strasse']}")
+    unten_plakat = unten.replace(f'<p class="infos">{esc(o["name"])}<br>', f'<p class="infos">{ort_plakat}<br>', 1)
     schriftblatt = lambda klasse: f"""<div class="blatt {klasse}">
   {kreis}
   {kopf}
-  {unten}
+  {unten_plakat if klasse == "plakat" else unten}
 </div>"""
     seiten = {
         "beitrag": schriftblatt("post"),
