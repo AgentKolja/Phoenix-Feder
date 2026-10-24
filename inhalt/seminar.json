@@ -16,5 +16,10 @@
   "preis": "kostenlos",
   "preis_hinweis": "kostenlos. Ich freue mich dafür über dein ehrliches Feedback.",
   "preis_danach": "39 €",
-  "anmeldeschluss": "2026-11-11"
+  "anmeldeschluss": "2026-11-11",
+  "plakat_foto": {
+    "url": "https://warungyoga.de/img/studio/room-jungle-wide.webp",
+    "x": 420, "y": 0, "breite": 1500,
+    "hinweis": "Raum im Warung Yoga, Foto von warungyoga.de, Nutzung für das Plakat mit Erlaubnis des Studios (Okt. 2026)"
+  }
 }

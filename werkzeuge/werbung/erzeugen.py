@@ -85,18 +85,25 @@ def main():
         plakat_bild = (ziel / "_kornfeld.jpg").as_uri()
     except ImportError:
         pass
-    meditation_bild = (WURZEL / "bilder" / "seminar-meditation-1600.webp").as_uri()
-    try:
-        from PIL import Image, ImageFilter
-        foto = Image.open(WURZEL / "bilder" / "seminar-meditation-1600.webp").convert("RGB")
-        hoehe = round(foto.width / 1.4)  # Seitenverhältnis wie der Bildbereich des Plakats (198 × 141 mm)
-        oben = round((foto.height - hoehe) * 0.9)  # Person ganz im Bild, Kopf nicht zu tief
-        foto = foto.crop((0, oben, foto.width, oben + hoehe))
-        foto = foto.resize((foto.width * 4, foto.height * 4), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=2.6, percent=70, threshold=3))
-        foto.save(ziel / "_meditation.jpg", quality=92)
-        meditation_bild = (ziel / "_meditation.jpg").as_uri()
-    except ImportError:
-        pass
+    # Foto für das Foto-Plakat: echter Raum des Veranstaltungsorts (seminar.json "plakat_foto", z. B. Warung Yoga
+    # mit Erlaubnis des Studios). Wird beim Erzeugen von der Website des Studios geladen und liegt nicht im Repo.
+    raum_bild = plakat_bild
+    pf = s.get("plakat_foto") or {}
+    if pf.get("url"):
+        try:
+            import io
+            import urllib.request
+            from PIL import Image, ImageFilter
+            anfrage = urllib.request.Request(pf["url"], headers={"User-Agent": "Mozilla/5.0"})
+            foto = Image.open(io.BytesIO(urllib.request.urlopen(anfrage, timeout=30).read())).convert("RGB")
+            x, y, breite = pf.get("x", 0), pf.get("y", 0), pf.get("breite", foto.width)
+            foto = foto.crop((x, y, x + breite, y + round(breite / 1.4)))  # Bildbereich des Plakats: 198 × 141 mm
+            if foto.width < 2400:
+                foto = foto.resize((2400, round(2400 / 1.4)), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=2, percent=50, threshold=3))
+            foto.save(ziel / "_raum.jpg", quality=92)
+            raum_bild = (ziel / "_raum.jpg").as_uri()
+        except Exception as fehler:  # ohne Netz: Kornfeld statt Raumfoto, damit der Rest trotzdem entsteht
+            print(f"Achtung: Raumfoto nicht geladen ({fehler}), Foto-Plakat nimmt das Kornfeld.")
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
@@ -151,7 +158,7 @@ def main():
     preis_feld = "0 €" if kostenlos else esc(s["preis"])
     fett = "Kostenloses Pilotseminar." if kostenlos and pilot else "Kostenloses Seminar." if kostenlos else "Seminar in kleiner Runde."
     foto_plakat = f"""<div class="blatt plakat2">
-  <div class="foto"><img src="{meditation_bild}" alt=""></div>
+  <div class="foto"><img src="{raum_bild}" alt=""></div>
   <div class="inhalt">
     <h1>Achtsamkeitsseminar</h1>
     <div class="angebot">
