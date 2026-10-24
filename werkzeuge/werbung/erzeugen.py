@@ -87,10 +87,16 @@ def main():
         pass
     # Bild fürs Foto-Plakat: selbst gezeichnete Illustration eines Yogaraums nach dem Vorbild des Warung Yoga mit einer
     # meditierenden Person auf einer Matte; Raum und Person im selben Stil (Nikolas, Okt. 2026: Montage wirkte „eingefügt“)
-    sys.path.insert(0, str(HIER))
-    import raum_illustration
-    raum_illustration.erzeugen(ziel / "_raum.svg")
-    raum_bild = (ziel / "_raum.svg").as_uri()
+    # Liegt ein echtes Foto als werkzeuge/werbung/plakat-foto.(jpg|png|webp) bereit, hat es Vorrang (Nikolas will ein
+    # ultrarealistisches Bild; die Zeichnung ist nur der Platzhalter, bis das Foto da ist)
+    foto_datei = next((HIER / f"plakat-foto.{e}" for e in ("jpg", "jpeg", "png", "webp") if (HIER / f"plakat-foto.{e}").exists()), None)
+    if foto_datei:
+        raum_bild = foto_datei.as_uri()
+    else:
+        sys.path.insert(0, str(HIER))
+        import raum_illustration
+        raum_illustration.erzeugen(ziel / "_raum.svg")
+        raum_bild = (ziel / "_raum.svg").as_uri()
     portrait = (WURZEL / "bilder" / "nikolas-portrait-800.webp").as_uri()
     qr = qr_svg(url)
     def fakten_html(preis):
