@@ -101,13 +101,10 @@ h1, .unter, .fakt span, .szene p { text-wrap: balance; }
 /* Warmer Grund mit weißem Rand: hebt sich am Schwarzen Brett von weißen Zetteln ab; der Rand ist gewollt,
    so schneidet auch ein Drucker ohne Randlosdruck nichts ungleichmäßig ab. Positionen gelten ab der Innenkante. */
 .plakat { width: 210mm; height: 297mm; padding: 9mm 10mm 7mm; display: flex; flex-direction: column; background: #f2e3c6; border: 6mm solid #fff; }
-.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -36mm; top: -86mm; border-radius: 50%; overflow: hidden; }
-.plakat > *:not(.kreis):not(.stoerer):not(.absender) { position: relative; }
-/* Absender oben links: füllt die Ecke neben dem Foto ruhig aus und macht die Marke erkennbar */
-.plakat .absender { position: absolute; left: 10mm; top: 8mm; display: flex; align-items: center; gap: 2.5mm; font: 500 17pt/1 var(--serif); color: var(--text); }
-.plakat .absender svg { width: 10mm; height: 10mm; }
+.plakat .kreis { position: absolute; width: 168mm; height: 168mm; right: -24mm; top: -86mm; border-radius: 50%; overflow: hidden; }
+.plakat > *:not(.kreis):not(.stoerer) { position: relative; }
 /* Störer: runder Aufkleber mit dem Angebot, sitzt auf dem Rand des Fotokreises */
-.plakat .stoerer { position: absolute; z-index: 2; left: 68mm; top: 34mm; width: 48mm; height: 48mm; border-radius: 50%;
+.plakat .stoerer { position: absolute; z-index: 2; left: 55mm; top: 33mm; width: 48mm; height: 48mm; border-radius: 50%;
   background: var(--akzent); color: #fffdf9; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; box-shadow: 0 1.5mm 5mm rgb(60 40 20 / 28%); border: 1.2mm solid #fffdf9; }
 .plakat .stoerer strong { font: 700 19.5pt/1 var(--sans); text-transform: uppercase; letter-spacing: 0.03em; }
