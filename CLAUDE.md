@@ -255,7 +255,7 @@ Bilder `seminar-*` stammen aus
 dem PDF. Termin nur in `inhalt/seminar.json` pflegen: Seite (Kurzinfo und Anmeldung oben, `#anmelden`), Angebotskarte
 (`"seminar": true`), Kalenderdatei `/achtsamkeitsseminar/termin.ics` und Bestätigungsseite `/angemeldet/` folgen daraus.
 Anmeldung: nur Vorname + E-Mail über Web3Forms; Nikolas nimmt 2–3 Anmeldungen mehr an als Plätze (Absagen-Puffer)
-und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026), Ort Warung Yoga Aachen. Seminar-Leitfaden mit Kursplan, Materialliste
+und schickt am Vortag eine Erinnerungsmail. Pilot kostenlos gegen Feedback (Okt. 2026), Ort Warung Yoga Aachen. Der Pilot am 14.11.2026 wurde am 3.11. verschoben (Nikolas: „mir ist etwas dazwischengekommen“), die 6 Angemeldeten haben eine Mail bekommen und erhalten eine neue Einladung, sobald das Datum steht; bis dahin `datum` und `anmeldeschluss` leer, Seite zeigt „in Planung“. Seminar-Leitfaden mit Kursplan, Materialliste
 und Druckvorlagen liegt als Claude-Doc bei Nikolas (nicht im Repo).
 Format: 150 Minuten mit Pause, kleine Gruppe, drinnen (keine Gehmeditation, kein Schweigeessen – wetter- bzw.
 zeitabhängig). Maslow: Mangelbedürfnisse lassen sich stillen, Selbstverwirklichung und Transzendenz sind Sehnsüchte,

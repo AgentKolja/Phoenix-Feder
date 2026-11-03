@@ -153,7 +153,7 @@ function server() {
   await p.goto(`${B}/achtsamkeitsseminar/`, { waitUntil: "load" });
   pruefe("Seminar-Seite erreichbar", (await p.textContent("h1")) === "Achtsamkeitsseminar");
   pruefe("Seminar-Seite schlank: Kurzinfo und Anmeldung (nur Vorname und E-Mail) ganz oben, Methoden verlinkt, keine Schokoladen-Übung",
-    Boolean(await p.$("#anmelden h1")) && !(await p.$("#anmelden form textarea")) && (await p.$$("#anmelden .termin-daten li, #anmelden form")).length >= 1
+    Boolean(await p.$("#anmelden h1")) && !(await p.$("#anmelden form[data-danach] textarea")) && (await p.$$("#anmelden .termin-daten li, #anmelden form")).length >= 1
     && (await p.$$(".methoden a")).length >= 6 && !(await p.textContent("main")).includes("Schokolade"));
   const SEM = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "inhalt", "seminar.json"), "utf8"));
   if (SEM.anmeldeschluss && SEM.anmeldeschluss >= new Date().toISOString().slice(0, 10) && await p.$("#anmelden .termin-daten")) {
