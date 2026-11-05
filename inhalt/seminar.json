@@ -1,6 +1,6 @@
 {
   "art": "Pilot",
-  "datum": "",
+  "datum": "2027-01-09",
   "beginn": "14:00",
   "ende": "16:30",
   "ort": {
@@ -16,5 +16,5 @@
   "preis": "kostenlos",
   "preis_hinweis": "kostenlos. Ich freue mich dafür über dein ehrliches Feedback.",
   "preis_danach": "39 €",
-  "anmeldeschluss": ""
+  "anmeldeschluss": "2027-01-06"
 }
